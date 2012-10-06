@@ -15,5 +15,6 @@
   "omnibox": {
     "keyword": "t"
   },
-  "options_page": "view/index.html"
+  "options_page": "view/index.html",
+  "update_url": "http://wstyke.com/tabspire/updates.xml"
 }
