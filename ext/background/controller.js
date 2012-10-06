@@ -36,7 +36,7 @@ TS.controller.openTab = function(tab) {
     }
     var tabUrlNoHashtag = tab.url.replace(/#\s*[^//.]+$/, '');
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
-        chrome.tabs.getSelected(function(selectedTab) {
+        TS.controller.fetchSelectedTab(function(selectedTab) {
             if (tabs.length > 0) {
                 // Tab already open, select it!.
                 debug('Found existing tab', tabs[0]);
@@ -66,7 +66,7 @@ TS.controller.openTab = function(tab) {
  * Fetch currently focused tab for callback.
  * @param {function} callback Passed focused tab.
  */
-TS.controller.fetchFocusedTab = function(callback) {
+TS.controller.fetchSelectedTab = function(callback) {
   chrome.windows.getCurrent(function(win) {
     chrome.tabs.getSelected(win.id, function(tab) {
         callback(tab);
