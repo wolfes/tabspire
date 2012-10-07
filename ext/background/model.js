@@ -67,6 +67,30 @@ TS.model.getTabByName = function(tabName) {
     return tabdict[tabName];
 };
 
+/**
+ * Retrieve tabs that fuzzy-match name.
+ * @param {string} tabName The name of the desired tab.
+ * @return {array} tabs The list of matching tabs.
+ */
+TS.model.getTabsByFuzzyName = function(tabName) {
+    var tabs = [];
+    var tabdict = TS.model.getNamedTabs();
+    for (var name in tabdict) {
+        var tab = tabdict[name];
+        if (tab.name.search(tabName) === 0) {
+            // Exact Match: Prepend to tabs list, skip fuzzy search.
+            tabs = [tab].concat(tabs);
+            continue;
+        }
+        // Fuzzy Search: Find tabName's chars in order in tab.name.
+        escTabName = TS.util.escapeRegExp(tabName);
+        var fuzzyNameRegExp = new RegExp(escTabName.split('').join('.*'));
+        if (fuzzyNameRegExp.test(tab.name)) {
+            tabs.push(tab);
+        }
+    }
+    return tabs;
+};
 
 /**
  * Removes tab info for the specified named tab.
