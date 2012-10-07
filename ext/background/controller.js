@@ -27,6 +27,37 @@ TS.controller.openTabByName = function(tabName) {
 };
 
 /**
+ * Open first tab that matches fuzzy name match algorithm.
+ * @param {string} tabName The name of the tab to open.
+ */
+TS.controller.openTabByFuzzyName = function(tabName) {
+    var tabs = TS.model.getTabsByFuzzyName(tabName);
+    if (tabs.length >= 1) {
+        TS.controller.openTab(tabs[0]);
+    }
+};
+
+
+/**
+ * Get list of tabs that fuzzy-match the name.
+ * @param {string} tabName The desired name.
+ * @return {array} The matching tabs.
+ */
+TS.controller.getTabsByFuzzyName = function(tabName) {
+    return TS.model.getTabsByFuzzyName(tabName);
+};
+
+/**
+ * Close tab if it is a Chrome 'newtab' page.
+ * @param {object} tab The tab to check for closing.
+ */
+TS.controller.closeNewTab = function(tab) {
+    if (tab.url === 'chrome://newtab/') {
+        chrome.tabs.remove(tab.id);
+    }
+};
+
+/**
  * Open a tab, or focus tab if already exists.
  * @param {object} tab Contains .url attr.
  */
@@ -40,10 +71,7 @@ TS.controller.openTab = function(tab) {
             if (tabs.length > 0) {
                 // Tab already open, select it!.
                 debug('Found existing tab', tabs[0]);
-                if (selectedTab.url === 'chrome://newtab/') {
-                    // Close empty tab that was made to type in tabspire.
-                    chrome.tabs.remove(selectedTab.id);
-                }
+                TS.controller.closeNewTab(selectedTab);
                 // Select desired tab.
                 chrome.tabs.update(tabs[0].id, {active: true});
             } else {
