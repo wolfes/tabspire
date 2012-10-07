@@ -150,7 +150,7 @@ TS.omni.suggestOpen = function(params) {
         chrome.omnibox.setDefaultSuggestion({
            'description': 'open ' + tabs[0].name + ' -> ' + tabs[0].url
         });
-        // Remove first suggestion, since we're showing it as default suggestion.
+        // Remove first suggestion, since it is shown as default suggestion.
         suggestions = suggestions.splice(1);
     } else {
         chrome.omnibox.setDefaultSuggestion({
