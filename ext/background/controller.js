@@ -28,7 +28,7 @@ TS.controller.openTabByName = function(tabName) {
 
 /**
  * Open a tab, or focus tab if already exists.
- * @param {object} tab The standard tab object.
+ * @param {object} tab Contains .url attr.
  */
 TS.controller.openTab = function(tab) {
     if (tab === undefined) {

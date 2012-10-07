@@ -195,7 +195,7 @@ TS.omni.inputEntered = function(text) {
     switch (cmd.opt) {
         case 'a':
             debug('Lets Add This Wabbit!', cmd);
-            TS.controller.fetchFocusedTab(function(tab) {
+            TS.controller.fetchSelectedTab(function(tab) {
                 TS.controller.addTab({
                     'name': cmd.params[0],
                     'url': tab.url
@@ -204,7 +204,15 @@ TS.omni.inputEntered = function(text) {
             break;
         case 'o':
             debug('Open This Panther!', cmd);
-            TS.controller.openTabByName(cmd.params[0]);
+            var nameOrUrl = cmd.params[0];
+            if (nameOrUrl.search('http://') === 0) {
+                // User selected from dropdown.
+                // Fragile, depends on open suggest text.
+                debug(nameOrUrl);
+                TS.controller.openTab({url: nameOrUrl});
+            } else {
+                TS.controller.openTabByName(cmd.params[0]);
+            }
             break;
     }
 };
