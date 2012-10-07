@@ -32,12 +32,18 @@ TS.omni.commands.push({
     'desc': 'Open Named Tab',
     'suggest': 'suggestOpen'
 });
+
 /*TS.omni.commands.push({
     'opt': 's',
     'cmd': 'superpowermultiply',
     'desc': 'Rabbit-Panther-Thingy!',
-    'suggest': 'suggestZ'
+    'suggest': 'suggestRockets'
 });*/
+
+/**
+ * Message to show to user when no results match command.
+ */
+TS.omni.NO_MATCH_MSG = 'No more results?  Try backspace!';
 
 /**
  * Reset Chrome Omnibox's default suggestion.
@@ -45,6 +51,7 @@ TS.omni.commands.push({
 TS.omni.resetDefaultSuggestion = function() {
     TS.omni.updateDefaultSuggestion('');
 };
+
 $(document).ready(function() {
     TS.omni.resetDefaultSuggestion();
 });
@@ -93,11 +100,11 @@ TS.omni.updateDefaultSuggestion = function(text) {
     });
 };
 
-
 /**
  * User started typing a tabspire command in Chrome's Omnibox.
  */
 TS.omni.inputStarted = function() {
+    debug('inputStarted');
     TS.omni.updateDefaultSuggestion('');
 };
 chrome.omnibox.onInputStarted.addListener(TS.omni.inputStarted);
@@ -127,23 +134,29 @@ TS.omni.suggestOpen = function(params) {
     debug('suggestOpen params:', params);
     var suggestions = [];
     var allSuggestions = [];
-    var tabdict = TS.model.getNamedTabs();
-    for (var name in tabdict) {
-        var tabInfo = tabdict[name];
-        var newName = params[0];
-        var tabName = tabInfo.name;
-        var suggestion = {
+    var requestedTabName = params[0];
+    var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
+    var numTabs = tabs.length;
+    for (var i = 0; i < numTabs; i++) {
+        var tabInfo = tabs[i];
+        suggestions.push({
             content: 'open ' + tabInfo.url,
-            description: 'Open: ' + tabInfo.name + ' -> ' + tabInfo.url
-        };
-        if (tabInfo.name.search(params[0]) === 0) {
-            // Consider === 0 vs !== -1 for match anywhere.
-            suggestions.push(suggestion);
-        }
+            description: 'open ' + tabInfo.name + ' -> ' + tabInfo.url
+        });
+    }
+    // If we have open tab suggestions, hide default suggestion.
+    debug('The suggestions for suggestOpen: ', suggestions);
+    if (suggestions.length > 0) {
+        chrome.omnibox.setDefaultSuggestion({
+           'description': 'open ' + tabs[0].name + ' -> ' + tabs[0].url
+        });
+    } else {
+        chrome.omnibox.setDefaultSuggestion({
+            'description': TS.omni.NO_MATCH_MSG
+        });
     }
     return suggestions;
 };
-
 
 /**
  * Parse text into command and params.
@@ -173,9 +186,9 @@ TS.omni._getCmd = function(text) {
  * @param {object} suggest Callback: pass suggestions to show in Omnibox.
  */
 TS.omni.inputChanged = function(text, suggest) {
-    TS.omni.updateDefaultSuggestion(text);
     cmd = TS.omni._getCmd(text);
     if (cmd === undefined) {
+        TS.omni.updateDefaultSuggestion(text);
         return;
     }
     if (cmd.suggest in TS.omni) {
@@ -205,13 +218,16 @@ TS.omni.inputEntered = function(text) {
         case 'o':
             debug('Open This Panther!', cmd);
             var nameOrUrl = cmd.params[0];
-            if (nameOrUrl.search('http://') === 0) {
+            if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
+                // User entered the no match message.
+                // Pass on opening tab.
+            } else if (TS.util.isUrl(nameOrUrl)) {
                 // User selected from dropdown.
                 // Fragile, depends on open suggest text.
                 debug(nameOrUrl);
                 TS.controller.openTab({url: nameOrUrl});
             } else {
-                TS.controller.openTabByName(cmd.params[0]);
+                TS.controller.openTabByFuzzyName(cmd.params[0]);
             }
             break;
     }
