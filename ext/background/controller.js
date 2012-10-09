@@ -31,6 +31,9 @@ TS.controller.openTabByName = function(tabName) {
  * @param {string} tabName The name of the tab to open.
  */
 TS.controller.openTabByFuzzyName = function(tabName) {
+    if (tabName === undefined) {
+        tabName = ''; // Open first match.
+    }
     var tabs = TS.model.getTabsByFuzzyName(tabName);
     if (tabs.length >= 1) {
         TS.controller.openTab(tabs[0]);
@@ -65,12 +68,12 @@ TS.controller.openTab = function(tab) {
     if (tab === undefined) {
         return;
     }
+    // Remove hashtag at end of url (stemming).
     var tabUrlNoHashtag = tab.url.replace(/#\s*[^//.]+$/, '');
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
         TS.controller.fetchSelectedTab(function(selectedTab) {
             if (tabs.length > 0) {
                 // Tab already open, select it!.
-                debug('Found existing tab', tabs[0]);
                 TS.controller.closeNewTab(selectedTab);
                 // Select desired tab.
                 chrome.tabs.update(tabs[0].id, {active: true});
