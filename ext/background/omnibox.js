@@ -105,7 +105,7 @@ TS.omni.updateDefaultSuggestion = function(text) {
  */
 TS.omni.inputStarted = function() {
     debug('inputStarted');
-    TS.omni.updateDefaultSuggestion('');
+    TS.omni.updateDefaultSuggestion(' ');
 };
 chrome.omnibox.onInputStarted.addListener(TS.omni.inputStarted);
 
@@ -133,30 +133,33 @@ TS.omni.suggestAdd = function(params) {
 TS.omni.suggestOpen = function(params) {
     debug('suggestOpen params:', params);
     var suggestions = [];
-    var allSuggestions = [];
     var requestedTabName = params[0];
     var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
     var numTabs = tabs.length;
-    for (var i = 0; i < numTabs; i++) {
-        var tabInfo = tabs[i];
-        suggestions.push({
-            content: 'open ' + tabInfo.url,
-            description: 'open ' + tabInfo.name + ' -> ' + tabInfo.url
-        });
-    }
-    // If we have open tab suggestions, hide default suggestion.
-    debug('The suggestions for suggestOpen: ', suggestions);
-    if (suggestions.length > 0) {
-        chrome.omnibox.setDefaultSuggestion({
-           'description': 'open ' + tabs[0].name + ' -> ' + tabs[0].url
-        });
-        // Remove first suggestion, since it is shown as default suggestion.
-        suggestions = suggestions.splice(1);
-    } else {
+    // If no tabs found, notify user.
+    if (numTabs === 0) {
         chrome.omnibox.setDefaultSuggestion({
             'description': TS.omni.NO_MATCH_MSG
         });
+        return suggestions;
     }
+    // List found tabs, with first tab shown as default suggestion.
+    for (var i = 0; i < numTabs; i++) {
+        var tabInfo = tabs[i];
+        var suggestion = {
+            content: 'open ' + tabInfo.url,
+            description: ('open ' + tabInfo.name + ' -> ' +
+                TS.util.encodeXml(tabInfo.url))
+        };
+        if (i === 0) {
+            chrome.omnibox.setDefaultSuggestion({
+                description: suggestion.description
+            });
+        } else {
+            suggestions.push(suggestion);
+        }
+    }
+    debug('The suggestions for suggestOpen: ', suggestions);
     return suggestions;
 };
 
@@ -189,6 +192,7 @@ TS.omni._getCmd = function(text) {
  */
 TS.omni.inputChanged = function(text, suggest) {
     cmd = TS.omni._getCmd(text);
+    debug('cmd: ', JSON.stringify(cmd));
     if (cmd === undefined) {
         TS.omni.updateDefaultSuggestion(text);
         return;
@@ -218,18 +222,19 @@ TS.omni.inputEntered = function(text) {
             });
             break;
         case 'o':
-            debug('Open This Panther!', cmd);
-            var nameOrUrl = cmd.params[0];
+            var params = cmd.params;
+            var nameOrUrl = (cmd.params.length !== 0) ? params[0] : '';
+            debug('Open This Panther: ', nameOrUrl, cmd);
             if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
                 // User entered the no match message.
                 // Pass on opening tab.
-            } else if (TS.util.isUrl(nameOrUrl)) {
+            } else if (TS.util.isUrl(TS.util.decodeXml(nameOrUrl))) {
                 // User selected from dropdown.
                 // Fragile, depends on open suggest text.
-                debug(nameOrUrl);
-                TS.controller.openTab({url: nameOrUrl});
+                debug(decodeXml(nameOrUrl));
+                TS.controller.openTab({url: TS.util.decodeXml(nameOrUrl)});
             } else {
-                TS.controller.openTabByFuzzyName(cmd.params[0]);
+                TS.controller.openTabByFuzzyName(nameOrUrl);
             }
             break;
     }
