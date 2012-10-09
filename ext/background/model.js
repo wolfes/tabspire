@@ -69,32 +69,75 @@ TS.model.getTabByName = function(tabName) {
 
 /**
  * Retrieve tabs that fuzzy-match name.
- * @param {string} tabName The name of the desired tab.
+ * @param {string} queryName The name of the desired tab.
  * @return {array} tabs The list of matching tabs.
  */
-TS.model.getTabsByFuzzyName = function(tabName) {
+TS.model.getTabsByFuzzyName = function(queryName) {
     var tabs = [];
     var tabdict = TS.model.getNamedTabs();
+    if (queryName === undefined) {
+        for (var name in tabdict) {
+            tabs.push(tabdict[name]);
+        }
+        return tabs;
+    }
     for (var name in tabdict) {
         var tab = tabdict[name];
-        if (tab.name.search(tabName) === 0) {
-            // Exact Match: Prepend to tabs list, skip fuzzy search.
-            tabs = [tab].concat(tabs);
-            continue;
+        // Condense first 3 cases:
+        // rankOrder = 1, rankPos = -10, 0, 1+
+        if (tab.name.search(queryName) !== -1) {
+            tab.rankOrder = 1;
+            // Rank = Position of queryName in the tab's name.
+            // Lower is better
+            tab.rankPos = tab.name.search(queryName);
+            if (tab.name === queryName) {
+                tab.rankPos = -10; // Sort Exact Match to front.
+            }
+            debug(1, tab.rankPos, tab.name);
+        } else {
+            // Fuzzy Match: by folders, then by entire string.
+            escTabName = TS.util.escapeRegExp(queryName);
+            tabFolders = tab.name.split('/');
+            fuzzyNameRegExp = new RegExp(
+                    escTabName.split('').join('.*'));
+            for (var i = 0; i < tabFolders.length; i++) {
+                // Fuzzy Match within a folder name.
+                if (fuzzyNameRegExp.test(tabFolders[i])) {
+                    tab.rankOrder = 4;
+                    tab.rankPos = i;
+                    //rank.dirStart.push(tab);
+                    debug(4, tab.name, queryName);
+                    break;
+                }
+            }
+            if (tab.rankPos === undefined &&
+                    fuzzyNameRegExp.test(tab.name)) {
+                // Fuzzy Match.
+                tab.rankOrder = 5;
+                tab.rankPos = tab.name.search(queryName[0]);
+                //rank.fuzzy.push(tab);
+                debug(5, tab.name, queryName);
+            }
         }
-        // Fuzzy Search: Find tabName's chars in order in tab.name.
-        escTabName = TS.util.escapeRegExp(tabName);
-        var fuzzyNameRegExp = new RegExp(escTabName.split('').join('.*'));
-        if (fuzzyNameRegExp.test(tab.name)) {
+        if (tab.rankOrder !== undefined && tab.rankPos !== undefined) {
             tabs.push(tab);
         }
     }
+    // Order tabs by rank.
+    function sortTabs(a, b) {
+        if (a.rankOrder !== b.rankOrder) {
+            return a.rankOrder > b.rankOrder;
+        } else {
+            return a.rankPos > b.rankPos;
+        }
+    }
+    tabs.sort(sortTabs);
     return tabs;
 };
 
 /**
- * Removes tab info for the specified named tab.
- * @param {string} tabName The name of the saved tab to delete.
+ * Remove tab by name.
+ * @param {string} tabName The name of the tab to delete.
  * @this TS.model
  */
 TS.model.removeNamedTab = function(tabName) {
