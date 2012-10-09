@@ -104,7 +104,6 @@ TS.omni.updateDefaultSuggestion = function(text) {
  * User started typing a tabspire command in Chrome's Omnibox.
  */
 TS.omni.inputStarted = function() {
-    debug('inputStarted');
     TS.omni.updateDefaultSuggestion(' ');
 };
 chrome.omnibox.onInputStarted.addListener(TS.omni.inputStarted);
@@ -115,7 +114,6 @@ chrome.omnibox.onInputStarted.addListener(TS.omni.inputStarted);
  * @return {array} suggestions For Chrome's Omnibox.
  */
 TS.omni.suggestAdd = function(params) {
-    debug('suggestAdd params:', params);
     var suggestions = [];
     var name = params[0] !== undefined ? params[0] : '';
     suggestions.push({
@@ -131,7 +129,6 @@ TS.omni.suggestAdd = function(params) {
  * @return {array} suggestions For Chrome's Omnibox.
  */
 TS.omni.suggestOpen = function(params) {
-    debug('suggestOpen params:', params);
     var suggestions = [];
     var requestedTabName = params[0];
     var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
@@ -159,7 +156,6 @@ TS.omni.suggestOpen = function(params) {
             suggestions.push(suggestion);
         }
     }
-    debug('The suggestions for suggestOpen: ', suggestions);
     return suggestions;
 };
 
@@ -192,7 +188,6 @@ TS.omni._getCmd = function(text) {
  */
 TS.omni.inputChanged = function(text, suggest) {
     cmd = TS.omni._getCmd(text);
-    debug('cmd: ', JSON.stringify(cmd));
     if (cmd === undefined) {
         TS.omni.updateDefaultSuggestion(text);
         return;
@@ -231,7 +226,6 @@ TS.omni.inputEntered = function(text) {
             } else if (TS.util.isUrl(TS.util.decodeXml(nameOrUrl))) {
                 // User selected from dropdown.
                 // Fragile, depends on open suggest text.
-                debug(decodeXml(nameOrUrl));
                 TS.controller.openTab({url: TS.util.decodeXml(nameOrUrl)});
             } else {
                 TS.controller.openTabByFuzzyName(nameOrUrl);

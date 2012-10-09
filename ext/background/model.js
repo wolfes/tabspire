@@ -96,6 +96,7 @@ TS.model.getTabsByFuzzyName = function(queryName) {
             debug(1, tab.rankPos, tab.name);
         } else {
             // Fuzzy Match: by folders, then by entire string.
+            // Redundent folder matching with query anywhere?
             escTabName = TS.util.escapeRegExp(queryName);
             tabFolders = tab.name.split('/');
             fuzzyNameRegExp = new RegExp(
@@ -105,7 +106,6 @@ TS.model.getTabsByFuzzyName = function(queryName) {
                 if (fuzzyNameRegExp.test(tabFolders[i])) {
                     tab.rankOrder = 4;
                     tab.rankPos = i;
-                    //rank.dirStart.push(tab);
                     debug(4, tab.name, queryName);
                     break;
                 }
@@ -115,7 +115,6 @@ TS.model.getTabsByFuzzyName = function(queryName) {
                 // Fuzzy Match.
                 tab.rankOrder = 5;
                 tab.rankPos = tab.name.search(queryName[0]);
-                //rank.fuzzy.push(tab);
                 debug(5, tab.name, queryName);
             }
         }
