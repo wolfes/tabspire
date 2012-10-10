@@ -33,12 +33,12 @@ TS.omni.commands.push({
     'suggest': 'suggestOpen'
 });
 
-/*TS.omni.commands.push({
-    'opt': 's',
-    'cmd': 'superpowermultiply',
-    'desc': 'Rabbit-Panther-Thingy!',
-    'suggest': 'suggestRockets'
-});*/
+TS.omni.commands.push({
+    'opt': 'r',
+    'cmd': 'reload',
+    'desc': 'Reload Tab Every',
+    'suggest': 'suggestReload'
+});
 
 /**
  * Message to show to user when no results match command.
@@ -160,6 +160,16 @@ TS.omni.suggestOpen = function(params) {
 };
 
 /**
+ * Return suggestions for Reload command.
+ * @param {string} params User's input for reload.
+ * @return {array} suggestions For Chrome's Omnibox.
+ */
+TS.omni.suggestReload = function(params) {
+    var suggestions = []; // return
+
+    return suggestions;
+};
+/**
  * Parse text into command and params.
  * @param {string} text The text to parse.
  * @return {object} Command The command item.
@@ -206,19 +216,21 @@ chrome.omnibox.onInputChanged.addListener(TS.omni.inputChanged);
  */
 TS.omni.inputEntered = function(text) {
     var cmd = TS.omni._getCmd(text);
+    var firstParam = cmd.params[0];
     switch (cmd.opt) {
         case 'a':
+            // Add Named Tab Command.
             debug('Lets Add This Wabbit!', cmd);
             TS.controller.fetchSelectedTab(function(tab) {
                 TS.controller.addTab({
-                    'name': cmd.params[0],
+                    'name': firstParam,
                     'url': tab.url
                 });
             });
             break;
         case 'o':
-            var params = cmd.params;
-            var nameOrUrl = (cmd.params.length !== 0) ? params[0] : '';
+            // Open Tab Command.
+            var nameOrUrl = (cmd.params.length !== 0) ? firstParam : '';
             debug('Open This Panther: ', nameOrUrl, cmd);
             if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
                 // User entered the no match message.
@@ -231,6 +243,40 @@ TS.omni.inputEntered = function(text) {
                 TS.controller.openTabByFuzzyName(nameOrUrl);
             }
             break;
+        case 'r':
+            // Reload Tab Every Command.
+            TS.omni.cmdReload(cmd);
+            break;
+    }
+};
+
+/**
+ * Act on reload command from user.
+ * @param {object} cmd The command object augmented with user's input.
+ */
+TS.omni.cmdReload = function(cmd) {
+    var firstParam = cmd.params[0];
+    var reloadTime = parseInt(firstParam, 10);
+    if (reloadTime > 0) {
+         TS.controller.fetchSelectedTab(function(tab) {
+             var tabId = tab.id;
+             TS.omni.tabId = setInterval(function() {
+                 chrome.tabs.get(tab.id, function(recentTab) {
+                     // recentTab is undefined
+                     // if reloaded tab is closed
+                     if (recentTab === undefined) {
+                         clearInterval(TS.omni.tabId);
+                         debug('Reloading tab: ');
+                         return;
+                     }
+                     chrome.tabs.update(tab.id, {
+                         // tab.url = reload original tab
+                         // recentTab.url = reload new tab.
+                         url: tab.url
+                     });
+                 });
+             }, reloadTime * 1000);
+         });
     }
 };
 
