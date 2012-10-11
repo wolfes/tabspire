@@ -104,7 +104,7 @@ TS.model.getTabsByFuzzyName = function(queryName) {
             for (var i = 0; i < tabFolders.length; i++) {
                 // Fuzzy Match within a folder name.
                 if (fuzzyNameRegExp.test(tabFolders[i])) {
-                    tab.rankOrder = 3;
+                    tab.rankOrder = 2;
                     tab.rankPos = i;
                     debug(4, tab.name, queryName);
                     break;
@@ -113,7 +113,7 @@ TS.model.getTabsByFuzzyName = function(queryName) {
             if (tab.rankPos === undefined &&
                     fuzzyNameRegExp.test(tab.name)) {
                 // Fuzzy Match.
-                tab.rankOrder = 4;
+                tab.rankOrder = 3;
                 tab.rankPos = tab.name.search(queryName[0]);
                 debug(5, tab.name, queryName);
             }
