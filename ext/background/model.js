@@ -10,7 +10,6 @@ var TS = TS || {};
  */
 TS.model = TS.model || {};
 
-
 /**
  * Return dict of tab names to saved tab info objects.
  * @return {Object} tabdict Dict mapping name to tab info.

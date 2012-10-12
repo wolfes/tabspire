@@ -32,12 +32,17 @@ TS.omni.commands.push({
     'desc': 'Open Named Tab',
     'suggest': 'suggestOpen'
 });
-
 TS.omni.commands.push({
     'opt': 'r',
     'cmd': 'reload',
     'desc': 'Reload Tab Every',
     'suggest': 'suggestReload'
+});
+TS.omni.commands.push({
+    'opt': 'm',
+    'cmd': 'message',
+    'desc': 'Message At:',
+    'suggest': 'suggestMessage'
 });
 
 /**
@@ -165,10 +170,21 @@ TS.omni.suggestOpen = function(params) {
  * @return {array} suggestions For Chrome's Omnibox.
  */
 TS.omni.suggestReload = function(params) {
-    var suggestions = []; // return
+    var suggestions = [];
 
     return suggestions;
 };
+
+/**
+ * Return suggestions for MessageAt command.
+ * @param {string} params User's input for message.
+ * @return {array} suggestions For Chrome's Omnibox.
+ */
+TS.omni.suggestMessage = function(params) {
+    var suggestions = [];
+    return suggestions;
+};
+
 /**
  * Parse text into command and params.
  * @param {string} text The text to parse.
@@ -247,6 +263,10 @@ TS.omni.inputEntered = function(text) {
             // Reload Tab Every Command.
             TS.omni.cmdReload(cmd);
             break;
+        case 'm':
+            // MessageAt Command.
+            TS.omni.cmdMessageAt(cmd);
+            break;
     }
 };
 
@@ -278,6 +298,47 @@ TS.omni.cmdReload = function(cmd) {
              }, reloadTime * 1000);
          });
     }
+};
+
+/**
+ * Act on reload command from user.
+ * @param {object} cmd The command object augmented with user's input.
+ */
+TS.omni.cmdMessageAt = function(cmd) {
+    var time = cmd.params[0];
+    var msg = cmd.params.splice(1).join(' ');
+
+    var hourMin = time.split(':');
+    var targetHour = parseInt(hourMin[0], 10);
+    var targetMin = parseInt(hourMin[1], 10);
+
+    var currDate = new Date();
+    var currHour = currDate.getHours();
+    var currMin = currDate.getMinutes();
+    var currSec = currDate.getSeconds();
+
+    var isTomorrow = ((targetHour < currHour) ||
+            ((targetHour === currHour) && (targetMin < currMin)));
+
+    var minutesToMsg = 0;
+    if (isTomorrow) {
+        // Message for tomorrow.
+        debug('Un-implemented: msg for tomorrow');
+    } else {
+        // Message for later today.
+        minutesToMsg += (targetHour - currHour) * 60;
+        minutesToMsg += (targetMin - currMin);
+    }
+    var msecToMsg = (minutesToMsg * 60 * 1000) - (currSec * 1000);
+    setTimeout(function() {
+        var notification = webkitNotifications.createNotification(
+            '',
+            'Tabspire Message!',
+            msg
+        );
+        notification.show();
+        debug(msg);
+    }, msecToMsg);
 };
 
 chrome.omnibox.onInputEntered.addListener(TS.omni.inputEntered);
