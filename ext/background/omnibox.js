@@ -50,6 +50,12 @@ TS.omni.commands.push({
     'desc': 'Notify In:',
     'suggest': 'suggestMessage'
 });
+TS.omni.commands.push({
+    'opt': 'rw',
+    'cmd': 'rwindow',
+    'desc': 'Reload Window',
+    'suggest': 'suggestMessage'
+});
 
 /**
  * Message to show to user when no results match command.
@@ -276,6 +282,9 @@ TS.omni.inputEntered = function(text) {
         case 'n':
             TS.omni.cmdMessageIn(cmd);
             break;
+        case 'rw':
+            TS.omni.reloadWindow(cmd);
+            break;
     }
 };
 
@@ -307,6 +316,22 @@ TS.omni.cmdReload = function(cmd) {
              }, reloadTime * 1000);
          });
     }
+};
+/**
+ * Create, return, optionally show HTML5 Notification.
+ * @param {string} opt_title The notification's title.
+ * @param {string} opt_content The body text.
+ * @param {string} opt_image The image src.
+ * @return {object} notification The html5 notification.
+ */
+TS.omni.createNotification = function(
+        opt_title, opt_content, opt_image) {
+    var notification = webkitNotifications.createNotification(
+        opt_image || '',
+        opt_title || '',
+        opt_content || ''
+    );
+    return notification;
 };
 
 /**
@@ -340,14 +365,11 @@ TS.omni.cmdMessageAt = function(cmd) {
         minutesToMsg += (targetMin - currMin);
     }
     var msecToMsg = (minutesToMsg * 60 * 1000) - (currSec * 1000 + currMSec);
+    var notification = TS.omni.createNotification(
+        time + ' hours says:', msg
+    );
     setTimeout(function() {
-        var notification = webkitNotifications.createNotification(
-            '',
-            'Tabspire Message!',
-            msg
-        );
         notification.show();
-        debug(msg);
     }, msecToMsg);
 };
 
@@ -356,26 +378,46 @@ TS.omni.cmdMessageAt = function(cmd) {
  * @param {object} cmd The command object augmented with user's input.
  */
 TS.omni.cmdMessageIn = function(cmd) {
-    var time = cmd.params[0];
+    var minToMsg = (parseInt(cmd.params[0]));
     var msg = cmd.params.splice(1).join(' ');
-
-    debug(time);
-    debug(msg);
-
     var date = new Date();
     var currMSec = date.getSeconds() * 1000 + date.getMilliseconds();
-    var msecToMsg = parseInt(time, 10) * 60 * 1000;
-    var msecToMsg = msecToMsg - currMSec;
-    debug(currMSec, msecToMsg);
+    var msecToMsg = (minToMsg * 60 * 1000) - currMSec;
+    var notification = TS.omni.createNotification(
+        'From ' + minToMsg + ' minutes ago...', // Title
+        msg // Body Text
+    );
     setTimeout(function() {
-        var notification = webkitNotifications.createNotification(
-            '',
-            'Tabspire Message!',
-            msg
-        );
         notification.show();
-        debug(msg);
     }, msecToMsg);
+};
+
+/**
+ * Reload all/matching tabs in current window.
+ * If first param provided, only reload tabs with urls matching param.
+ * @param {object} cmd The user's command.
+ */
+TS.omni.reloadWindow = function(cmd) {
+    var text = cmd.params;
+    var urlMatch;
+    if (text.length > 0) {
+        urlMatch = text[0];
+    }
+    // Get all tabs in current window, reload tabs as directed.
+    chrome.windows.getCurrent(function(gWin) {
+        chrome.tabs.getAllInWindow(gWin.id, function(gTabs) {
+            for (var i = 0; i < gTabs.length; i++) {
+                // If match url param exists and we match tab's url,
+                // or param doesn't exist: reload tab.
+                if ((urlMatch && gTabs[i].url.search(urlMatch) !== -1) ||
+                    !urlMatch) {
+                chrome.tabs.update(gTabs[i].id, {
+                    url: gTabs[i].url
+                });
+                }
+            }
+        });
+    });
 };
 
 chrome.omnibox.onInputEntered.addListener(TS.omni.inputEntered);
