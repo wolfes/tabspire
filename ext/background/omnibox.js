@@ -331,6 +331,9 @@ TS.omni.createNotification = function(
         opt_title || '',
         opt_content || ''
     );
+    notification.addEventListener('click',
+            function(e) { this.cancel(); });
+
     return notification;
 };
 

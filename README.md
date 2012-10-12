@@ -10,3 +10,4 @@ More info: http://wstyke.com/tabspire
 
 
 activity logging and bookmarklets and (show matching tab names on tab add)
+Assign bookmarklets to be run on tabname's opening.
