@@ -44,6 +44,12 @@ TS.omni.commands.push({
     'desc': 'Message At:',
     'suggest': 'suggestMessage'
 });
+TS.omni.commands.push({
+    'opt': 'n',
+    'cmd': 'notify',
+    'desc': 'Notify In:',
+    'suggest': 'suggestMessage'
+});
 
 /**
  * Message to show to user when no results match command.
@@ -267,6 +273,9 @@ TS.omni.inputEntered = function(text) {
             // MessageAt Command.
             TS.omni.cmdMessageAt(cmd);
             break;
+        case 'n':
+            TS.omni.cmdMessageIn(cmd);
+            break;
     }
 };
 
@@ -301,7 +310,7 @@ TS.omni.cmdReload = function(cmd) {
 };
 
 /**
- * Act on reload command from user.
+ * Set notification for a military time.
  * @param {object} cmd The command object augmented with user's input.
  */
 TS.omni.cmdMessageAt = function(cmd) {
@@ -316,6 +325,7 @@ TS.omni.cmdMessageAt = function(cmd) {
     var currHour = currDate.getHours();
     var currMin = currDate.getMinutes();
     var currSec = currDate.getSeconds();
+    var currMSec = currDate.getMilliseconds();
 
     var isTomorrow = ((targetHour < currHour) ||
             ((targetHour === currHour) && (targetMin < currMin)));
@@ -329,7 +339,34 @@ TS.omni.cmdMessageAt = function(cmd) {
         minutesToMsg += (targetHour - currHour) * 60;
         minutesToMsg += (targetMin - currMin);
     }
-    var msecToMsg = (minutesToMsg * 60 * 1000) - (currSec * 1000);
+    var msecToMsg = (minutesToMsg * 60 * 1000) - (currSec * 1000 + currMSec);
+    setTimeout(function() {
+        var notification = webkitNotifications.createNotification(
+            '',
+            'Tabspire Message!',
+            msg
+        );
+        notification.show();
+        debug(msg);
+    }, msecToMsg);
+};
+
+/**
+ * Set Notification for n minutes in the future! ms accuracy!
+ * @param {object} cmd The command object augmented with user's input.
+ */
+TS.omni.cmdMessageIn = function(cmd) {
+    var time = cmd.params[0];
+    var msg = cmd.params.splice(1).join(' ');
+
+    debug(time);
+    debug(msg);
+
+    var date = new Date();
+    var currMSec = date.getSeconds() * 1000 + date.getMilliseconds();
+    var msecToMsg = parseInt(time, 10) * 60 * 1000;
+    var msecToMsg = msecToMsg - currMSec;
+    debug(currMSec, msecToMsg);
     setTimeout(function() {
         var notification = webkitNotifications.createNotification(
             '',
