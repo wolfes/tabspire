@@ -23,37 +23,37 @@ TS.omni.commands = [];
 TS.omni.commands.push({
     'opt': 'a',
     'cmd': 'add',
-    'desc': 'Add Name To Tab',
+    'desc': 'Add Tab',
     'suggest': 'suggestAdd'
     });
 TS.omni.commands.push({
     'opt': 'o',
     'cmd': 'open',
-    'desc': 'Open Named Tab',
+    'desc': 'Open Tab',
     'suggest': 'suggestOpen'
 });
 TS.omni.commands.push({
     'opt': 'r',
     'cmd': 'reload',
-    'desc': 'Reload Tab Every',
+    'desc': 'Reload Tab',
     'suggest': 'suggestReload'
 });
 TS.omni.commands.push({
     'opt': 'm',
     'cmd': 'message',
-    'desc': 'Message At:',
+    'desc': 'MsgAt',
     'suggest': 'suggestMessage'
 });
 TS.omni.commands.push({
     'opt': 'n',
     'cmd': 'notify',
-    'desc': 'Notify In:',
+    'desc': 'NotifyIn',
     'suggest': 'suggestMessage'
 });
 TS.omni.commands.push({
     'opt': 'rw',
     'cmd': 'rwindow',
-    'desc': 'Reload Window',
+    'desc': 'Reload Win',
     'suggest': 'suggestMessage'
 });
 TS.omni.commands.push({
@@ -65,8 +65,8 @@ TS.omni.commands.push({
 TS.omni.commands.push({
     'opt': 'u',
     'cmd': 'usebook',
-    'desc': 'Use Bookmarklet',
-    'suggest': 'suggestMessage'
+    'desc': 'Use Book',
+    'suggest': 'suggestBookmarks'
 });
 
 /**
@@ -106,7 +106,6 @@ TS.omni.updateDefaultSuggestion = function(text) {
     function match(txt) {
         return '<match>' + txt + '</match>';
     }
-
     var textCmd = text.split(' ')[0];
 
     var description = lb;
@@ -158,33 +157,15 @@ TS.omni.suggestAdd = function(params) {
  * @return {array} suggestions For Chrome's Omnibox.
  */
 TS.omni.suggestOpen = function(params) {
-    var suggestions = [];
     var requestedTabName = params[0];
     var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
-    var numTabs = tabs.length;
-    // If no tabs found, notify user.
-    if (numTabs === 0) {
-        chrome.omnibox.setDefaultSuggestion({
-            'description': TS.omni.NO_MATCH_MSG
-        });
-        return suggestions;
-    }
-    // List found tabs, with first tab shown as default suggestion.
-    for (var i = 0; i < numTabs; i++) {
-        var tabInfo = tabs[i];
-        var suggestion = {
+    var suggestions = TS.omni.suggestItems(tabs, function(tabInfo) {
+        return {
             content: 'open ' + tabInfo.url,
             description: ('open ' + tabInfo.name + ' -> ' +
                 TS.util.encodeXml(tabInfo.url))
         };
-        if (i === 0) {
-            chrome.omnibox.setDefaultSuggestion({
-                description: suggestion.description
-            });
-        } else {
-            suggestions.push(suggestion);
-        }
-    }
+    });
     return suggestions;
 };
 
@@ -195,7 +176,6 @@ TS.omni.suggestOpen = function(params) {
  */
 TS.omni.suggestReload = function(params) {
     var suggestions = [];
-
     return suggestions;
 };
 
@@ -210,6 +190,36 @@ TS.omni.suggestMessage = function(params) {
 };
 
 /**
+ * Suggest items using content and desc fns.
+ * @param {array} items List of items to show.
+ * @param {function} itemToSuggest Creates suggestion for item.
+ * @return {array} suggestions The suggestions for Chrome's Omnibox.
+ */
+TS.omni.suggestItems = function(items, itemToSuggest) {
+    var suggestions = [];
+    var numItems = items.length;
+    // If no items, display standard error.
+    if (numItems === 0) {
+        chrome.omnibox.setDefaultSuggestion({
+            'description': TS.omni.NO_MATCH_MSG
+        });
+        return suggestions;
+    }
+    // Create suggestions, with first item as default suggestion.
+    for (var i = 0; i < numItems; i++) {
+        var suggestion = itemToSuggest(items[i]);
+        if (i === 0) {
+            chrome.omnibox.setDefaultSuggestion({
+                description: suggestion.description
+           });
+        } else {
+            suggestions.push(suggestion);
+        }
+    }
+    return suggestions;
+};
+
+/**
  * Return suggestions for bookmarks to use.
  * @param {string} params User's input for message.
  * @return {array} suggestions For Chrome's Omnibox.
@@ -218,9 +228,12 @@ TS.omni.suggestBookmarks = function(params) {
     var suggestions = [];
     var requestedBookName = params[0];
     var books = TS.dbBook.getBooksByFuzzyName(requestedBookName);
-
-
-
+    var suggestions = TS.omni.suggestItems(books, function(bookInfo) {
+        return {
+            content: 'use ' + bookInfo.name,
+            description: 'use ' + bookInfo.name + ' bookmarket'
+        };
+    });
     return suggestions;
 };
 
@@ -480,8 +493,9 @@ TS.omni.addBookmarklet = function(cmd) {
  */
 TS.omni.useNamedBook = function(cmd) {
     var bookName = cmd.params[0];
-    var bookmarklet = TS.dbBook.getBookByName(bookName);
+    var bookmarklet = TS.dbBook.getBooksByFuzzyName(bookName);
     if (bookmarklet) {
+        bookmarklet = bookmarklet[0];
         chrome.tabs.executeScript(
             // null -> Execute in current tab.
             null, { code: bookmarklet.script }
