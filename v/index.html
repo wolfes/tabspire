@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tabspire</title>
+<style>
+.html, body {
+  font-size: 18px;
+}
+.bold {
+  font-weight: bold;
+}
+.accent {
+  font-size: 22px;
+}
+</style>
+</head>
+<body>
+
+<h1> Tabspire </h1>
+
+<p> A command line for your browser's address bar. </p>
+
+<p> Name the tabs you want at your fingertips to re-open or re-focus later.</p>
+
+<h2> Easy Installation </h2>
+<ol>
+  <li> Download <a href='tabspire.crx'>Tabspire</a>. </li>
+  <li> Open Chrome Extension Page --> chrome://chrome/extensions </li>
+  <li> Drag tabspire.crx into Chrome Extensions Page. </li>
+</ol>
+
+<h2> Features </h2>
+<ul>
+  <li> <span class="bold accent">A</span>dd  name 'api/twitter' to current tab: </li>
+  <ul><li> t <span class='bold'>a</span> api/twitter </li></ul>
+ 
+  <li> <span class="bold accent">O</span>pen or re-focus 'api/twitter' with fuzzy name search: </li>
+  <ul>
+    <li> t <span class='bold'>o</span> twit </li>
+    <li> t <span class='bold'>o</span> apt </li>
+  </ul>
+
+  <li> <span class="bold accent">M</span>essage yourself later: </li>
+  <ul>
+    <li> t <span class='bold'>m</span> 14:30 You'll see this at 2:30pm. </li>
+    <li> t <span class='bold'>n</span> 30 You'll see this in 30 minutes. </li>
+    <li> Just click the notification box to close it. </li>
+  </ul>
+  
+  <li> <span class="bold accent">R</span>eload a page every n seconds: </li>
+  <ul>
+    <li> t <span class='bold'>r</span> 60 </li>
+  </ul>
+
+  <li> <span class="bold accent">R</span>eload window's tabs (that optionally have urls matching param): </li>
+  <ul>
+    <li> t <span class='bold'>rw</span> </li>
+    <li> t <span class='bold'>rw</span> yelp </li>
+  </ul>
+
+  <li> <span class="bold accent">B</span>ookmarklets! </li>
+  <ul>
+    <li> t <span class='bold'>b</span> edit document.body.contentEditable=true; </li>
+    <li> t <span class='bold'>u</span> edit --> Uses edit bookmarklet on current tab. </li>
+    <li> Supports fuzzy search for bookmarklet name. </li>
+  </ul>
+
+</ul>
+
+<h2> Version Updates </h2>
+
+<p> v0.7, v0.8 </p>
+<ul>
+  <li> Added Bookmarklets </li>
+  <ul>
+    <li> "t b bookmarklet_name js_code_to_run_in_current_tab" </li>
+    <li> "t u bookmarklet_name" --> Executes bookmarklet in current tab. </li>
+  </ul>
+</ul>
+
+<p> v0.6 </p>
+<ul>
+  <li>Added "Reload Tabs in Window" command: rw</li>
+  <ul><li> "t rw" </li></ul>
+  <li>Reload tabs in current window whose URLs match first param: </li>
+  <ul><li> "t rw yelp" reloads tabs with urls containing 'yelp'</li></ul>
+</ul>
+
+<p> v0.5 </p>
+<ul>
+  <li> Added "Message In" command. </li>
+  <ul><li> "t n 30 This msg will appear in 30 minutes!" </li></ul>
+</ul>
+
+<p> v0.4 </p>
+<ul>
+  <li> Added "Message At" command. </li>
+  <ul><li> "t m 14:30 This msg will appear at 2:30pm!" </li></ul>
+</ul>
+
+<p> v0.3 </p>
+<ul>
+  <li>  </li>
+</ul>
+
+<p> v0.2 </p>
+<ul>
+  <li>  </li>
+</ul>
+
+<p> v0.1 </p>
+<ul>
+  <li> Fuzzy tab searching added! </li>
+  <li> Namespace your tabs: 
+  <ul><li> t a api/chrome/background </li></ul>
+  <li> Fuzzy tab search: </li>
+  <ul><li> t o apiback </li></ul>
+  <li> Search term matches a saved tab if letters from search term appear in-order (but not necessarily adjacent) in the saved tab. </li>
+</ul>
+
+<p> v0.0 </p>
+<ul>
+  <li> From omnibox (address bar): </li>
+  <li> "t a foo" ==> Name focused tab 'foo' </li>
+  <li> "t o foo" ==> Open saved tab named 'foo', or focus if already opened.
+</ul>
+
+</body>
+</html>
