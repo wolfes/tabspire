@@ -72,44 +72,7 @@ TS.dbBook.getBookByName = function(bookName) {
  * @return {object} Bookmarklets matching requested name.
  */
 TS.dbBook.getBooksByFuzzyName = function(queryName) {
-    var books = [];
     var bookDict = TS.dbBook.getNamedBooks();
-
-    if (queryName === undefined) {
-        for (var name in bookDict) {
-            bookss.push(bookDict[name]);
-        }
-        return books;
-    }
-    for (var name in bookDict) {
-        var book = bookDict[name];
-        if (book.name.search(queryName) !== -1) {
-            book.rankOrder = 1;
-            // Rank = Position of queryName in the book's name.
-            // Lower is better
-            book.rankPos = book.name.search(queryName);
-            if (book.name === queryName) {
-                book.rankPos = -10; // Sort Exact Match to front.
-            }
-            debug(1, book.rankPos, book.name);
-        } else {
-            // Fuzzy Match: by folders, then by entire string.
-            // Redundent folder matching with query anywhere?
-            escBookName = TS.util.escapeRegExp(queryName);
-            bookFolders = book.name.split('/');
-            fuzzyNameRegExp = new RegExp(
-                    escBookName.split('').join('.*'));
-            if (book.rankPos === undefined &&
-                    fuzzyNameRegExp.test(book.name)) {
-                // Fuzzy Match.
-                book.rankOrder = 3;
-                book.rankPos = book.name.search(queryName[0]);
-                debug(5, book.name, queryName);
-            }
-        }
-    }
-    return books;
+    return TS.dbUtil.getMatchesByFuzzyName(bookDict, queryName);
 };
-
-
 
