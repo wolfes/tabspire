@@ -56,6 +56,18 @@ TS.omni.commands.push({
     'desc': 'Reload Window',
     'suggest': 'suggestMessage'
 });
+TS.omni.commands.push({
+    'opt': 'b',
+    'cmd': 'bookmarklet',
+    'desc': 'Add Bookmarklet',
+    'suggest': 'suggestMessage'
+});
+TS.omni.commands.push({
+    'opt': 'u',
+    'cmd': 'usebook',
+    'desc': 'Use Bookmarklet',
+    'suggest': 'suggestMessage'
+});
 
 /**
  * Message to show to user when no results match command.
@@ -198,6 +210,21 @@ TS.omni.suggestMessage = function(params) {
 };
 
 /**
+ * Return suggestions for bookmarks to use.
+ * @param {string} params User's input for message.
+ * @return {array} suggestions For Chrome's Omnibox.
+ */
+TS.omni.suggestBookmarks = function(params) {
+    var suggestions = [];
+    var requestedBookName = params[0];
+    var books = TS.dbBook.getBooksByFuzzyName(requestedBookName);
+
+
+
+    return suggestions;
+};
+
+/**
  * Parse text into command and params.
  * @param {string} text The text to parse.
  * @return {object} Command The command item.
@@ -285,8 +312,17 @@ TS.omni.inputEntered = function(text) {
         case 'rw':
             TS.omni.reloadWindow(cmd);
             break;
+        case 'b':
+            // Bookmarklet.
+            TS.omni.addBookmarklet(cmd);
+            break;
+        case 'u':
+            TS.omni.useNamedBook(cmd);
+            break;
     }
 };
+
+chrome.omnibox.onInputEntered.addListener(TS.omni.inputEntered);
 
 /**
  * Act on reload command from user.
@@ -423,5 +459,32 @@ TS.omni.reloadWindow = function(cmd) {
     });
 };
 
-chrome.omnibox.onInputEntered.addListener(TS.omni.inputEntered);
+/**
+ * Save bookmarklet by name.
+ * @param {object} cmd The user's command.
+ */
+TS.omni.addBookmarklet = function(cmd) {
+    var text = cmd.params;
+    var bookName = text[0];
+    var bookScript = cmd.params.splice(1).join(' ');
+    var bookmarklet = {
+        name: bookName,
+        script: bookScript
+    };
+    TS.dbBook.addNamedBook(bookmarklet);
+};
 
+/**
+ * Execute named bookmarklet in current tab.
+ * @param {object} cmd The user's command.
+ */
+TS.omni.useNamedBook = function(cmd) {
+    var bookName = cmd.params[0];
+    var bookmarklet = TS.dbBook.getBookByName(bookName);
+    if (bookmarklet) {
+        chrome.tabs.executeScript(
+            // null -> Execute in current tab.
+            null, { code: bookmarklet.script }
+        );
+    }
+};

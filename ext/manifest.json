@@ -11,7 +11,8 @@
   },
   "permissions": [
     "tabs",
-    "notifications"
+    "notifications",
+	"http://*/*"
   ],
   "omnibox": {
     "keyword": "t"
