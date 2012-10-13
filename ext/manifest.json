@@ -1,6 +1,6 @@
 {
   "name": "Tabspire",
-  "version": "0.6",
+  "version": "0.7",
   "manifest_version": 2,
   "description": "Command Line / GUI for saving & opening tabs.",
   "browser_action": {
@@ -12,7 +12,8 @@
   "permissions": [
     "tabs",
     "notifications",
-	"http://*/*"
+	"http://*/*",
+	"https://*/*"
   ],
   "omnibox": {
     "keyword": "t"
