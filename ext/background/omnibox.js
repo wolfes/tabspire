@@ -144,10 +144,21 @@ chrome.omnibox.onInputStarted.addListener(TS.omni.inputStarted);
 TS.omni.suggestAdd = function(params) {
     var suggestions = [];
     var name = params[0] !== undefined ? params[0] : '';
-    suggestions.push({
-        content: 'add ' + params.join(' '),
-        description: 'Add named tab: ' + name
+    chrome.omnibox.setDefaultSuggestion({
+        'description': 'Add named tab: ' + name
     });
+
+    var tabs = TS.controller.getTabsByFuzzyName(name);
+    var suggestions = TS.omni.suggestItems(
+        tabs,
+        function(tabInfo) {
+            return {
+                content: '',
+                description: 'Saved Tab: ' + tabInfo.name
+            };
+        },
+        true // Skip Showing Default Suggestions.
+    );
     return suggestions;
 };
 
@@ -193,13 +204,15 @@ TS.omni.suggestMessage = function(params) {
  * Suggest items using content and desc fns.
  * @param {array} items List of items to show.
  * @param {function} itemToSuggest Creates suggestion for item.
+ * @param {boolean} opt_noDefault Do not show default suggestion..
  * @return {array} suggestions The suggestions for Chrome's Omnibox.
  */
-TS.omni.suggestItems = function(items, itemToSuggest) {
+TS.omni.suggestItems = function(items, itemToSuggest, opt_noDefault) {
     var suggestions = [];
+    var noDefault = opt_noDefault || false;
     var numItems = items.length;
     // If no items, display standard error.
-    if (numItems === 0) {
+    if (numItems === 0 && !opt_noDefault) {
         chrome.omnibox.setDefaultSuggestion({
             'description': TS.omni.NO_MATCH_MSG
         });
@@ -208,7 +221,7 @@ TS.omni.suggestItems = function(items, itemToSuggest) {
     // Create suggestions, with first item as default suggestion.
     for (var i = 0; i < numItems; i++) {
         var suggestion = itemToSuggest(items[i]);
-        if (i === 0) {
+        if (i === 0 && !opt_noDefault) {
             chrome.omnibox.setDefaultSuggestion({
                 description: suggestion.description
            });
