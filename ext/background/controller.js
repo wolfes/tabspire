@@ -99,7 +99,10 @@ TS.controller.openTab = function(tab) {
  */
 TS.controller.fetchSelectedTab = function(callback) {
   chrome.windows.getCurrent(function(win) {
-    chrome.tabs.getSelected(win.id, function(tab) {
+    chrome.tabs.query({
+        windowId: win.id,
+        active: true
+    }, function(tab) {
         callback(tab);
     });
   });
