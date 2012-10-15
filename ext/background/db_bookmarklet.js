@@ -1,6 +1,7 @@
 /**
  * Bookmarklet Storage and Retrieval.
- * Author: Wolfe Styke <wstyke@gmail.com>
+ *
+ * @author Wolfe Styke - <wstyke@gmail.com>
  */
 
 

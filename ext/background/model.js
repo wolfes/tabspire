@@ -1,7 +1,7 @@
 /**
  * Model: Saved tab info with persistant storage.
  *
- * Author: Wolfe Styke - <wstyke@gmail.com>
+ * @author: Wolfe Styke - <wstyke@gmail.com>
  */
 
 var TS = TS || {};

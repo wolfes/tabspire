@@ -1,6 +1,7 @@
 /**
  * Util Methods for DB.
  *
+ * @author Wolfe Styke - <wstyke@gmail.com>
  */
 
 /**
