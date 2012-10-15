@@ -433,6 +433,15 @@ TS.omni.cmdMessageAt = function(cmd) {
     var notification = TS.omni.createNotification(
         time + ' hours says:', msg
     );
+    /**
+    chrome.alarms.create(time, {
+        when: msecToMsg
+    });
+    chrome.alarms.onAlarm.addListener(function(alarm) {
+        debug(alarm);
+        debug(msg);
+    });
+    **/
     setTimeout(function() {
         notification.show();
     }, msecToMsg);
