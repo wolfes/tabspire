@@ -301,7 +301,6 @@ TS.omni.inputEntered = function(text) {
     switch (cmd.opt) {
         case 'a':
             // Add Named Tab Command.
-            debug('Lets Add This Wabbit!', cmd);
             TS.controller.fetchSelectedTab(function(tab) {
                 TS.controller.addTab({
                     'name': firstParam,
@@ -312,7 +311,6 @@ TS.omni.inputEntered = function(text) {
         case 'o':
             // Open Tab Command.
             var nameOrUrl = (cmd.params.length !== 0) ? firstParam : '';
-            debug('Open This Panther: ', nameOrUrl, cmd);
             if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
                 // User entered the no match message.
                 // Pass on opening tab.
@@ -366,7 +364,6 @@ TS.omni.cmdReload = function(cmd) {
                      // if reloaded tab is closed
                      if (recentTab === undefined) {
                          clearInterval(TS.omni.tabId);
-                         debug('Reloading tab: ');
                          return;
                      }
                      chrome.tabs.update(tab.id, {

@@ -38,7 +38,7 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
             if (match.name === queryName) {
                 match.rankPos = -10; // Sort Exact Match to front.
             }
-            debug(1, match.rankPos, match.name);
+            //debug(1, match.rankPos, match.name);
         } else {
             // Fuzzy Match: by folders, then by entire string.
             // Redundent folder matching with query anywhere?
@@ -51,7 +51,7 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
                 if (fuzzyNameRegExp.test(matchFolders[i])) {
                     match.rankOrder = 2;
                     match.rankPos = i;
-                    debug(4, match.name, queryName);
+                    //debug(4, match.name, queryName);
                     break;
                 }
             }
@@ -60,7 +60,7 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
                 // Fuzzy Match.
                 match.rankOrder = 3;
                 match.rankPos = match.name.search(queryName[0]);
-                debug(5, match.name, queryName);
+                //debug(5, match.name, queryName);
             }
         }
         if (match.rankOrder !== undefined && match.rankPos !== undefined) {
