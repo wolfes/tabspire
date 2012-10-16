@@ -108,3 +108,15 @@ TS.controller.fetchSelectedTab = function(callback) {
   });
 };
 
+/**
+ * Add activity log to db, augment with time & active tab.
+ * @param {object} log The activity log to save.
+ */
+TS.controller.saveActivityLog = function(log) {
+    // Add Timestamp if not already present.
+    log.when = 'when' in log ? log.when : Date.now();
+    TS.controller.fetchSelectedTab(function(tab) {
+        log.activeTab = tab;
+        TS.dbLogs.addLog(log);
+    });
+};

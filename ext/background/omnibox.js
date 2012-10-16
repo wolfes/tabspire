@@ -86,15 +86,6 @@ $(document).ready(function() {
 });
 
 /**
- * Bold matching text using omnibox <match>.
- * @param {string} txt The matching text to bold.
- * @return {string} The 'bolded' text.
- */
-TS.omni._matchText = function(txt) {
-    return '<match>' + txt + '</match>';
-};
-
-/**
  * Update first suggestion in Chrome Omnibox based on user's text.
  * @param {string} text The user's text in Chrome Omnibox.
  */
@@ -297,40 +288,25 @@ chrome.omnibox.onInputChanged.addListener(TS.omni.inputChanged);
  */
 TS.omni.inputEntered = function(text) {
     var cmd = TS.omni._getCmd(text);
-    var firstParam = cmd.params[0];
     switch (cmd.opt) {
         case 'a':
             // Add Named Tab Command.
-            TS.controller.fetchSelectedTab(function(tab) {
-                TS.controller.addTab({
-                    'name': firstParam,
-                    'url': tab.url
-                });
-            });
+            TS.omni.cmdAddTab(cmd);
             break;
         case 'o':
             // Open Tab Command.
-            var nameOrUrl = (cmd.params.length !== 0) ? firstParam : '';
-            if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
-                // User entered the no match message.
-                // Pass on opening tab.
-            } else if (TS.util.isUrl(TS.util.decodeXml(nameOrUrl))) {
-                // User selected from dropdown.
-                // Fragile, depends on open suggest text.
-                TS.controller.openTab({url: TS.util.decodeXml(nameOrUrl)});
-            } else {
-                TS.controller.openTabByFuzzyName(nameOrUrl);
-            }
+            TS.omni.cmdOpenTab(cmd);
             break;
         case 'r':
-            // Reload Tab Every Command.
+            // Reload Tab Periodically Command.
             TS.omni.cmdReload(cmd);
             break;
         case 'm':
-            // MessageAt Command.
+            // MessageAt 14:30 Command.
             TS.omni.cmdMessageAt(cmd);
             break;
         case 'n':
+            // MessageIn 45 minutes Command
             TS.omni.cmdMessageIn(cmd);
             break;
         case 'rw':
@@ -347,6 +323,39 @@ TS.omni.inputEntered = function(text) {
 };
 
 chrome.omnibox.onInputEntered.addListener(TS.omni.inputEntered);
+
+/**
+ * Add name to active tab.
+ * @param {object} cmd The command object with user's input.
+ */
+TS.omni.cmdAddTab = function(cmd) {
+    var firstParam = cmd.params[0];
+    TS.controller.fetchSelectedTab(function(tab) {
+        TS.controller.addTab({
+            'name': firstParam,
+            'url': tab.url
+        });
+    });
+};
+
+/**
+ * Open tab by name (or by url if selected from suggestions).
+ * @param {object} cmd The command object with user's input.
+ */
+TS.omni.cmdOpenTab = function(cmd) {
+    var firstParam = cmd.params[0];
+    var nameOrUrl = (cmd.params.length !== 0) ? firstParam : '';
+    if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
+        // User entered the no match message.
+        // Pass on opening tab.
+    } else if (TS.util.isUrl(TS.util.decodeXml(nameOrUrl))) {
+        // User selected from dropdown.
+        // Fragile, depends on open suggest text.
+        TS.controller.openTab({url: TS.util.decodeXml(nameOrUrl)});
+    } else {
+        TS.controller.openTabByFuzzyName(nameOrUrl);
+    }
+};
 
 /**
  * Act on reload command from user.

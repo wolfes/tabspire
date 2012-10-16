@@ -57,7 +57,7 @@ TS.dbLogs.nukeAllLogs = function() {
  * Add activity log to database.
  * @param {object} log The activity log to add.
  */
-TS.dbLogs.add = function(log) {
+TS.dbLogs.addLog = function(log) {
     var logs = TS.dbLogs.getAllLogs();
     logs.push(log);
     TS.dbLogs.saveAllLogs(logs);
