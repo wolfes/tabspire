@@ -13,12 +13,12 @@ var TS = TS || {};
 /**
  * Activity Log Database Namespace.
  */
-var TS.dbLogs = TS.dbLogs || {};
+TS.dbLogs = TS.dbLogs || {};
 
 /**
  * Name of activity log database in local storage.
  */
-var TS.dbLogs.DB_NAME = 'actlogs';
+TS.dbLogs.DB_NAME = 'actlogs';
 
 /**
  * Returns all parsed activity logs.
@@ -27,9 +27,8 @@ var TS.dbLogs.DB_NAME = 'actlogs';
 TS.dbLogs.getAllLogs = function() {
     var logs = localStorage.getItem(TS.dbLogs.DB_NAME);
     if (logs === null) {
-        logs = [];
-    }
-    return logs;
+        logs = JSON.stringify([]); }
+    return JSON.parse(logs);
 };
 
 /**

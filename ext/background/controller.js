@@ -36,8 +36,19 @@ TS.controller.openTabByFuzzyName = function(tabName) {
     }
     var tabs = TS.model.getTabsByFuzzyName(tabName);
     if (tabs.length >= 1) {
-        TS.controller.openTab(tabs[0]);
+        var tab = tabs[0];
+        TS.controller.openTab(tab);
+        TS.controller.saveActivityLog({
+            action: 'openTab',
+            info: {
+                query: tabName,
+                title: tab.name,
+                url: tab.url
+            }
+        });
+
     }
+
 };
 
 
@@ -78,8 +89,8 @@ TS.controller.openTab = function(tab) {
                 // Select desired tab.
                 chrome.tabs.update(tabs[0].id, {active: true});
             } else {
-                // Tab
                 if (selectedTab.url === 'chrome://newtab/') {
+                    // Replace selected newtab page with opened tab url.
                     chrome.tabs.update(selectedTab.id, {url: tab.url});
                 } else {
                     chrome.tabs.create({url: tab.url}, function(newTab) {
@@ -102,8 +113,8 @@ TS.controller.fetchSelectedTab = function(callback) {
     chrome.tabs.query({
         windowId: win.id,
         active: true
-    }, function(tab) {
-        callback(tab);
+    }, function(tabs) {
+        callback(tabs[0]);
     });
   });
 };

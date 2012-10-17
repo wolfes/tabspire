@@ -11,8 +11,10 @@ More info: http://wstyke.com/tabspire
 
 + Bookmarklets (10-12-2012)
 + Show matching tab names on tab add (10-13-2012)
++ Activity logging
 
-- Activity logging
 - Assign bookmarklets to be run on tabname's opening.
 - HTML5 Notifications with links to site where notif was made.
--
+
+
+

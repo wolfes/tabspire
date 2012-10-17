@@ -333,7 +333,17 @@ TS.omni.cmdAddTab = function(cmd) {
     TS.controller.fetchSelectedTab(function(tab) {
         TS.controller.addTab({
             'name': firstParam,
-            'url': tab.url
+            'url': tab.url,
+            'title': tab.title,
+            'favicon': tab.favIconUrl,
+            'pinned': tab.pinned
+        });
+
+        TS.controller.saveActivityLog({
+            action: 'addTab',
+            info: {
+                name: firstParam
+            }
         });
     });
 };
@@ -345,13 +355,15 @@ TS.omni.cmdAddTab = function(cmd) {
 TS.omni.cmdOpenTab = function(cmd) {
     var firstParam = cmd.params[0];
     var nameOrUrl = (cmd.params.length !== 0) ? firstParam : '';
+    var xmlParsedName = TS.util.decodeXml(nameOrUrl);
     if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
-        // User entered the no match message.
+        // User entered the no match message, do nothing.
         // Pass on opening tab.
-    } else if (TS.util.isUrl(TS.util.decodeXml(nameOrUrl))) {
+        return;
+    } else if (TS.util.isUrl(xmlParsedName)) {
         // User selected from dropdown.
         // Fragile, depends on open suggest text.
-        TS.controller.openTab({url: TS.util.decodeXml(nameOrUrl)});
+        TS.controller.openTab({url: xmlParsedName});
     } else {
         TS.controller.openTabByFuzzyName(nameOrUrl);
     }
@@ -365,24 +377,30 @@ TS.omni.cmdReload = function(cmd) {
     var firstParam = cmd.params[0];
     var reloadTime = parseInt(firstParam, 10);
     if (reloadTime > 0) {
-         TS.controller.fetchSelectedTab(function(tab) {
-             var tabId = tab.id;
-             TS.omni.tabId = setInterval(function() {
-                 chrome.tabs.get(tab.id, function(recentTab) {
-                     // recentTab is undefined
-                     // if reloaded tab is closed
-                     if (recentTab === undefined) {
-                         clearInterval(TS.omni.tabId);
-                         return;
-                     }
-                     chrome.tabs.update(tab.id, {
-                         // tab.url = reload original tab
-                         // recentTab.url = reload new tab.
-                         url: tab.url
-                     });
-                 });
-             }, reloadTime * 1000);
-         });
+        TS.controller.fetchSelectedTab(function(tab) {
+            var tabId = tab.id;
+            TS.controller.saveActivityLog({
+                action: 'rTab',
+                info: {
+                    delay: reloadTime * 1000
+                }
+            });
+            TS.omni.tabId = setInterval(function() {
+                chrome.tabs.get(tab.id, function(recentTab) {
+                    // recentTab is undefined
+                    // if reloaded tab is closed
+                    if (recentTab === undefined) {
+                        clearInterval(TS.omni.tabId);
+                        return;
+                    }
+                    chrome.tabs.update(tab.id, {
+                        // tab.url = reload original tab
+                        // recentTab.url = reload new tab.
+                        url: tab.url
+                    });
+                });
+            }, reloadTime * 1000);
+        });
     }
 };
 /**
@@ -426,16 +444,16 @@ TS.omni.cmdMessageAt = function(cmd) {
     var isTomorrow = ((targetHour < currHour) ||
             ((targetHour === currHour) && (targetMin < currMin)));
 
-    var minutesToMsg = 0;
+    var minToMsg = 0;
     if (isTomorrow) {
         // Message for tomorrow.
         debug('Un-implemented: msg for tomorrow');
     } else {
         // Message for later today.
-        minutesToMsg += (targetHour - currHour) * 60;
-        minutesToMsg += (targetMin - currMin);
+        minToMsg += (targetHour - currHour) * 60;
+        minToMsg += (targetMin - currMin);
     }
-    var msecToMsg = (minutesToMsg * 60 * 1000) - (currSec * 1000 + currMSec);
+    var msecToMsg = (minToMsg * 60 * 1000) - (currSec * 1000 + currMSec);
     var notification = TS.omni.createNotification(
         time + ' hours says:', msg
     );
@@ -451,6 +469,14 @@ TS.omni.cmdMessageAt = function(cmd) {
     setTimeout(function() {
         notification.show();
     }, msecToMsg);
+
+    TS.controller.saveActivityLog({
+        action: 'msgAt',
+        info: {
+            msg: msg,
+            delay: msecToMsg
+        }
+    });
 };
 
 /**
@@ -470,6 +496,14 @@ TS.omni.cmdMessageIn = function(cmd) {
     setTimeout(function() {
         notification.show();
     }, msecToMsg);
+
+    TS.controller.saveActivityLog({
+        action: 'msgIn',
+        info: {
+            msg: msg,
+            delay: msecToMsg
+        }
+    });
 };
 
 /**
@@ -486,16 +520,28 @@ TS.omni.reloadWindow = function(cmd) {
     // Get all tabs in current window, reload tabs as directed.
     chrome.windows.getCurrent(function(gWin) {
         chrome.tabs.getAllInWindow(gWin.id, function(gTabs) {
+            var matches = [];
             for (var i = 0; i < gTabs.length; i++) {
                 // If match url param exists and we match tab's url,
                 // or param doesn't exist: reload tab.
                 if ((urlMatch && gTabs[i].url.search(urlMatch) !== -1) ||
-                    !urlMatch) {
-                chrome.tabs.update(gTabs[i].id, {
-                    url: gTabs[i].url
-                });
+                        !urlMatch) {
+                    chrome.tabs.update(gTabs[i].id, {
+                        url: gTabs[i].url
+                    });
+                    matches.push({
+                        url: gTabs[i].url,
+                        title: gTabs[i].title
+                    });
                 }
             }
+            TS.controller.saveActivityLog({
+                action: 'rWin',
+                info: {
+                    query: urlMatch,
+                    matches: matches
+                }
+            });
         });
     });
 };
@@ -513,6 +559,14 @@ TS.omni.addBookmarklet = function(cmd) {
         script: bookScript
     };
     TS.dbBook.addNamedBook(bookmarklet);
+
+    TS.controller.saveActivityLog({
+        action: 'addBook',
+        info: {
+            name: bookName,
+            script: bookScript
+        }
+    });
 };
 
 /**
@@ -529,4 +583,12 @@ TS.omni.useNamedBook = function(cmd) {
             null, { code: bookmarklet.script }
         );
     }
+
+    TS.controller.saveActivityLog({
+        action: 'useBook',
+        info: {
+            query: bookName,
+            name: bookmarklet.name
+        }
+    });
 };
