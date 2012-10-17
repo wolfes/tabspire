@@ -417,6 +417,12 @@ TS.omni.createNotification = function(
         opt_title || '',
         opt_content || ''
     );
+
+    /*TS.controller.msg = opt_content;
+    notification = webkitNotifications.createHTMLNotification(
+      '../notif.html'  // html url - can be relative
+    );*/
+
     notification.addEventListener('click',
             function(e) { this.cancel(); });
 
@@ -489,8 +495,9 @@ TS.omni.cmdMessageIn = function(cmd) {
     var date = new Date();
     var currMSec = date.getSeconds() * 1000 + date.getMilliseconds();
     var msecToMsg = (minToMsg * 60 * 1000) - currMSec;
+    var timeAgo = minToMsg === 1 ? ' minute ago...' : ' minutes ago...';
     var notification = TS.omni.createNotification(
-        'From ' + minToMsg + ' minutes ago...', // Title
+        'From ' + minToMsg + timeAgo, // Title
         msg // Body Text
     );
     setTimeout(function() {

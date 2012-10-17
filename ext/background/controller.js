@@ -10,6 +10,18 @@ var TS = TS || {};
 TS.controller = TS.controller || {};
 
 /**
+ * The message for next notification.
+ */
+TS.controller.msg = '';
+/**
+ * Returns msg for notification.
+ * @return {string} The message.
+ */
+TS.controller.getMsg = function() {
+    return TS.controller.msg;
+};
+
+/**
  * Add a tab to tabspire.
  * @param {object} tab Contains 'url' and 'name'.
  */
