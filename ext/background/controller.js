@@ -143,3 +143,21 @@ TS.controller.saveActivityLog = function(log) {
         TS.dbLogs.addLog(log);
     });
 };
+
+
+chrome.extension.onMessage.addListener(
+    function(msg, sender, sendResponse) {
+        debug(msg, sender);
+        var action = msg.action;
+        if (action === 'openTab') {
+            TS.controller.openTab({
+                url: msg.url
+            });
+        } else if (action === 'cmdLine.inputChanged') {
+            //TODO(wstyke:10-24-2012) Divide omnibox into:
+            // 1. Omnibox-specific code
+            // 2. User Text Input handling code.
+            // Then use (2) here.
+            //
+        }
+});

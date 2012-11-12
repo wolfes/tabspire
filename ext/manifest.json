@@ -12,12 +12,20 @@
   "permissions": [
     "tabs",
     "notifications",
+	"history",
 	"http://*/*",
 	"https://*/*"
   ],
   "omnibox": {
     "keyword": "t"
   },
+  "content_scripts": [
+    {
+	  "matches": ["http://*/*", "https://*/*", "file:///*/*"],
+	  "css": ["cs/cmdLine.css"],
+	  "js": ["lib/underscore-1.3.3.js", "lib/backbone.js", "lib/jquery-1.7.2.min.js", "shared/util.js", "cs/cmdLine.js"]
+    }
+  ],
   "options_page": "view/index.html",
   "update_url": "http://wstyke.com/tabspire/updates.xml"
 }

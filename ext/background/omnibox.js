@@ -68,6 +68,14 @@ TS.omni.commands.push({
     'desc': 'Use Book',
     'suggest': 'suggestBookmarks'
 });
+TS.omni.commands.push({
+    'opt': 'h',
+    'cmd': 'history',
+    'desc': 'Search History',
+    'suggest': 'suggestHistory'
+});
+// Add command for: History Fuzzy Search
+
 
 /**
  * Message to show to user when no results match command.
@@ -225,7 +233,7 @@ TS.omni.suggestItems = function(items, itemToSuggest, opt_noDefault) {
 
 /**
  * Return suggestions for bookmarks to use.
- * @param {string} params User's input for message.
+ * @param {string} params User's input for bookmark.
  * @return {array} suggestions For Chrome's Omnibox.
  */
 TS.omni.suggestBookmarks = function(params) {
@@ -238,6 +246,39 @@ TS.omni.suggestBookmarks = function(params) {
             description: 'use ' + bookInfo.name + ' bookmarket'
         };
     });
+    return suggestions;
+};
+
+/**
+ * History interval.
+ */
+TS.omni.historyInterval = setInterval(function() {
+    chrome.history.search({
+        'text': '', 'maxResults': 1000},
+        function(history) {TS.omni.history = history;});
+    }, 1 * 10 * 1000
+);
+
+/**
+ * Return suggestions for history search matches.
+ * @param {string} params User's input for search.
+ * @return {array} suggestions For Chrome's Omnibox.
+ */
+TS.omni.suggestHistory = function(params) {
+    var suggestions = [];
+    var query = params[0];
+
+    var history = TS.omni.history;
+    var numHistory = history.length;
+    for (var i = 0; i < numHistory; i++) {
+        var site = history[i];
+        if (site.url.search(query) !== -1) {
+            suggestions.push({
+                content: 'h ' + TS.util.encodeXml(site.url),
+                description: 'Open ' + TS.util.encodeXml(site.title)
+            });
+        }
+    }
     return suggestions;
 };
 
@@ -284,42 +325,21 @@ chrome.omnibox.onInputChanged.addListener(TS.omni.inputChanged);
 /**
  * Process user's input if it is a command.
  * @param {string} text The text entered in Omnibox.
- * @this TS.omni
  */
 TS.omni.inputEntered = function(text) {
     var cmd = TS.omni._getCmd(text);
-    switch (cmd.opt) {
-        case 'a':
-            // Add Named Tab Command.
-            TS.omni.cmdAddTab(cmd);
-            break;
-        case 'o':
-            // Open Tab Command.
-            TS.omni.cmdOpenTab(cmd);
-            break;
-        case 'r':
-            // Reload Tab Periodically Command.
-            TS.omni.cmdReload(cmd);
-            break;
-        case 'm':
-            // MessageAt 14:30 Command.
-            TS.omni.cmdMessageAt(cmd);
-            break;
-        case 'n':
-            // MessageIn 45 minutes Command
-            TS.omni.cmdMessageIn(cmd);
-            break;
-        case 'rw':
-            TS.omni.reloadWindow(cmd);
-            break;
-        case 'b':
-            // Bookmarklet.
-            TS.omni.addBookmarklet(cmd);
-            break;
-        case 'u':
-            TS.omni.useNamedBook(cmd);
-            break;
-    }
+    var optToCmd = {
+        'a': TS.omni.cmdAddTab,
+        'o': TS.omni.cmdOpenTab,
+        'r': TS.omni.cmdReload,
+        'm': TS.omni.cmdMessageAt,
+        'n': TS.omni.cmdMessageIn,
+        'rw': TS.omni.reloadWindow,
+        'b': TS.omni.addBookmarklet,
+        'u': TS.omni.useNamedBook,
+        'h': TS.omni.openHistory
+    };
+    optToCmd[cmd.opt](cmd);
 };
 
 chrome.omnibox.onInputEntered.addListener(TS.omni.inputEntered);
@@ -418,13 +438,17 @@ TS.omni.createNotification = function(
         opt_content || ''
     );
 
-    /*TS.controller.msg = opt_content;
+    TS.controller.msg = opt_content;
     notification = webkitNotifications.createHTMLNotification(
-      '../notif.html'  // html url - can be relative
-    );*/
+      '../notif/notif.html'  // html url - can be relative
+    );
 
-    notification.addEventListener('click',
-            function(e) { this.cancel(); });
+    notification.addEventListener('click', function(e) {
+        var this_ = this;
+        setTimeout(function() {
+            this_.cancel();
+        }, 200);
+    });
 
     return notification;
 };
@@ -460,28 +484,24 @@ TS.omni.cmdMessageAt = function(cmd) {
         minToMsg += (targetMin - currMin);
     }
     var msecToMsg = (minToMsg * 60 * 1000) - (currSec * 1000 + currMSec);
-    var notification = TS.omni.createNotification(
-        time + ' hours says:', msg
-    );
-    /**
-    chrome.alarms.create(time, {
-        when: msecToMsg
-    });
-    chrome.alarms.onAlarm.addListener(function(alarm) {
-        debug(alarm);
-        debug(msg);
-    });
-    **/
-    setTimeout(function() {
-        notification.show();
-    }, msecToMsg);
 
-    TS.controller.saveActivityLog({
-        action: 'msgAt',
-        info: {
-            msg: msg,
-            delay: msecToMsg
-        }
+    TS.controller.fetchSelectedTab(function(tab) {
+        var notification = TS.omni.createNotification(
+            time + ' hours says:',
+            {'msg': msg, 'url': tab.url, 'title': tab.title}
+        );
+        setTimeout(function() {
+            notification.show();
+        }, msecToMsg);
+
+        TS.controller.saveActivityLog({
+            action: 'msgAt',
+            info: {
+                msg: msg,
+                delay: msecToMsg,
+                activeTab: tab
+           }
+        });
     });
 };
 
@@ -496,20 +516,24 @@ TS.omni.cmdMessageIn = function(cmd) {
     var currMSec = date.getSeconds() * 1000 + date.getMilliseconds();
     var msecToMsg = (minToMsg * 60 * 1000) - currMSec;
     var timeAgo = minToMsg === 1 ? ' minute ago...' : ' minutes ago...';
-    var notification = TS.omni.createNotification(
-        'From ' + minToMsg + timeAgo, // Title
-        msg // Body Text
-    );
-    setTimeout(function() {
-        notification.show();
-    }, msecToMsg);
 
-    TS.controller.saveActivityLog({
-        action: 'msgIn',
-        info: {
-            msg: msg,
-            delay: msecToMsg
-        }
+    TS.controller.fetchSelectedTab(function(tab) {
+        var notification = TS.omni.createNotification(
+            'From ' + minToMsg + timeAgo, // Title
+            {'msg': msg, 'url': tab.url, 'title': tab.title}
+        );
+        setTimeout(function() {
+            notification.show();
+        }, msecToMsg);
+
+        TS.controller.saveActivityLog({
+            action: 'msgIn',
+            info: {
+                msg: msg,
+                delay: msecToMsg,
+                activeTab: tab
+            }
+        });
     });
 };
 
@@ -598,4 +622,18 @@ TS.omni.useNamedBook = function(cmd) {
             name: bookmarklet.name
         }
     });
+};
+
+/**
+ * Open url from History.
+ * @param {object} cmd The user's command info.
+ */
+TS.omni.openHistory = function(cmd) {
+    var url = cmd.params[0];
+    url = TS.util.decodeXml(url);
+    if (TS.util.isUrl(url)) {
+        TS.controller.openTab({url: url});
+    } else {
+        debug('Open History - Not a Url');
+    }
 };
