@@ -267,12 +267,13 @@ TS.omni.historyInterval = setInterval(function() {
 TS.omni.suggestHistory = function(params) {
     var suggestions = [];
     var query = params[0];
+    var queryRegExp = new RegExp(query, 'i');
 
     var history = TS.omni.history;
     var numHistory = history.length;
     for (var i = 0; i < numHistory; i++) {
         var site = history[i];
-        if (site.url.search(query) !== -1) {
+        if (queryRegExp.test(site.url)) {
             suggestions.push({
                 content: 'h ' + TS.util.encodeXml(site.url),
                 description: 'Open ' + TS.util.encodeXml(site.title)
@@ -545,31 +546,35 @@ TS.omni.cmdMessageIn = function(cmd) {
 TS.omni.reloadWindow = function(cmd) {
     var text = cmd.params;
     var urlMatch;
-    if (text.length > 0) {
-        urlMatch = text[0];
+    var query = '';
+    if (text.length === 0) {
+        query = text[0];
+        urlMatch = new RegExp(query, 'i');
     }
+
     // Get all tabs in current window, reload tabs as directed.
     chrome.windows.getCurrent(function(gWin) {
         chrome.tabs.getAllInWindow(gWin.id, function(gTabs) {
             var matches = [];
             for (var i = 0; i < gTabs.length; i++) {
+                var gTab = gTabs[i];
                 // If match url param exists and we match tab's url,
-                // or param doesn't exist: reload tab.
-                if ((urlMatch && gTabs[i].url.search(urlMatch) !== -1) ||
+                // or param doesn't exist: reload all tabs.
+                if ((urlMatch && urlMatch.test(gTab.url)) ||
                         !urlMatch) {
-                    chrome.tabs.update(gTabs[i].id, {
-                        url: gTabs[i].url
+                    chrome.tabs.update(gTab.id, {
+                        url: gTab.url
                     });
                     matches.push({
-                        url: gTabs[i].url,
-                        title: gTabs[i].title
+                        url: gTab.url,
+                        title: gTab.title
                     });
                 }
             }
             TS.controller.saveActivityLog({
                 action: 'rWin',
                 info: {
-                    query: urlMatch,
+                    query: query,
                     matches: matches
                 }
             });
