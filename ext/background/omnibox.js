@@ -638,6 +638,13 @@ TS.omni.openHistory = function(cmd) {
     url = TS.util.decodeXml(url);
     if (TS.util.isUrl(url)) {
         TS.controller.openTab({url: url});
+        TS.controller.saveActivityLog({
+            action: 'openHistory',
+            info: {
+               openUrl: url
+            }
+        });
+
     } else {
         debug('Open History - Not a Url');
     }
