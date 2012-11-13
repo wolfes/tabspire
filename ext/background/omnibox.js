@@ -273,7 +273,8 @@ TS.omni.suggestHistory = function(params) {
     var numHistory = history.length;
     for (var i = 0; i < numHistory; i++) {
         var site = history[i];
-        if (queryRegExp.test(site.url)) {
+        if (queryRegExp.test(site.url) ||
+                queryRegExp.test(site.title)) {
             suggestions.push({
                 content: 'h ' + TS.util.encodeXml(site.url),
                 description: 'Open ' + TS.util.encodeXml(site.title)
