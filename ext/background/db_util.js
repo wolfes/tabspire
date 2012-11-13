@@ -52,7 +52,7 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
                 if (fuzzyNameRegExp.test(matchFolders[i])) {
                     match.rankOrder = 2;
                     match.rankPos = i;
-                    //debug(4, match.name, queryName);
+                    //debug(2, match.name, queryName);
                     break;
                 }
             }
@@ -61,7 +61,7 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
                 // Fuzzy Match.
                 match.rankOrder = 3;
                 match.rankPos = match.name.search(queryName[0]);
-                //debug(5, match.name, queryName);
+                //debug(3, match.name, queryName);
             }
         }
         if (match.rankOrder !== undefined && match.rankPos !== undefined) {

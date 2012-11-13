@@ -19,6 +19,8 @@ More info: http://wstyke.com/tabspire
 
 Pending Feature Ideas:
 
+- Delete named tab, named bookmarklet, named anything...
+	"t d name"
 - Default Behavior -?- Open from bookmarked, history, ...?
 
 
