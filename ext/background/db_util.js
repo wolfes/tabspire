@@ -72,7 +72,9 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
     function sortMatches(a, b) {
         return ((a.rankOrder !== b.rankOrder) ?
                 a.rankOrder > b.rankOrder :
-                a.rankPos > b.rankPos);
+                (a.rankPos !== b.rankPos ?
+                 a.rankPos > b.rankPos :
+                 a.name.length > b.name.length));
     }
     matches.sort(sortMatches);
     return matches;
