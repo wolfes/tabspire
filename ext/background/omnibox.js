@@ -264,8 +264,12 @@ TS.omni.historyInterval = setInterval(function() {
         function(history) {TS.omni.history = history;});
 
     chrome.bookmarks.getTree(function(bTree) {
-//        TS.omni.bookmarks = bTree[0].children[0].children;
-        TS.omni.bookmarks = TS.omni.flattenBookmarks(bTree[0]);
+        var bookmarkTypes = bTree[0].children;
+        var bookmarkBar = bookmarkTypes[0];
+        var otherBookmarks = bookmarkTypes[1];
+        TS.omni.bookmarks = TS.omni.flattenBookmarks(bookmarkBar);
+        TS.omni.bookmarks = TS.omni.bookmarks.concat(
+            TS.omni.flattenBookmarks(otherBookmarks));
     });
 
     }, 1 * 10 * 1000
@@ -338,7 +342,7 @@ TS.omni.suggestChromeBookmarks = function(params) {
             continue;
         }
         if (query.test(bookmark.url) ||
-                query.test(bookmark.title)) {
+                query.test(bookmark.name)) {
             suggestions.push(bookmark);
         }
     }
@@ -763,7 +767,7 @@ TS.omni.openBookmark = function(cmd) {
                 continue;
             }
             if (query.test(bookmark.url) ||
-                    query.test(bookmark.title)) {
+                    query.test(bookmark.name)) {
                 cmd.params[0] = bookmark.url;
                 TS.omni.openBookmark(cmd);
                 break;

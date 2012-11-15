@@ -17,6 +17,8 @@ More info: http://wstyke.com/tabspire
 + (11-13-2012) History Search (basic str.search method)
 + (11-15-2012) Open Chrome Bookmarks (and bookmarklets) by name/url match.
 - Add fuzzy match for history and bookmarks.
++ (11-15-2012) Bookmark Name now includes parent folder names
+	name: folder1/folder2/bookmark_name
 
 Pending Feature Ideas:
 
@@ -24,5 +26,8 @@ Pending Feature Ideas:
 	"t d name"
 - Default Behavior -?- Open from bookmarked, history, ...?
 - Paste current window's tab urls into notification.
+
+- Remember last 5 commands for each command type that makes sense.
+-- Suggest these commands when user begins "t o"
 
 - Assign bookmarklets to be run on tabname's opening.
