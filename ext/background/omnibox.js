@@ -57,9 +57,9 @@ TS.omni.commands.push({
     'suggest': 'suggestMessage'
 });
 TS.omni.commands.push({
-    'opt': 'b',
-    'cmd': 'bookmarklet',
-    'desc': 'Add Bookmarklet',
+    'opt': 's',
+    'cmd': 'script',
+    'desc': 'Add Script',
     'suggest': 'suggestMessage'
 });
 TS.omni.commands.push({
@@ -68,14 +68,20 @@ TS.omni.commands.push({
     'desc': 'Use Book',
     'suggest': 'suggestBookmarks'
 });
+// Add command for: History Fuzzy Search
 TS.omni.commands.push({
     'opt': 'h',
     'cmd': 'history',
     'desc': 'Search History',
     'suggest': 'suggestHistory'
 });
-// Add command for: History Fuzzy Search
-
+// Add command for: Bookmark Fuzzy Search
+TS.omni.commands.push({
+    'opt': 'b',
+    'cmd': 'bookmarkOpen',
+    'desc': 'Open Bookmark',
+    'suggest': 'suggestChromeBookmarks'
+});
 
 /**
  * Message to show to user when no results match command.
@@ -256,8 +262,38 @@ TS.omni.historyInterval = setInterval(function() {
     chrome.history.search({
         'text': '', 'maxResults': 1000},
         function(history) {TS.omni.history = history;});
+
+    chrome.bookmarks.getTree(function(bTree) {
+//        TS.omni.bookmarks = bTree[0].children[0].children;
+        TS.omni.bookmarks = TS.omni.flattenBookmarks(bTree[0]);
+    });
+
     }, 1 * 10 * 1000
 );
+
+/**
+ * Get flattened list of bookmarks from Chrome's bookmark tree.
+ * @param {object} bookmarkTree A Chrome Bookmark Tree.
+ * @param {string} opt_prefix Optional prefix for bookmark name.
+ * @return {object} bookmarks A list of flattened bookmarks.
+ */
+TS.omni.flattenBookmarks = function(bookmarkTree, opt_prefix) {
+    opt_prefix = opt_prefix || '';
+    bookmarks = [];
+    for (var i = 0, n = bookmarkTree.children.length; i < n; i++) {
+        var child = bookmarkTree.children[i];
+        var prefix = (opt_prefix ?
+                opt_prefix + '/' + child.title : child.title);
+        if ('children' in child) {
+            bookmarks = bookmarks.concat(
+                    TS.omni.flattenBookmarks(child, prefix));
+        } else {
+            child.name = prefix;
+            bookmarks.push(child);
+        }
+    }
+    return bookmarks;
+};
 
 /**
  * Return suggestions for history search matches.
@@ -281,6 +317,39 @@ TS.omni.suggestHistory = function(params) {
             });
         }
     }
+    return suggestions;
+};
+
+/**
+ * Return suggestions for Chrome's bookmark matches.
+ * @param {string} params User's input for search.
+ * @return {array} suggestions For Chrome's Omnibox.
+ */
+TS.omni.suggestChromeBookmarks = function(params) {
+    // TODO(wstyke:11-14-2012): Fully un-tree-ify bookmark tree.
+    // There are still children within the bookmark list...
+    // Name the children via "parentFolderName/bookmarkName".
+    var suggestions = [];
+    var query = new RegExp(params[0], 'i');
+    var bookmarks = TS.omni.bookmarks;
+    for (var i = 0, n = bookmarks.length; i < n; i++) {
+        var bookmark = bookmarks[i];
+        if (!('url' in bookmark && 'title' in bookmark)) {
+            continue;
+        }
+        if (query.test(bookmark.url) ||
+                query.test(bookmark.title)) {
+            suggestions.push(bookmark);
+        }
+    }
+
+    suggestions = TS.omni.suggestItems(suggestions, function(bmark) {
+        return {
+            'description': 'b ' + TS.util.encodeXml(bmark.title),
+            'content': 'b ' + TS.util.encodeXml(bmark.url)
+        };
+    });
+
     return suggestions;
 };
 
@@ -337,9 +406,10 @@ TS.omni.inputEntered = function(text) {
         'm': TS.omni.cmdMessageAt,
         'n': TS.omni.cmdMessageIn,
         'rw': TS.omni.reloadWindow,
-        'b': TS.omni.addBookmarklet,
+        's': TS.omni.addBookmarklet,
         'u': TS.omni.useNamedBook,
-        'h': TS.omni.openHistory
+        'h': TS.omni.openHistory,
+        'b': TS.omni.openBookmark
     };
     optToCmd[cmd.opt](cmd);
 };
@@ -648,5 +718,56 @@ TS.omni.openHistory = function(cmd) {
 
     } else {
         debug('Open History - Not a Url');
+    }
+};
+
+/**
+ * Open Chrome Bookmark
+ * @param {object} cmd The user's command info.
+ */
+TS.omni.openBookmark = function(cmd) {
+    var url = TS.util.decodeXml(cmd.params[0]);
+    if (url.search('javascript:') === 0) {
+        // Use bookmarklet bookmark.
+        debug('openBookmark - activating bookmarklet');
+        chrome.tabs.executeScript(
+            // null -> Execute in current tab.
+            null, { code: unescape(url.substr(11)) }
+        );
+        TS.controller.saveActivityLog({
+            action: 'openBookmark',
+            info: {
+                bookmarkType: 'bookmarklet',
+                openUrl: url
+            }
+        });
+    } else if (TS.util.isUrl(url)) {
+        // Open tab.
+        debug('openBookmark - opening bookmark');
+        TS.controller.openTab({url: url});
+        TS.controller.saveActivityLog({
+            action: 'openBookmark',
+            info: {
+                bookmarkType: 'bookmark',
+                openUrl: url
+            }
+        });
+    } else {
+        debug('Open Bookmark - Not a Url');
+        // TODO(wstyke:11-15-2012) Move dup code to controller.
+        var query = new RegExp(cmd.params[0], 'i');
+        var bookmarks = TS.omni.bookmarks;
+        for (var i = 0, n = bookmarks.length; i < n; i++) {
+            var bookmark = bookmarks[i];
+            if (!('url' in bookmark && 'title' in bookmark)) {
+                continue;
+            }
+            if (query.test(bookmark.url) ||
+                    query.test(bookmark.title)) {
+                cmd.params[0] = bookmark.url;
+                TS.omni.openBookmark(cmd);
+                break;
+            }
+        }
     }
 };

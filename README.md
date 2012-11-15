@@ -14,14 +14,15 @@ More info: http://wstyke.com/tabspire
   (10-17-2012)
 + Activity logging (all the logs!)
 + HTML5 Notifications with links to site where notif was made.
-+ History Search (basic str.search method)
-
++ (11-13-2012) History Search (basic str.search method)
++ (11-15-2012) Open Chrome Bookmarks (and bookmarklets) by name/url match.
+- Add fuzzy match for history and bookmarks.
 
 Pending Feature Ideas:
 
 - Delete named tab, named bookmarklet, named anything...
 	"t d name"
 - Default Behavior -?- Open from bookmarked, history, ...?
-
+- Paste current window's tab urls into notification.
 
 - Assign bookmarklets to be run on tabname's opening.
