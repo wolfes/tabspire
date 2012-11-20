@@ -1,7 +1,7 @@
 tabspire
 ========
 
-A command line for your Chrome  address bar.
+A command line for your Chrome address bar.
 
 Name the tabs you want at your fingertips to re-open or re-focus later.
 
@@ -21,6 +21,9 @@ More info: http://wstyke.com/tabspire
 	name: folder1/folder2/bookmark_name
 
 Pending Feature Ideas:
+
+- chrome.pageCapture to save all pages in window at once.
+- Badges for completing X actions of each type: 1, 3, 10, 30, 100, 300, ...
 
 - Delete named tab, named bookmarklet, named anything...
 	"t d name"

@@ -25,7 +25,7 @@ TS.omni.commands.push({
     'cmd': 'add',
     'desc': 'Add Tab',
     'suggest': 'suggestAdd'
-    });
+});
 TS.omni.commands.push({
     'opt': 'o',
     'cmd': 'open',
@@ -152,7 +152,6 @@ TS.omni.suggestAdd = function(params) {
     chrome.omnibox.setDefaultSuggestion({
         'description': 'Add named tab: ' + name
     });
-
     var tabs = TS.controller.getTabsByFuzzyName(name);
     var suggestions = TS.omni.suggestItems(
         tabs,
@@ -256,13 +255,18 @@ TS.omni.suggestBookmarks = function(params) {
 };
 
 /**
- * History interval.
+ * Setup TS.omni.history with list of sites visited from user history.
  */
-TS.omni.historyInterval = setInterval(function() {
+TS.omni.setupHistory = function() {
     chrome.history.search({
         'text': '', 'maxResults': 1000},
         function(history) {TS.omni.history = history;});
+};
 
+/**
+ * Setup TS.omni.bookmarks with flattened bookmark list.
+ */
+TS.omni.setupBookmarks = function() {
     chrome.bookmarks.getTree(function(bTree) {
         var bookmarkTypes = bTree[0].children;
         var bookmarkBar = bookmarkTypes[0];
@@ -271,9 +275,17 @@ TS.omni.historyInterval = setInterval(function() {
         TS.omni.bookmarks = TS.omni.bookmarks.concat(
             TS.omni.flattenBookmarks(otherBookmarks));
     });
+};
 
-    }, 1 * 10 * 1000
-);
+$(document).ready(function() {
+    TS.omni.setupHistory();
+    TS.omni.setupBookmarks();
+    setInterval(
+        function() {
+            TS.omni.setupHistory();
+            TS.omni.setupBookmarks();
+        }, 1 * 60 * 1000);
+});
 
 /**
  * Get flattened list of bookmarks from Chrome's bookmark tree.
@@ -341,19 +353,16 @@ TS.omni.suggestChromeBookmarks = function(params) {
         if (!('url' in bookmark && 'title' in bookmark)) {
             continue;
         }
-        if (query.test(bookmark.url) ||
-                query.test(bookmark.name)) {
+        if (query.test(bookmark.name)) {
             suggestions.push(bookmark);
         }
     }
-
     suggestions = TS.omni.suggestItems(suggestions, function(bmark) {
         return {
-            'description': 'b ' + TS.util.encodeXml(bmark.title),
+            'description': 'b ' + TS.util.encodeXml(bmark.name), //.title
             'content': 'b ' + TS.util.encodeXml(bmark.url)
         };
     });
-
     return suggestions;
 };
 
@@ -434,7 +443,6 @@ TS.omni.cmdAddTab = function(cmd) {
             'favicon': tab.favIconUrl,
             'pinned': tab.pinned
         });
-
         TS.controller.saveActivityLog({
             action: 'addTab',
             info: {
@@ -513,19 +521,16 @@ TS.omni.createNotification = function(
         opt_title || '',
         opt_content || ''
     );
-
     TS.controller.msg = opt_content;
     notification = webkitNotifications.createHTMLNotification(
       '../notif/notif.html'  // html url - can be relative
     );
-
     notification.addEventListener('click', function(e) {
         var this_ = this;
         setTimeout(function() {
             this_.cancel();
         }, 200);
     });
-
     return notification;
 };
 
@@ -549,7 +554,6 @@ TS.omni.cmdMessageAt = function(cmd) {
 
     var isTomorrow = ((targetHour < currHour) ||
             ((targetHour === currHour) && (targetMin < currMin)));
-
     var minToMsg = 0;
     if (isTomorrow) {
         // Message for tomorrow.
@@ -569,7 +573,6 @@ TS.omni.cmdMessageAt = function(cmd) {
         setTimeout(function() {
             notification.show();
         }, msecToMsg);
-
         TS.controller.saveActivityLog({
             action: 'msgAt',
             info: {
@@ -601,7 +604,6 @@ TS.omni.cmdMessageIn = function(cmd) {
         setTimeout(function() {
             notification.show();
         }, msecToMsg);
-
         TS.controller.saveActivityLog({
             action: 'msgIn',
             info: {
@@ -626,7 +628,6 @@ TS.omni.reloadWindow = function(cmd) {
         query = text[0];
         urlMatch = new RegExp(query, 'i');
     }
-
     // Get all tabs in current window, reload tabs as directed.
     chrome.windows.getCurrent(function(gWin) {
         chrome.tabs.getAllInWindow(gWin.id, function(gTabs) {
@@ -694,7 +695,6 @@ TS.omni.useNamedBook = function(cmd) {
             null, { code: bookmarklet.script }
         );
     }
-
     TS.controller.saveActivityLog({
         action: 'useBook',
         info: {
@@ -719,7 +719,6 @@ TS.omni.openHistory = function(cmd) {
                openUrl: url
             }
         });
-
     } else {
         debug('Open History - Not a Url');
     }
@@ -766,8 +765,7 @@ TS.omni.openBookmark = function(cmd) {
             if (!('url' in bookmark && 'title' in bookmark)) {
                 continue;
             }
-            if (query.test(bookmark.url) ||
-                    query.test(bookmark.name)) {
+            if (query.test(bookmark.name)) {
                 cmd.params[0] = bookmark.url;
                 TS.omni.openBookmark(cmd);
                 break;

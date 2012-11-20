@@ -25,6 +25,7 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
         for (var name in itemDict) {
             matches.push(itemDict[name]);
         }
+        debug('queryName is undefined');
         return matches;
     }
     for (var name in itemDict) {
