@@ -4,15 +4,33 @@
  * @author Wolfe Styke <wstyke@gmail.com>
  */
 var TS = TS || {};
-/**
- * Namespace: controller
- */
+
+/** Namespace: controller */
 TS.controller = TS.controller || {};
+
 
 /**
  * The message for next notification.
  */
 TS.controller.msg = '';
+
+/**
+ * Initialization
+ */
+$(document).ready(function() {
+    debug('Initializing...');
+    TS.io = io.connect('http://localhost:3000');
+
+    TS.io.on('testFromServer', function(data) {
+        debug(data);
+    });
+
+    TS.io.emit('testFromExt', {'fake': 'data'});
+
+    debug('Initialization Done!');
+});
+
+
 /**
  * Returns msg for notification.
  * @return {string} The message.

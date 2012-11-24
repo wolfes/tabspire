@@ -34,3 +34,8 @@ Pending Feature Ideas:
 -- Suggest these commands when user begins "t o"
 
 - Assign bookmarklets to be run on tabname's opening.
+
+In Progress
+- Refactor searchX into
+	getItemsX
+	createSuggestionsForX
