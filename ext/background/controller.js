@@ -25,6 +25,13 @@ $(document).ready(function() {
         debug(data);
     });
 
+    TS.io.on('open:tab:byName', function(data) {
+        if (!('name' in data)) {
+            return;
+        }
+        TS.controller.openTabByName(data['name']);
+    });
+
     TS.io.emit('testFromExt', {'fake': 'data'});
 
     debug('Initialization Done!');
@@ -102,7 +109,7 @@ TS.controller.closeNewTab = function(tab) {
 };
 
 /**
- * Open a tab, or focus tab if already exists.
+ * Open a tab, or focus tab if already exists, also focus window.
  * @param {object} tab Contains .url attr.
  */
 TS.controller.openTab = function(tab) {
@@ -118,20 +125,30 @@ TS.controller.openTab = function(tab) {
                 TS.controller.closeNewTab(selectedTab);
                 // Select desired tab.
                 chrome.tabs.update(tabs[0].id, {active: true});
+                TS.controller.focusWindowById(tabs[0].windowId);
             } else {
                 if (selectedTab.url === 'chrome://newtab/') {
                     // Replace selected newtab page with opened tab url.
                     chrome.tabs.update(selectedTab.id, {url: tab.url});
+                    TS.controller.focusWindowById(selectedTab.windowId);
                 } else {
                     chrome.tabs.create({url: tab.url}, function(newTab) {
                     // Callback: Let win/tab mgr know this tab now exists.
                     // May not be necessary with new chrome.tabs.query :)
                     // query only queries same window?
+                        TS.controller.focusWindowById(newTab.windowId);
                     });
                 }
             }
         });
     });
+};
+/**
+ * Focuses a window by its id.
+ * @param {number} windowId The ID of the window to focus.
+ */
+TS.controller.focusWindowById = function(windowId) {
+    chrome.windows.update(windowId, {focused: true});
 };
 
 /**
