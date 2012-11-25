@@ -76,4 +76,3 @@ TS.dbBook.getBooksByFuzzyName = function(queryName) {
     var bookDict = TS.dbBook.getNamedBooks();
     return TS.dbUtil.getMatchesByFuzzyName(bookDict, queryName);
 };
-
