@@ -5,9 +5,11 @@
  */
 var TS = TS || {};
 
+/** Whether to use local settings. */
+TS.localSettings = false;
+
 /** Namespace: controller */
 TS.controller = TS.controller || {};
-
 
 /**
  * The message for next notification.
@@ -19,20 +21,25 @@ TS.controller.msg = '';
  */
 $(document).ready(function() {
     debug('Initializing...');
-    TS.io = io.connect('http://localhost:3000');
+    TS.io = io.connect(TS.localSettings ?
+        'http://localhost:3000' : '192.155.82.253:3000');
+
+
+    TS.io.emit('id:register', {
+        'socketId': 'thespicemustflow'
+    });
 
     TS.io.on('testFromServer', function(data) {
         debug(data);
     });
 
-    TS.io.on('open:tab:byName', function(data) {
+    TS.io.on('tab:openByName', function(data) {
+        debug('tab:openByName', data);
         if (!('name' in data)) {
             return;
         }
-        TS.controller.openTabByName(data['name']);
+        TS.controller.openTabByFuzzyName(data['name']);
     });
-
-    TS.io.emit('testFromExt', {'fake': 'data'});
 
     debug('Initialization Done!');
 });
