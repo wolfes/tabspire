@@ -28,6 +28,5 @@
     }
   ],
   "options_page": "view/index.html",
-  "update_url": "http://wstyke.com/tabspire/updates.xml",
-  "content_security_policy": "script-src 'self' http://localhost:3000; object-src 'self'"
+  "update_url": "http://wstyke.com/tabspire/updates.xml"
 }
