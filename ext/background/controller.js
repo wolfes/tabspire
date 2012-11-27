@@ -42,6 +42,7 @@ $(document).ready(function() {
     TS.io = io.connect(TS.localSettings ?
         'http://localhost:3000' : 'cmdsync.com:3000');
 
+    TS.io.socket.options['max reconnection attempts'] = Math.min();
     // Register clientId with server on restarting app.
     var clientId = localStorage.getItem('clientId');
     debug('Prev clientId: ', clientId);
