@@ -42,7 +42,6 @@ $(document).ready(function() {
     TS.io = io.connect(TS.localSettings ?
         'http://localhost:3000' : 'cmdsync.com:3000');
 
-    TS.io.socket.options['max reconnection attempts'] = Math.min();
     // Register clientId with server on restarting app.
     var clientId = localStorage.getItem('clientId');
     debug('Prev clientId: ', clientId);
@@ -59,8 +58,42 @@ $(document).ready(function() {
         }
         TS.controller.openTabByFuzzyName(data['name']);
     });
+    TS.io.on('search:normal', function(data) {
+        debug('search:normal', data);
+        TS.controller.openSearchTab({
+            'query': 'query' in data ? data.query : '',
+            'lucky': false
+        });
+    });
+    TS.io.on('search:lucky', function(data) {
+        TS.controller.openSearchTab({
+            'query': 'query' in data ? data.query : '',
+            'lucky': true
+        });
+    });
     debug('Initialization Done!');
 });
+
+/**
+ * Open new tab with search query (google search).
+ * @param {object} searchInfo The query and params for search.
+ */
+TS.controller.openSearchTab = function(searchInfo) {
+    var queryURL = 'http://www.google.com/#';
+    if (!('query' in searchInfo)) {
+        debug('No \'query\' in searchInfo for openSearchTab.');
+        return;
+    }
+    if ('lucky' in searchInfo && searchInfo.lucky) {
+        // TODO(wstyke:11-27-2012) Implement lucky search.
+        queryURL = queryURL + 'q=' + searchInfo.query;
+    } else {
+        queryURL = queryURL + 'q=' + searchInfo.query;
+    }
+    TS.controller.openTab({
+        'url': queryURL
+    });
+};
 
 
 /**
