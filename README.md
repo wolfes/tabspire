@@ -8,6 +8,8 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 More info: http://wstyke.com/tabspire
 
 
+v0.9.3 - Added support for joining a channel on cmdsync.com:3000.
+
 
 + (10-12-2012) Bookmarklets
 + (10-13-2012) Show matching tab names on tab add.
