@@ -82,6 +82,14 @@ TS.omni.commands.push({
     'desc': 'Open Bookmark',
     'suggest': 'suggestChromeBookmarks'
 });
+// Add command to set id for server.
+TS.omni.commands.push({
+    'opt': 'c',
+    'cmd': 'clientId',
+    'desc': 'Set Client Id',
+    'suggest': 'suggestMessage'
+});
+
 
 /**
  * Message to show to user when no results match command.
@@ -422,7 +430,9 @@ TS.omni.inputEntered = function(text) {
         's': TS.omni.addBookmarklet,
         'u': TS.omni.useNamedBook,
         'h': TS.omni.openHistory,
-        'b': TS.omni.openBookmark
+        'b': TS.omni.openBookmark,
+        'c': TS.omni.setClientId,
+        ' ': TS.omni.queryAllItems
     };
     optToCmd[cmd.opt](cmd);
 };
@@ -772,4 +782,22 @@ TS.omni.openBookmark = function(cmd) {
             }
         }
     }
+};
+
+/**
+ * Set client id for server.
+ * @param {object} cmd The user's command.
+ */
+TS.omni.setClientId = function(cmd) {
+    var newId = cmd.params[0];
+    TS.controller.setClientId(newId);
+};
+
+
+/**
+ * Query (saved tabs, bookmarks, history) for matches.
+ * @param {object} cmd The user's params.
+ */
+TS.omni.queryAllItems = function(cmd) {
+    debug(cmd);
 };
