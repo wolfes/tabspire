@@ -11,10 +11,24 @@ TS.localSettings = false;
 /** Namespace: controller */
 TS.controller = TS.controller || {};
 
-/**
- * The message for next notification.
- */
+/** The message for next notification. */
 TS.controller.msg = '';
+
+/** Server Id for this extension. */
+TS.controller.serverId = '';
+
+/**
+ * Set client's id for server communication from vimspire.
+ * @param {string} serverId The id to be known by on server.
+ */
+TS.controller.setClientId = function(serverId) {
+    // Register new, unregister old if applicable.
+    TS.io.emit('id:register', {
+        'socketId': serverId,
+        'oldSocketId': TS.controller.serverId
+    });
+    TS.controller.serverId = serverId;
+};
 
 /**
  * Initialization
@@ -22,16 +36,7 @@ TS.controller.msg = '';
 $(document).ready(function() {
     debug('Initializing...');
     TS.io = io.connect(TS.localSettings ?
-        'http://localhost:3000' : '192.155.82.253:3000');
-
-
-    TS.io.emit('id:register', {
-        'socketId': 'thespicemustflow'
-    });
-
-    TS.io.on('testFromServer', function(data) {
-        debug(data);
-    });
+        'http://localhost:3000' : 'cmdsync.com:3000');
 
     TS.io.on('tab:openByName', function(data) {
         debug('tab:openByName', data);
@@ -40,7 +45,6 @@ $(document).ready(function() {
         }
         TS.controller.openTabByFuzzyName(data['name']);
     });
-
     debug('Initialization Done!');
 });
 
