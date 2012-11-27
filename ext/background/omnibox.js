@@ -245,6 +245,17 @@ TS.omni.suggestItems = function(items, itemToSuggest, opt_noDefault) {
 };
 
 /**
+ * Get bookmarks matching bookmarkName.
+ * @param {string} bookmarkName The queried name.
+ * @return {object} bookmarks List of bookmarks matching query.
+ */
+TS.omni._getMatchingBookmarks = function(bookmarkName) {
+    // UNUSED -- refactor
+    var bookmarks = TS.db.getBookmarksByFuzzyName(bookmarkName);
+    return bookmarks;
+};
+
+/**
  * Return suggestions for bookmarks to use.
  * @param {string} params User's input for bookmark.
  * @return {array} suggestions For Chrome's Omnibox.
@@ -292,7 +303,7 @@ $(document).ready(function() {
         function() {
             TS.omni.setupHistory();
             TS.omni.setupBookmarks();
-        }, 1 * 60 * 1000);
+        }, 5 * 60 * 1000);
 });
 
 /**
@@ -375,6 +386,37 @@ TS.omni.suggestChromeBookmarks = function(params) {
 };
 
 /**
+ * Suggest all matches (saved tabs, bookmarks, history).
+ * @param {object} params The user's text params.
+ * @return {object} suggestions For the omnibox.
+ */
+TS.omni.suggestAllItems = function(params) {
+    var suggestions = [];
+    /*
+    var query = params[0];
+    var savedTabs = TS.model.getNamedTabs();
+    var bookmarkMatches = 1;
+    var historyMatches = 1;
+    var allItems = [];
+    allItems = allItems.concat(savedTabs);
+    allItems = allItems.concat(bookmarkMatches);
+    allItems = allItems.concat(historyMatches);
+    */
+    var savedTabSuggestions = TS.omni.suggestOpen(params);
+    debug('saved tab:', savedTabSuggestions);
+    var bookmarkSuggestions = TS.omni.suggestChromeBookmarks(params);
+    debug('bookmark:', bookmarkSuggestions);
+    var historySuggestions = TS.omni.suggestHistory(params);
+    debug('history:', historySuggestions);
+
+    suggestions = suggestions.concat(savedTabSuggestions);
+    suggestions = suggestions.concat(bookmarkSuggestions);
+    suggestions = suggestions.concat(historySuggestions);
+
+    return suggestions;
+};
+
+/**
  * Parse text into command and params.
  * @param {string} text The text to parse.
  * @return {object} Command The command item.
@@ -392,6 +434,16 @@ TS.omni._getCmd = function(text) {
             command.params = params;
             break;
         }
+    }
+    if (!command && cmdInput.length > 1) {
+        // No recognized command, query all item command.
+        command = {
+            opt: ' ',
+            cmd: ' ',
+            desc: 'Suggest All',
+            suggest: 'suggestAllItems',
+            params: terms
+        };
     }
     return command;
 };
@@ -420,6 +472,7 @@ chrome.omnibox.onInputChanged.addListener(TS.omni.inputChanged);
  */
 TS.omni.inputEntered = function(text) {
     var cmd = TS.omni._getCmd(text);
+    debug('inputEntered cmd:', cmd);
     var optToCmd = {
         'a': TS.omni.cmdAddTab,
         'o': TS.omni.cmdOpenTab,
