@@ -14,20 +14,24 @@ TS.controller = TS.controller || {};
 /** The message for next notification. */
 TS.controller.msg = '';
 
-/** Server Id for this extension. */
-TS.controller.serverId = '';
-
 /**
  * Set client's id for server communication from vimspire.
- * @param {string} serverId The id to be known by on server.
+ * @param {string} clientId The id to be known by on server.
  */
-TS.controller.setClientId = function(serverId) {
+TS.controller.setClientId = function(clientId) {
+    if (clientId.search('/') !== -1) {
+        // Invalid client id contains '/'.
+        debug('Client Id is Invalid: has /');
+        return;
+    }
+
     // Register new, unregister old if applicable.
+    var oldClientId = localStorage.getItem('clientId');
     TS.io.emit('id:register', {
-        'socketId': serverId,
-        'oldSocketId': TS.controller.serverId
+        'socketId': clientId,
+        'oldSocketId': oldClientId || ''
     });
-    TS.controller.serverId = serverId;
+    localStorage.setItem('clientId', clientId);
 };
 
 /**
@@ -37,6 +41,15 @@ $(document).ready(function() {
     debug('Initializing...');
     TS.io = io.connect(TS.localSettings ?
         'http://localhost:3000' : 'cmdsync.com:3000');
+
+    // Register clientId with server on restarting app.
+    var clientId = localStorage.getItem('clientId');
+    debug('Prev clientId: ', clientId);
+    if (clientId && clientId !== '') {
+        TS.io.emit('id:register', {
+            'socketId': clientId
+        });
+    }
 
     TS.io.on('tab:openByName', function(data) {
         debug('tab:openByName', data);
