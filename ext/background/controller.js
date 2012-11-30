@@ -189,22 +189,27 @@ TS.controller.openTab = function(tab) {
     if (tab === undefined) {
         return;
     }
+    tab.url = (tab.url.substr(0, 4) === 'http' ?
+            tab.url : 'http://' + tab.url);
+    debug(tab.url);
     // Remove hashtag at end of url (stemming).
     var tabUrlNoHashtag = tab.url.replace(/#\s*[^//.]+$/, '');
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
         TS.controller.fetchSelectedTab(function(selectedTab) {
             if (tabs.length > 0) {
+                debug('openTab -> Selecting existing:', tab.url);
                 // Tab already open, select it!.
                 TS.controller.closeNewTab(selectedTab);
-                // Select desired tab.
                 chrome.tabs.update(tabs[0].id, {active: true});
                 TS.controller.focusWindowById(tabs[0].windowId);
             } else {
                 if (selectedTab.url === 'chrome://newtab/') {
+                    debug('openTab -> open in place.');
                     // Replace selected newtab page with opened tab url.
                     chrome.tabs.update(selectedTab.id, {url: tab.url});
                     TS.controller.focusWindowById(selectedTab.windowId);
                 } else {
+                    debug('openTab -> open in new tab:', tab.url);
                     chrome.tabs.create({url: tab.url}, function(newTab) {
                     // Callback: Let win/tab mgr know this tab now exists.
                     // May not be necessary with new chrome.tabs.query :)
