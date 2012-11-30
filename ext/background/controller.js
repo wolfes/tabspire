@@ -1,6 +1,6 @@
 /**
  * Controller for connecting views/server to background model.
- *
+*
  * @author Wolfe Styke <wstyke@gmail.com>
  */
 var TS = TS || {};
@@ -35,16 +35,15 @@ TS.controller.setClientId = function(clientId) {
 };
 
 /**
- * Initialization
+ * Connect socket to server and setup listeners.
  */
-$(document).ready(function() {
-    debug('Initializing...');
+TS.controller.setupSocket = function() {
     TS.io = io.connect(TS.localSettings ?
         'http://localhost:3000' : 'cmdsync.com:3000');
 
     // Register clientId with server on restarting app.
     var clientId = localStorage.getItem('clientId');
-    debug('Prev clientId: ', clientId);
+    debug('Connecting to server with clientId:', clientId);
     if (clientId && clientId !== '') {
         TS.io.emit('id:register', {
             'socketId': clientId
