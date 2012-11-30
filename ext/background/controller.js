@@ -71,6 +71,21 @@ $(document).ready(function() {
             'lucky': true
         });
     });
+
+    TS.io.on('tab:openByURL', function(data) {
+        debug('tab:openByURL', data);
+        TS.controller.openTab({
+            'url': data.url
+        });
+    });
+};
+
+/**
+ * Initialization
+ */
+$(document).ready(function() {
+    debug('Initializing...');
+    TS.controller.setupSocket();
     debug('Initialization Done!');
 });
 
