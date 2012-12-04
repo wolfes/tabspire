@@ -179,11 +179,24 @@ TS.controller.openTabByFuzzyName = function(tabName) {
                 url: tab.url
             }
         });
-
     }
-
 };
 
+/**
+ * Delete the first tab that matches fuzzy name search.
+ * @param {string} fuzzyTabName The tabname to search and destroy.
+ */
+TS.controller.deleteTabByFuzzyName = function(fuzzyTabName) {
+    if (fuzzyTabName === undefined) {
+        fuzzyTabName = ''; // Open first match.
+    }
+    var tabs = TS.model.getTabsByFuzzyName(fuzzyTabName);
+    if (tabs.length === 0) {
+        return; // No matching tabs to delete.
+    }
+    var tabToDelete = tabs[0];
+    TS.model.removeNamedTab(tabToDelete.name);
+};
 
 /**
  * Get list of tabs that fuzzy-match the name.

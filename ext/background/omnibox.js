@@ -27,6 +27,12 @@ TS.omni.commands.push({
     'suggest': 'suggestAdd'
 });
 TS.omni.commands.push({
+    'opt': 'd',
+    'cmd': 'delete',
+    'desc': 'Del Tab',
+    'suggest': 'suggestDelete'
+});
+TS.omni.commands.push({
     'opt': 'o',
     'cmd': 'open',
     'desc': 'Open Tab',
@@ -171,6 +177,24 @@ TS.omni.suggestAdd = function(params) {
         },
         true // Skip Showing Default Suggestions.
     );
+    return suggestions;
+};
+
+/**
+ * Return suggestions for Delete Tab by Name command.
+ * @param {string} params for delete named tab.
+ * @return {array} suggestions For Chrome's Omnibox.
+ */
+TS.omni.suggestDelete = function(params) {
+    var requestedTabName = params[0];
+    var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
+    var suggestions = TS.omni.suggestItems(tabs, function(tabInfo) {
+        return {
+            content: 'delete ' + tabInfo.url,
+            description: ('delete ' + tabInfo.name + ' -> ' +
+                TS.util.encodeXml(tabInfo.url))
+        };
+    });
     return suggestions;
 };
 
@@ -476,6 +500,7 @@ TS.omni.inputEntered = function(text) {
     var optToCmd = {
         'a': TS.omni.cmdAddTab,
         'o': TS.omni.cmdOpenTab,
+        'd': TS.omni.cmdDeleteTab,
         'r': TS.omni.cmdReload,
         'm': TS.omni.cmdMessageAt,
         'n': TS.omni.cmdMessageIn,
@@ -513,6 +538,29 @@ TS.omni.cmdAddTab = function(cmd) {
             }
         });
     });
+};
+
+/**
+ * Delete tab by name (or by url if selected from suggestions).
+ * @param {object} cmd The command object with user's input.
+ */
+TS.omni.cmdDeleteTab = function(cmd) {
+    var firstParam = cmd.params[0];
+    var nameOrUrl = (cmd.params.length !== 0) ? firstParam : '';
+    var xmlParsedName = TS.util.decodeXml(nameOrUrl);
+    debug('cmdDeleteTab: xmlParsedName', xmlParsedName,
+            ', nameOrUrl:', nameOrUrl);
+    if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
+        // User entered the no match message, do nothing.
+        // Pass on opening tab.
+        return;
+    } else if (TS.util.isUrl(xmlParsedName)) {
+        // User selected from dropdown.
+        // Fragile, depends on open suggest text.
+        TS.model.removeTabByURL(xmlParsedName);
+    } else {
+        TS.controller.deleteTabByFuzzyName(nameOrUrl);
+    }
 };
 
 /**

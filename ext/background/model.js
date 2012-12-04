@@ -37,7 +37,6 @@ TS.model.saveNamedTabs = function(tabdict) {
     localStorage.setItem('tabdict', JSON.stringify(tabdict));
 };
 
-
 /**
  * Add a new uniquely named tab to TS.model.
  * @param {Object} data Dict with tab name and tab info.
@@ -83,15 +82,28 @@ TS.model.getTabsByFuzzyName = function(queryName) {
  * @this TS.model
  */
 TS.model.removeNamedTab = function(tabName) {
+    debug('TS.model.removeNamedTab(', tabName, ')');
     var tabdict = this.getNamedTabs();
-    if (name in tabdict) {
-        delete tabdict[name];
-    }
+    delete tabdict[tabName];
     this.saveNamedTabs(tabdict);
 };
 
-
-
+/**
+ * Remove tab by url.
+ * @param {string} url The url to delete from saved tabs.
+ * @this TS.model
+ */
+TS.model.removeTabByURL = function(url) {
+    var tabdict = this.getNamedTabs();
+    for (name in tabdict) {
+        debug('Considering deleting tab named:', name);
+        if (tabdict[name].url === url) {
+            debug('Model is removing tab with name:', name);
+            delete tabdict[name];
+        }
+    }
+    this.saveNamedTabs(tabdict);
+};
 
 /**
  * Unused.
@@ -99,7 +111,6 @@ TS.model.removeNamedTab = function(tabName) {
 TS.model.a = function() {
 
 };
-
 
 /**
  * Unused.
