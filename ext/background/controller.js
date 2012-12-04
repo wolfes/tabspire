@@ -57,7 +57,7 @@ TS.controller.setupSocket = function() {
     });
 
     TS.io.socket.on('reconnecting', function(delay) {
-       TS.io.socket.reconnectionDelay = 2 * 60 * 1000;
+       TS.io.socket.reconnectionDelay = 5 * 60 * 1000;
     });
     TS.io.socket.on('reconnect', function() {
         TS.controller.uploadClientId();
