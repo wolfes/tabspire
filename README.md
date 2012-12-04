@@ -25,6 +25,17 @@ v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
 Pending Feature Ideas:
 
+CATASTROPHIC
+- Remove tab by name
+
+MAJOR
+
+
+MINOR
+
+COSMETIC
+
+
 - chrome.pageCapture to save all pages in window at once.
 - Badges for completing X actions of each type: 1, 3, 10, 30, 100, 300, ...
 
