@@ -8,6 +8,7 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 More info: http://wstyke.com/tabspire
 
 
+v0.9.6 - Added delete tab by name/url with 't d tabName'.
 v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
