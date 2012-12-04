@@ -35,15 +35,39 @@ TS.controller.setClientId = function(clientId) {
 };
 
 /**
+ * Upload existing clientId to server.  Useful after reconnect.
+ */
+TS.controller.uploadClientId = function() {
+    var clientId = localStorage.getItem('clientId');
+    TS.io.emit('id:register', {
+        'socketId': clientId || '',
+        'oldSocketId': clientId || ''
+    });
+};
+
+/**
  * Connect socket to server and setup listeners.
  */
 TS.controller.setupSocket = function() {
-    TS.io = io.connect(TS.localSettings ?
-        'http://localhost:3000' : 'cmdsync.com:3000');
+    var serverHost = (TS.localSettings ?
+            'http://localhost:3000' : 'cmdsync.com:3000');
+
+    TS.io = io.connect(serverHost, {
+        'max reconnection attempts': Infinity
+    });
+
+    TS.io.socket.on('reconnecting', function(delay) {
+       TS.io.socket.reconnectionDelay = 2 * 60 * 1000;
+    });
+    TS.io.socket.on('reconnect', function() {
+        TS.controller.uploadClientId();
+    });
+    // Starts reconnecting engines...
+    TS.io.socket.reconnect();
 
     // Register clientId with server on restarting app.
     var clientId = localStorage.getItem('clientId');
-    debug('Connecting to server with clientId:', clientId);
+    debug('Connecting to', serverHost, 'with clientId:', clientId);
     if (clientId && clientId !== '') {
         TS.io.emit('id:register', {
             'socketId': clientId
