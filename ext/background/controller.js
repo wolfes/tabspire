@@ -94,14 +94,24 @@ TS.controller.setupSocket = function() {
             'lucky': true
         });
     });
-
     TS.io.on('tab:openByURL', function(data) {
         debug('tab:openByURL', data);
         TS.controller.openTab({
             'url': data.url
         });
     });
-};
+    TS.io.on('tab:reloadByName', function(data) {
+        debug('tab:reloadByName', data);
+        TS.controller.reloadTabByFuzzyName(
+            'tabName' in data ? data.tabName : '');
+    });
+    TS.io.on('tab:reloadByURL', function(data) {
+        debug('tab:reloadByURL', data);
+        TS.controller.openTab({
+            'url': 'url' in data ? data.url : ''
+        }, true);
+    });
+ };
 
 /**
  * Initialization
@@ -183,6 +193,31 @@ TS.controller.openTabByFuzzyName = function(tabName) {
 };
 
 /**
+ * Open or Reload tab that matches fuzzyTabName best.
+ * @param {string} fuzzyTabName The tabname to search and destroy.
+ */
+TS.controller.reloadTabByFuzzyName = function(fuzzyTabName) {
+    if (fuzzyTabName === undefined) {
+        fuzzyTabName = ''; // Open first match.
+    }
+    var tabs = TS.model.getTabsByFuzzyName(fuzzyTabName);
+    if (tabs.length === 0) {
+        return; // No tabs found.
+    }
+    var tabToReload = tabs[0];
+    TS.controller.openTab(tabToReload, true);
+    TS.controller.saveActivityLog({
+        action: 'reloadTab',
+        info: {
+            query: fuzzyTabName,
+            title: tabToReload.name,
+            url: tabToReload.url
+        }
+    });
+
+};
+
+/**
  * Delete the first tab that matches fuzzy name search.
  * @param {string} fuzzyTabName The tabname to search and destroy.
  */
@@ -220,23 +255,28 @@ TS.controller.closeNewTab = function(tab) {
 /**
  * Open a tab, or focus tab if already exists, also focus window.
  * @param {object} tab Contains .url attr.
+ * @param {boolean} opt_reloadIfOpen Reload tab if already open.
  */
-TS.controller.openTab = function(tab) {
+TS.controller.openTab = function(tab, opt_reloadIfOpen) {
+    var reloadIfOpen = opt_reloadIfOpen || false;
     if (tab === undefined) {
         return;
     }
     tab.url = (tab.url.substr(0, 4) === 'http' ?
             tab.url : 'http://' + tab.url);
-    debug(tab.url);
     // Remove hashtag at end of url (stemming).
     var tabUrlNoHashtag = tab.url.replace(/#\s*[^//.]+$/, '');
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
         TS.controller.fetchSelectedTab(function(selectedTab) {
             if (tabs.length > 0) {
                 debug('openTab -> Selecting existing:', tab.url);
-                // Tab already open, select it!.
+                // Tab already open, select it and optionally reload!.
                 TS.controller.closeNewTab(selectedTab);
-                chrome.tabs.update(tabs[0].id, {active: true});
+                var updateInfo = {active: true};
+                if (reloadIfOpen) {
+                    updateInfo['url'] = tab.url;
+                }
+                chrome.tabs.update(tabs[0].id, updateInfo);
                 TS.controller.focusWindowById(tabs[0].windowId);
             } else {
                 if (selectedTab.url === 'chrome://newtab/') {
@@ -275,6 +315,7 @@ TS.controller.fetchSelectedTab = function(callback) {
         windowId: win.id,
         active: true
     }, function(tabs) {
+        debug(tabs[0]);
         callback(tabs[0]);
     });
   });
