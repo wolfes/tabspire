@@ -29,8 +29,9 @@ Pending Feature Ideas:
 CATASTROPHIC
 - Remove tab by name
 
-MAJOR
 
+MAJOR
+- Figure out: Copy to Clipboard (it exists!).
 
 MINOR
 
