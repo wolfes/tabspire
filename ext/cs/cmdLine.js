@@ -82,9 +82,18 @@ CL.init = function() {
   */
 };
 
+/**
+ * Map from key to keyCode.
+ */
+CL.keyCodes = {
+    ESC: 27,
+    APOSTROPHE: 39,
+    m: 109
+};
+
 $(document).live('keyup', function(e) {
     // Reset previous keys if user hits ESC.
-    if (e.keyCode === 27) {
+    if (e.keyCode === CL.keyCodes.ESC) {
         CL.clearKeys();
     }
 });
@@ -111,7 +120,7 @@ CL.checkKeysForCommand = function() {
     dd = keys;
 
     // Try mark using:  m<mark-letter>
-    if (keys.length === 2 && keys[0].charCode === 109) {
+    if (keys.length === 2 && keys[0].charCode === CL.keyCodes.m) {
         var markCode = keys[1].charCode;
         //debug('Save Mark Code:', markCode);
 
@@ -122,9 +131,9 @@ CL.checkKeysForCommand = function() {
         CL.clearKeys();
     }
     // Try goto using: '<mark-letter>
-    if (keys.length === 2 && keys[0].charCode === 39) {
+    if (keys.length === 2 && keys[0].charCode === CL.keyCodes.APOSTROPHE) {
         var markCode = keys[1].charCode;
-        //debug('Goto Mark Code:', markCode);
+        debug('Goto Mark Code:', markCode);
 
         chrome.extension.sendMessage({
             action: 'cmdLine.gotoMark',

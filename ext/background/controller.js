@@ -117,7 +117,6 @@ TS.controller.setupSocket = function() {
  * Initialization
  */
 $(document).ready(function() {
-    debug('Initializing...');
     TS.controller.setupSocket();
     debug('Initialization Done!');
 });
@@ -315,7 +314,7 @@ TS.controller.fetchSelectedTab = function(callback) {
         windowId: win.id,
         active: true
     }, function(tabs) {
-        debug(tabs[0]);
+        //debug(tabs[0]);
         callback(tabs[0]);
     });
   });
@@ -335,6 +334,12 @@ TS.controller.saveActivityLog = function(log) {
 };
 
 
+var digits = {
+    49: 1, 50: 2, 51: 3, 52: 4, 53: 5,
+    54: 6, 55: 7, 56: 8, 57: 9, 48: 0
+};
+
+
 chrome.extension.onMessage.addListener(
     function(msg, sender, sendResponse) {
         debug(msg, sender);
@@ -348,7 +353,6 @@ chrome.extension.onMessage.addListener(
             // 1. Omnibox-specific code
             // 2. User Text Input handling code.
             // Then use (2) here.
-            //
         } else if (action === 'cmdLine.saveMark') {
             //TODO(wstyke:01-03-2013) Save mark for tab.
             var keyCode = msg.code;
@@ -359,6 +363,9 @@ chrome.extension.onMessage.addListener(
         } else if (action === 'cmdLine.gotoMark') {
             //TODO(wstyke:01-03-2013) Focus marked tab, if available, else open.
             var markInfo = TS.dbMark.getMarkByKey(msg.code);
+            if (msg.code in digits && markInfo === undefined) {
+                //debug('Goto tab #', digits[msg.code]);
+            }
             TS.controller.openTab({
                 'url': markInfo.url
             });
