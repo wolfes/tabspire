@@ -349,5 +349,18 @@ chrome.extension.onMessage.addListener(
             // 2. User Text Input handling code.
             // Then use (2) here.
             //
+        } else if (action === 'cmdLine.saveMark') {
+            //TODO(wstyke:01-03-2013) Save mark for tab.
+            var keyCode = msg.code;
+            TS.controller.fetchSelectedTab(function(tabInfo) {
+                TS.dbMark.addMark(keyCode, tabInfo);
+                debug('Added Mark:', keyCode, tabInfo);
+            });
+        } else if (action === 'cmdLine.gotoMark') {
+            //TODO(wstyke:01-03-2013) Focus marked tab, if available, else open.
+            var markInfo = TS.dbMark.getMarkByKey(msg.code);
+            TS.controller.openTab({
+                'url': markInfo.url
+            });
         }
 });

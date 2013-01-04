@@ -47,8 +47,6 @@ var duct = duct || _.extend({}, Backbone.Events);
  *
  */
 CL.init = function() {
-  debug('cmdLine-2');
-
   box = document.createElement('div');
   box.setAttribute('id', 'cmdLineBox');
   box.style.position = 'fixed';
@@ -66,11 +64,12 @@ CL.init = function() {
   input.style.fontSize = '16px';
   box.appendChild(input);
 
-
-  /*document.body.appendChild(box);
+  /*
+  document.body.appendChild(box);
   setTimeout(function() {
     document.getElementById('cmdLine').focus();
-  }, 25);
+  }, 10);
+
   $('#cmdLine').live('keyup', function(e) {
     // KeyUp gives you 'after char entered' text.
     var text = e.target.value;
@@ -78,8 +77,94 @@ CL.init = function() {
         action: 'cmdLine.inputChanged',
         text: text
     });
-  });*/
+  });
+
+  */
 };
+
+$(document).live('keyup', function(e) {
+    // Reset previous keys if user hits ESC.
+    if (e.keyCode === 27) {
+        CL.clearKeys();
+    }
+});
+
+
+$(document).live('keypress', function(e) {
+    var invalidTags = {
+        'INPUT': false,
+        'TEXTAREA': false
+    };
+    if (e.target.tagName in invalidTags) {
+        return;
+    }
+    CL.registerKeys(e);
+    CL.checkKeysForCommand();
+});
+
+/**
+ * ' = 39
+ * m = 109
+ */
+CL.checkKeysForCommand = function() {
+    var keys = CL.previousKeys_;
+    dd = keys;
+
+    // Try mark using:  m<mark-letter>
+    if (keys.length === 2 && keys[0].charCode === 109) {
+        var markCode = keys[1].charCode;
+        //debug('Save Mark Code:', markCode);
+
+        chrome.extension.sendMessage({
+            action: 'cmdLine.saveMark',
+            code: markCode
+        });
+        CL.clearKeys();
+    }
+    // Try goto using: '<mark-letter>
+    if (keys.length === 2 && keys[0].charCode === 39) {
+        var markCode = keys[1].charCode;
+        //debug('Goto Mark Code:', markCode);
+
+        chrome.extension.sendMessage({
+            action: 'cmdLine.gotoMark',
+            code: markCode
+        });
+        CL.clearKeys();
+    }
+};
+
+/** @private Private list of previously pressed keys. */
+CL.previousKeys_ = [];
+/** @private Timeout id for unregistering keystrokes. */
+CL.unregisterTimer_ = null;
+/** @private Timeout time till unregistration occurs. */
+CL.unregisterTime_ = 2 * 1000;
+
+/**
+ * Register sequences of key presses, looking for matching cmd patterns.
+ * @param {Object} keyEvent The key press event, from jQuery.
+ */
+CL.registerKeys = function(keyEvent) {
+    var key = keyEvent;
+    CL.previousKeys_.push(key);
+    //debug(CL.previousKeys_);
+    CL.resetUnregisterKeys();
+};
+
+/** Set Timeout to unregister recorded keystrokes. */
+CL.resetUnregisterKeys = function() {
+    clearTimeout(CL.unregisterTimer_);
+    CL.unregisterTimer_ = setTimeout(function() {
+        CL.clearKeys();
+    }, CL.unregisterTime_);
+};
+
+/** Clear keys after command performed */
+CL.clearKeys = function() {
+    CL.previousKeys_ = [];
+};
+
 $(document).ready(function() {
   CL.init();
 });
