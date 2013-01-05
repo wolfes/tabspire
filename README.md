@@ -7,6 +7,7 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 
 More info: http://wstyke.com/tabspire
 
+v0.9.9 - Added reloadCurrentTab.
 v0.9.8 - Added Mark Tab `ma` and Goto Tab `'a` like in Vim.
 v0.9.6 - Added delete tab by name/url with 't d tabName'.
 v0.9.5 - Added infinite socket.io reconnect every 5 mins.
@@ -28,7 +29,6 @@ Pending Feature Ideas:
 
 CATASTROPHIC
 - Remove tab by name
-
 
 MAJOR
 - Figure out: Copy to Clipboard (it exists!).
