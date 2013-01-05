@@ -111,6 +111,10 @@ TS.controller.setupSocket = function() {
             'url': 'url' in data ? data.url : ''
         }, true);
     });
+    TS.io.on('tab:reloadCurrent', function(data) {
+        debug('tab:reloadCurrent', data);
+        TS.controller.reloadCurrentTab();
+    });
  };
 
 /**
@@ -192,6 +196,27 @@ TS.controller.openTabByFuzzyName = function(tabName) {
 };
 
 /**
+ * Reload Currently Focused Tab.
+ */
+TS.controller.reloadCurrentTab = function() {
+    TS.controller.fetchSelectedTab(function(tab) {
+        // Reload Currently Focused Tab.
+        chrome.tabs.update(tab.id, {
+            active: true,
+            url: tab.url
+        });
+        // Record Activity.
+        TS.controller.saveActivityLog({
+            action: 'reloadCurrentTab',
+            info: {
+                title: tab.title,
+                url: tab.url
+            }
+        });
+    });
+};
+
+/**
  * Open or Reload tab that matches fuzzyTabName best.
  * @param {string} fuzzyTabName The tabname to search and destroy.
  */
@@ -213,7 +238,6 @@ TS.controller.reloadTabByFuzzyName = function(fuzzyTabName) {
             url: tabToReload.url
         }
     });
-
 };
 
 /**
