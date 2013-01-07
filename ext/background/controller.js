@@ -305,7 +305,7 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
         return;
     }
     tab.url = TS.util.fixUrlProtocol(tab.url);
-    tab.url = TS.util.removeHashtag(tab.url);
+    var tabUrlNoHashtag = TS.util.removeHashtag(tab.url);
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
         TS.controller.fetchSelectedTab(function(selectedTab) {
             if (tabs.length > 0) {
