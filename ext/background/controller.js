@@ -285,8 +285,13 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
     if (tab === undefined) {
         return;
     }
-    tab.url = (tab.url.substr(0, 4) === 'http' ?
-            tab.url : 'http://' + tab.url);
+
+    var url = tab.url;
+    if ((url.search('chrome:') !== 0) &&
+            (url.search('http') !== 0) &&
+            (url.search('file:') !== 0)) {
+        tab.url = 'http://' + tab.url;
+    }
     // Remove hashtag at end of url (stemming).
     var tabUrlNoHashtag = tab.url.replace(/#\s*[^//.]+$/, '');
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
@@ -303,7 +308,7 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
                 TS.controller.focusWindowById(tabs[0].windowId);
             } else {
                 if (selectedTab.url === 'chrome://newtab/') {
-                    debug('openTab -> open in place.');
+                    debug('openTab -> open in place:', tab.url);
                     // Replace selected newtab page with opened tab url.
                     chrome.tabs.update(selectedTab.id, {url: tab.url});
                     TS.controller.focusWindowById(selectedTab.windowId);
