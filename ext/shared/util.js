@@ -33,6 +33,29 @@ TS.util.isUrl = function(urlString) {
 };
 
 /**
+ * Fixes urls without a leading (http/https/chrome/file).
+ * @param {string} url The url to fix.
+ * @return {string} url The fixed url.
+ */
+TS.util.fixUrlProtocol = function(url) {
+    if ((url.search('chrome:') !== 0) &&
+            (url.search('http') !== 0) &&
+            (url.search('file:') !== 0)) {
+        url = 'http://' + url;
+    }
+    return url;
+};
+
+/**
+ * Remove hashtag at end of url for stemming purposes.
+ * @param {string} url The url to remove hashtags from.
+ * @return {string} The url sans hashtag.
+ */
+TS.util.removeHashtag = function(url) {
+    return url.replace(/#\s*[^//.]+$/, '');
+};
+
+/**
  * Escape RegExp special chars from a string.
  * @param {string} text The unescaped string.
  * @return {string} The string with escaped RegExp special chars.
@@ -41,19 +64,18 @@ TS.util.escapeRegExp = function(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 };
 
-
 var xml_special_to_escaped_one_map = {
-        '&': '&amp;',
-            '"': '&quot;',
-                '<': '&lt;',
-                    '>': '&gt;'
+    '&': '&amp;',
+    '"': '&quot;',
+    '<': '&lt;',
+    '>': '&gt;'
 };
 
 var escaped_one_to_xml_special_map = {
-        '&amp;': '&',
-            '&quot;': '"',
-                '&lt;': '<',
-                    '&gt;': '>'
+    '&amp;': '&',
+    '&quot;': '"',
+    '&lt;': '<',
+    '&gt;': '>'
 };
 
 /**

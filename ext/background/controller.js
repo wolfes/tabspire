@@ -276,6 +276,25 @@ TS.controller.closeNewTab = function(tab) {
 };
 
 /**
+ * Focus a tab that is already open in Chrome,
+ * and close currently selected tab if it is a newtab.
+ * @param {Object} tab The tab to focus.
+ * @param {Object} selectedTab The tab currently focused..
+ * @private
+ */
+TS.controller.focusExistingTab_ = function(tab, selectedTab) {
+    debug('openTab -> Focusing existing tab:', tab.url);
+    TS.controller.closeNewTab(selectedTab);
+
+    var updateInfo = {active: true};
+    if (reloadIfOpen) {
+        updateInfo['url'] = tab.url;
+    }
+    chrome.tabs.update(tabs[0].id, updateInfo);
+    TS.controller.focusWindowById(tabs[0].windowId);
+};
+
+/**
  * Open a tab, or focus tab if already exists, also focus window.
  * @param {object} tab Contains .url attr.
  * @param {boolean} opt_reloadIfOpen Reload tab if already open.
@@ -285,31 +304,16 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
     if (tab === undefined) {
         return;
     }
-
-    var url = tab.url;
-    if ((url.search('chrome:') !== 0) &&
-            (url.search('http') !== 0) &&
-            (url.search('file:') !== 0)) {
-        tab.url = 'http://' + tab.url;
-    }
-    // Remove hashtag at end of url (stemming).
-    var tabUrlNoHashtag = tab.url.replace(/#\s*[^//.]+$/, '');
+    tab.url = TS.util.fixUrlProtocol(tab.url);
+    tab.url = TS.util.removeHashtag(tab.url);
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
         TS.controller.fetchSelectedTab(function(selectedTab) {
             if (tabs.length > 0) {
-                debug('openTab -> Selecting existing:', tab.url);
-                // Tab already open, select it and optionally reload!.
-                TS.controller.closeNewTab(selectedTab);
-                var updateInfo = {active: true};
-                if (reloadIfOpen) {
-                    updateInfo['url'] = tab.url;
-                }
-                chrome.tabs.update(tabs[0].id, updateInfo);
-                TS.controller.focusWindowById(tabs[0].windowId);
+                TS.controller.focusExistingTab_(tab, selectedTab);
             } else {
                 if (selectedTab.url === 'chrome://newtab/') {
-                    debug('openTab -> open in place:', tab.url);
                     // Replace selected newtab page with opened tab url.
+                    debug('openTab -> open in place:', tab.url);
                     chrome.tabs.update(selectedTab.id, {url: tab.url});
                     TS.controller.focusWindowById(selectedTab.windowId);
                 } else {
