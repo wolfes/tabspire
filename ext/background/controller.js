@@ -146,7 +146,6 @@ TS.controller.openSearchTab = function(searchInfo) {
     });
 };
 
-
 /**
  * Returns msg for notification.
  * @return {string} The message.
@@ -367,7 +366,6 @@ TS.controller.saveActivityLog = function(log) {
         TS.dbLogs.addLog(log);
     });
 };
-
 
 var digits = {
     49: 1, 50: 2, 51: 3, 52: 4, 53: 5,

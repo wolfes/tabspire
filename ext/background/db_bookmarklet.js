@@ -4,7 +4,6 @@
  * @author Wolfe Styke - <wstyke@gmail.com>
  */
 
-
 var TS = TS || {};
 /**
  * Namespace: dbBook.

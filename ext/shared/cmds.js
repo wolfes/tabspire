@@ -9,7 +9,6 @@ var TS = TS || {};
  */
 TS.cmds = TS.cmds || {};
 
-
 /**
  * Basic Idea: Each command has:
  * Option: 1 char, for easy typing of command.
@@ -66,7 +65,6 @@ TS.cmds.commands.push({
     'suggest': 'suggestBookmarks'
 });
 
-
 /**
  * Parse text into command and params.
  * @param {string} text The text to parse.
@@ -93,9 +91,3 @@ TS.cmds.parseCmd = function(text) {
     }
     return command;
 };
-
-
-
-
-
-

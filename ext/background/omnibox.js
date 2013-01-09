@@ -96,7 +96,6 @@ TS.omni.commands.push({
     'suggest': 'suggestMessage'
 });
 
-
 /**
  * Message to show to user when no results match command.
  */
@@ -893,7 +892,6 @@ TS.omni.setClientId = function(cmd) {
     var newId = cmd.params[0];
     TS.controller.setClientId(newId);
 };
-
 
 /**
  * Query (saved tabs, bookmarks, history) for matches.

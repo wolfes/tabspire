@@ -21,6 +21,4 @@ function loadPage() {
     });
 }
 
-
-
 $(document).ready(loadPage);

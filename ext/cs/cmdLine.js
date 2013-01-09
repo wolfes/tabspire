@@ -41,7 +41,6 @@ var vent = vent || _.extend({}, Backbone.Events);
 /** Controller Vent: duct for between underground models */
 var duct = duct || _.extend({}, Backbone.Events);
 
-
 /**
  * Initialize command line code.
  *
@@ -97,7 +96,6 @@ $(document).live('keyup', function(e) {
         CL.clearKeys();
     }
 });
-
 
 $(document).live('keypress', function(e) {
     var invalidTags = {
