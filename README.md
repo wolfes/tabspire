@@ -14,21 +14,25 @@ v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
-+ (10-12-2012) Bookmarklets
++ (01-03-2013) Mark + Goto (ma + 'a)
++ (12-05-2012) Added Reload Tab By Name.
++ (12-04-2012) Added Delete Tab By Name.  Infinite reconnect.
++ (12-03-2012) Added openURL
++ (11-27-2012) Added Open GoogleSearch in Tab.
++ (11-15-2012) Bookmark Name now includes parent folder names
+	name: folder1/folder2/bookmark_name
++ (11-15-2012) Open Chrome Bookmarks (and bookmarklets) by name/url match.
+- Add fuzzy match for history and bookmarks.
 + (10-13-2012) Show matching tab names on tab add.
++ (11-13-2012) History Search (basic str.search method)
++ (10-12-2012) Bookmarklets
   (10-17-2012)
 + Activity logging (all the logs!)
 + HTML5 Notifications with links to site where notif was made.
-+ (11-13-2012) History Search (basic str.search method)
-+ (11-15-2012) Open Chrome Bookmarks (and bookmarklets) by name/url match.
-- Add fuzzy match for history and bookmarks.
-+ (11-15-2012) Bookmark Name now includes parent folder names
-	name: folder1/folder2/bookmark_name
 
 Pending Feature Ideas:
 
 CATASTROPHIC
-- Remove tab by name
 
 MAJOR
 - Figure out: Copy to Clipboard (it exists!).

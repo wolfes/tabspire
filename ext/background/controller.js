@@ -280,9 +280,11 @@ TS.controller.closeNewTab = function(tab) {
  * and close currently selected tab if it is a newtab.
  * @param {Object} tab The tab to focus.
  * @param {Object} selectedTab The tab currently focused..
+ * @param {boolean} reloadIfOpen Reload tab if it is already open.
  * @private
  */
-TS.controller.focusExistingTab_ = function(tab, selectedTab) {
+TS.controller.focusExistingTab_ = function(
+        tab, selectedTab, reloadIfOpen) {
     debug('openTab -> Focusing existing tab:', tab.url);
     TS.controller.closeNewTab(selectedTab);
 
@@ -309,7 +311,7 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
         TS.controller.fetchSelectedTab(function(selectedTab) {
             if (tabs.length > 0) {
-                TS.controller.focusExistingTab_(tab, selectedTab);
+                TS.controller.focusExistingTab_(tab, selectedTab, reloadIfOpen);
             } else {
                 if (selectedTab.url === 'chrome://newtab/') {
                     // Replace selected newtab page with opened tab url.
@@ -372,7 +374,6 @@ var digits = {
     54: 6, 55: 7, 56: 8, 57: 9, 48: 0
 };
 
-
 chrome.extension.onMessage.addListener(
     function(msg, sender, sendResponse) {
         debug(msg, sender);
@@ -387,14 +388,12 @@ chrome.extension.onMessage.addListener(
             // 2. User Text Input handling code.
             // Then use (2) here.
         } else if (action === 'cmdLine.saveMark') {
-            //TODO(wstyke:01-03-2013) Save mark for tab.
             var keyCode = msg.code;
             TS.controller.fetchSelectedTab(function(tabInfo) {
                 TS.dbMark.addMark(keyCode, tabInfo);
                 debug('Added Mark:', keyCode, tabInfo);
             });
         } else if (action === 'cmdLine.gotoMark') {
-            //TODO(wstyke:01-03-2013) Focus marked tab, if available, else open.
             var markInfo = TS.dbMark.getMarkByKey(msg.code);
             if (msg.code in digits && markInfo === undefined) {
                 //debug('Goto tab #', digits[msg.code]);
