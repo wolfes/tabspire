@@ -1,5 +1,7 @@
 /**
- * Database for storing flags.
+ * Database for storing persistent flags.
+ * - Special "development" flags
+ * - Feature Toggles
  *
  * @author Wolfe Styke - <wstyke@gmail.com>
  */
@@ -43,7 +45,10 @@ TS.dbFlags.setFlag = function(name, value) {
 
 /**
  * Get a flag's value by name.
- * @param {string} flagName The name of the flag to fetch.
- * @return {string|boolean|
+ * @param {string} name The name of the flag to fetch.
+ * @return {string|boolean|Object|null} The flag or null.
  */
-
+TS.dbFlags.getFlag = function(name) {
+    var flags = TS.dbFlags.getAll();
+    return (name in flags) ? flags[name] : null;
+};
