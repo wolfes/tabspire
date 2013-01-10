@@ -115,7 +115,12 @@ TS.controller.setupSocket = function() {
         debug('tab:reloadCurrent', data);
         TS.controller.reloadCurrentTab();
     });
- };
+    TS.io.on('tab:reloadFocusMark', function(data) {
+        debug('tab:reloadFocusMark', data);
+        var charCodeMark = data.mark.charCodeAt(0);
+        TS.controller.reloadFocusMark(charCodeMark);
+    });
+};
 
 /**
  * Initialization
@@ -199,7 +204,7 @@ TS.controller.openTabByFuzzyName = function(tabName) {
  */
 TS.controller.reloadCurrentTab = function() {
     TS.controller.fetchSelectedTab(function(tab) {
-        // Reload Currently Focused Tab.
+        // Reload & Focus currently Focused Tab.
         chrome.tabs.update(tab.id, {
             active: true,
             url: tab.url
@@ -213,6 +218,16 @@ TS.controller.reloadCurrentTab = function() {
             }
         });
     });
+};
+
+/**
+ * Reload/Open and Focus Marked Tab.
+ * @param {number} markCharCode The charCode of the mark.
+ */
+TS.controller.reloadFocusMark = function(markCharCode) {
+    var markInfo = TS.dbMark.getMarkByKey(markCharCode);
+    if (markInfo === null) { return; }
+    TS.controller.openTab({'url': markInfo.url}, true);
 };
 
 /**
@@ -286,6 +301,7 @@ TS.controller.closeNewTab = function(tab) {
 TS.controller.focusExistingTab_ = function(
         tab, tabs, selectedTab, reloadIfOpen) {
     debug('openTab -> Focusing existing tab:', tab.url);
+    debug('Reloading:', reloadIfOpen);
     TS.controller.closeNewTab(selectedTab);
 
     var updateInfo = {active: true};
@@ -322,9 +338,6 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
                 } else {
                     debug('openTab -> open in new tab:', tab.url);
                     chrome.tabs.create({url: tab.url}, function(newTab) {
-                    // Callback: Let win/tab mgr know this tab now exists.
-                    // May not be necessary with new chrome.tabs.query :)
-                    // query only queries same window?
                         TS.controller.focusWindowById(newTab.windowId);
                     });
                 }

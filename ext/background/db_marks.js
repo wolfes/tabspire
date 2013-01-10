@@ -22,14 +22,14 @@ TS.dbMark.getAllMarks = function() {
 
 /** Nukes all stored marks. */
 TS.dbMark.nukeAllmarks = function() {
-    TS.dbMark.saveMark({});
+    TS.dbMark.saveMarks({});
 };
 
 /**
  * Save named mark dict into localStorage.
  * @param {Object} markdict Dict mapping mark name to markmarklet info.
  */
-TS.dbMark.saveMark = function(markdict) {
+TS.dbMark.saveMarks = function(markdict) {
     localStorage.setItem('markdict', JSON.stringify(markdict));
 };
 
@@ -46,16 +46,16 @@ TS.dbMark.addMark = function(keyCode, tabInfo) {
         // Skip saving?
     }
     markdict[keyCode] = tabInfo;
-    this.saveMark(markdict);
+    this.saveMarks(markdict);
 };
 
 /**
  * Retrieve mark item by key.
  * @param {string} markKey The key of desired mark.
- * @return {object} mar Saved mark info or undefined.
+ * @return {?object} Saved mark info or null.
  * @this TS.dbMark
  */
 TS.dbMark.getMarkByKey = function(markKey) {
     var markdict = this.getAllMarks();
-    return markdict[markKey];
+    return (markKey in markdict) ? markdict[markKey] : null;
 };
