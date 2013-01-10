@@ -277,13 +277,14 @@ TS.controller.closeNewTab = function(tab) {
 /**
  * Focus a tab that is already open in Chrome,
  * and close currently selected tab if it is a newtab.
- * @param {Object} tab The tab to focus.
+ * @param {Object} tab The tab with the url to focus.
+ * @param {Object} tabs The focused tab list.
  * @param {Object} selectedTab The tab currently focused..
  * @param {boolean} reloadIfOpen Reload tab if it is already open.
  * @private
  */
 TS.controller.focusExistingTab_ = function(
-        tab, selectedTab, reloadIfOpen) {
+        tab, tabs, selectedTab, reloadIfOpen) {
     debug('openTab -> Focusing existing tab:', tab.url);
     TS.controller.closeNewTab(selectedTab);
 
@@ -310,7 +311,8 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
         TS.controller.fetchSelectedTab(function(selectedTab) {
             if (tabs.length > 0) {
-                TS.controller.focusExistingTab_(tab, selectedTab, reloadIfOpen);
+                TS.controller.focusExistingTab_(
+                    tab, tabs, selectedTab, reloadIfOpen);
             } else {
                 if (selectedTab.url === 'chrome://newtab/') {
                     // Replace selected newtab page with opened tab url.
@@ -343,15 +345,12 @@ TS.controller.focusWindowById = function(windowId) {
  * @param {function} callback Passed focused tab.
  */
 TS.controller.fetchSelectedTab = function(callback) {
-  chrome.windows.getCurrent(function(win) {
     chrome.tabs.query({
-        windowId: win.id,
-        active: true
+        active: true,
+        currentWindow: true
     }, function(tabs) {
-        //debug(tabs[0]);
         callback(tabs[0]);
     });
-  });
 };
 
 /**

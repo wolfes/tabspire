@@ -25,10 +25,8 @@ TS.dbLogs.DB_NAME = 'actlogs';
  * @return {array} logs The stored activity log items.
  */
 TS.dbLogs.getAllLogs = function() {
-    var logs = localStorage.getItem(TS.dbLogs.DB_NAME);
-    if (logs === null) {
-        logs = JSON.stringify([]); }
-    return JSON.parse(logs);
+    var logs = JSON.parse(localStorage.getItem(TS.dbLogs.DB_NAME));
+    return (logs === null) ? [] : logs;
 };
 
 /**

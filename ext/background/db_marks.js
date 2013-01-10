@@ -17,10 +17,7 @@ TS.dbMark = TS.dbMark || {};
  */
 TS.dbMark.getAllMarks = function() {
   var markdict = JSON.parse(localStorage.getItem('markdict'));
-  if (markdict === null) {
-      markdict = {};
-  }
-  return markdict;
+  return (markdict === null) ? {} : markdict;
 };
 
 /** Nukes all stored marks. */
