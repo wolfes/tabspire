@@ -5,9 +5,13 @@ A command line for your Chrome address bar.
 
 Name the tabs you want at your fingertips to re-open or re-focus later.
 
+Add:
+	showMark -> to switch selected tab, without focusing browser.
+
+
 More info: http://wstyke.com/tabspire
 
-v0.9.9 - Added reloadCurrentTab + reloadFocusMark.
+v0.9.9 - Added reloadCurrentTab + reloadFocusMark + focusMark.
 v0.9.8 - Added Mark Tab `ma` and Goto Tab `'a` like in Vim.
 v0.9.6 - Added delete tab by name/url with 't d tabName'.
 v0.9.5 - Added infinite socket.io reconnect every 5 mins.

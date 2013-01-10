@@ -118,7 +118,12 @@ TS.controller.setupSocket = function() {
     TS.io.on('tab:reloadFocusMark', function(data) {
         debug('tab:reloadFocusMark', data);
         var charCodeMark = data.mark.charCodeAt(0);
-        TS.controller.reloadFocusMark(charCodeMark);
+        TS.controller.reloadFocusMark(charCodeMark, true);
+    });
+    TS.io.on('tab:focusMark', function(data) {
+        debug('tab:focusMark', data);
+        var charCodeMark = data.mark.charCodeAt(0);
+        TS.controller.reloadFocusMark(charCodeMark, false);
     });
 };
 
@@ -223,11 +228,13 @@ TS.controller.reloadCurrentTab = function() {
 /**
  * Reload/Open and Focus Marked Tab.
  * @param {number} markCharCode The charCode of the mark.
+ * @param {?boolean} opt_reload Reload tab if true, default: false.
  */
-TS.controller.reloadFocusMark = function(markCharCode) {
+TS.controller.reloadFocusMark = function(markCharCode, opt_reload) {
+    var reloadTab = opt_reload || false;
     var markInfo = TS.dbMark.getMarkByKey(markCharCode);
     if (markInfo === null) { return; }
-    TS.controller.openTab({'url': markInfo.url}, true);
+    TS.controller.openTab({'url': markInfo.url}, reloadTab);
 };
 
 /**
