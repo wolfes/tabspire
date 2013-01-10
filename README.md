@@ -18,6 +18,10 @@ v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
++ (01-10-2013) Added TS.controller.setLocalSettings(boolean useLocalSettings).
+	Enables one-method switching between local and remote server,
+	using persistent flag storage.
++ (01-09-2013) Added dbFlags for persistent flag storage in localStorage.
 + (01-09-2013) Added reloadFocusMark method for remote-controlling marks.
 + (01-03-2013) Mark + Goto (ma + 'a)
 + (12-05-2012) Added Reload Tab By Name.

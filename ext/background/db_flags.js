@@ -6,8 +6,11 @@
  * @author Wolfe Styke - <wstyke@gmail.com>
  */
 
+/** Project Namespace */
+var TS = TS || {};
+
 /** Flag Database Namespace */
-var TS.dbFlags = TS.dbFlags || {};
+TS.dbFlags = TS.dbFlags || {};
 
 /** @const {string} Database Name */
 TS.dbFlags.DB_NAME = 'flags';

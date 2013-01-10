@@ -15,6 +15,17 @@ TS.controller = TS.controller || {};
 TS.controller.msg = '';
 
 /**
+ * Set localSettings flag.
+ * @param {boolean} useLocalSettings True means use local settings.
+ */
+TS.controller.setLocalSettings = function(useLocalSettings) {
+    // Force value into boolean to be consistent.
+    TS.dbFlags.setFlag('localSettings', useLocalSettings === true);
+    // Re-setup socket to use possibly different server.
+    TS.controller.setupSocket();
+};
+
+/**
  * Set client's id for server communication from vimspire.
  * @param {string} clientId The id to be known by on server.
  */
@@ -49,7 +60,7 @@ TS.controller.uploadClientId = function() {
  * Connect socket to server and setup listeners.
  */
 TS.controller.setupSocket = function() {
-    var serverHost = (TS.localSettings ?
+    var serverHost = (TS.dbFlags.getFlag('localSettings') ?
             'http://localhost:3000' : 'cmdsync.com:3000');
 
     TS.io = io.connect(serverHost, {
