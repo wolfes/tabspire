@@ -7,13 +7,14 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 
 More info: http://wstyke.com/tabspire
 
-v0.9.9 - Added reloadCurrentTab.
+v0.9.9 - Added reloadCurrentTab + reloadFocusMark.
 v0.9.8 - Added Mark Tab `ma` and Goto Tab `'a` like in Vim.
 v0.9.6 - Added delete tab by name/url with 't d tabName'.
 v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
++ (01-09-2013) Added reloadFocusMark method for remote-controlling marks.
 + (01-03-2013) Mark + Goto (ma + 'a)
 + (12-05-2012) Added Reload Tab By Name.
 + (12-04-2012) Added Delete Tab By Name.  Infinite reconnect.
