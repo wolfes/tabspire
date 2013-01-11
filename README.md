@@ -7,7 +7,19 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 
 Add:
 	showMark -> to switch selected tab, without focusing browser.
+	Clear Number / All Marks.
 
+Create flash-pages.
+	t p
+		Create New FlashPage (HTML Page)
+			Question div - contenteditable=true
+			Answer div - contenteditable=true
+		Store json blob in new db.
+	t q
+		Quiz me!
+		Show questions
+			"Show Answer" -> "I got this!", "Was Close", "Totally Forgot"
+	Periodic System-Pushed HTML5 Notif. Quiz Questions
 
 More info: http://wstyke.com/tabspire
 
@@ -18,6 +30,7 @@ v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
++ (01-11-2013) Added TS.controller.focusTabIndex, focus i'th tab in curr window.
 + (01-10-2013) Added TS.controller.setLocalSettings(boolean useLocalSettings).
 	Enables one-method switching between local and remote server,
 	using persistent flag storage.

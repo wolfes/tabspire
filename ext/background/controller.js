@@ -5,14 +5,8 @@
  */
 var TS = TS || {};
 
-/** Whether to use local settings. */
-TS.localSettings = false;
-
 /** Namespace: controller */
 TS.controller = TS.controller || {};
-
-/** The message for next notification. */
-TS.controller.msg = '';
 
 /**
  * Set localSettings flag.
@@ -84,14 +78,7 @@ TS.controller.setupSocket = function() {
             'socketId': clientId
         });
     }
-
-    TS.io.on('tab:openByName', function(data) {
-        debug('tab:openByName', data);
-        if (!('name' in data)) {
-            return;
-        }
-        TS.controller.openTabByFuzzyName(data['name']);
-    });
+    // Connect incoming messages.
     TS.io.on('search:normal', function(data) {
         debug('search:normal', data);
         TS.controller.openSearchTab({
@@ -104,6 +91,13 @@ TS.controller.setupSocket = function() {
             'query': 'query' in data ? data.query : '',
             'lucky': true
         });
+    });
+    TS.io.on('tab:openByName', function(data) {
+        debug('tab:openByName', data);
+        if (!('name' in data)) {
+            return;
+        }
+        TS.controller.openTabByFuzzyName(data['name']);
     });
     TS.io.on('tab:openByURL', function(data) {
         debug('tab:openByURL', data);
@@ -165,14 +159,6 @@ TS.controller.openSearchTab = function(searchInfo) {
     TS.controller.openTab({
         'url': queryURL
     });
-};
-
-/**
- * Returns msg for notification.
- * @return {string} The message.
- */
-TS.controller.getMsg = function() {
-    return TS.controller.msg;
 };
 
 /**
@@ -332,7 +318,7 @@ TS.controller.focusExistingTab_ = function(
 
 /**
  * Open a tab, or focus tab if already exists, also focus window.
- * @param {object} tab Contains .url attr.
+ * @param {object} tab Contains attr 'url'.
  * @param {boolean} opt_reloadIfOpen Reload tab if already open.
  */
 TS.controller.openTab = function(tab, opt_reloadIfOpen) {
@@ -402,6 +388,34 @@ var digits = {
     54: 6, 55: 7, 56: 8, 57: 9, 48: 0
 };
 
+/**
+ * Call continuation with list of tabs in current window.
+ * @param {function} callWithCurrTabs Continuation for curr window's tabs.
+ */
+TS.controller.cbCurrWindowTabs = function(callWithCurrTabs) {
+    chrome.windows.getCurrent(function(currWindow) {
+        chrome.tabs.getAllInWindow(currWindow.id, callWithCurrTabs);
+    });
+};
+
+/**
+ * Focus i'th tab in current window.
+ * @param {number} tabIndex The tab index to focus.
+ */
+TS.controller.focusTabIndex = function(tabIndex) {
+    TS.controller.cbCurrWindowTabs(function(tabList) {
+        // Focus last tab if tabIndex is greater than length.
+        tabIndex = Math.min(tabIndex, tabList.length);
+        // tabIndex=1 selects first tab
+        tabIndex = Math.max(tabIndex - 1, 0);
+        var tab = tabList[tabIndex];
+        chrome.tabs.update(tab.id, {
+            active: true
+        });
+    });
+};
+
+
 chrome.extension.onMessage.addListener(
     function(msg, sender, sendResponse) {
         debug(msg, sender);
@@ -422,9 +436,12 @@ chrome.extension.onMessage.addListener(
                 debug('Added Mark:', keyCode, tabInfo);
             });
         } else if (action === 'cmdLine.gotoMark') {
+            debug('gotoMark:', msg.code);
             var markInfo = TS.dbMark.getMarkByKey(msg.code);
-            if (msg.code in digits && markInfo === undefined) {
+            debug('gotoMark:', msg.code in digits, markInfo);
+            if (msg.code in digits && markInfo === null) {
                 //debug('Goto tab #', digits[msg.code]);
+                TS.controller.focusTabIndex(digits[msg.code]);
             }
             TS.controller.openTab({
                 'url': markInfo.url
