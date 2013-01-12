@@ -9,134 +9,21 @@ var TS = TS || {};
 TS.controller = TS.controller || {};
 
 /**
- * Set localSettings flag.
+ * Set localSettings flag & connect to server.
  * @param {boolean} useLocalSettings True means use local settings.
  */
 TS.controller.setLocalSettings = function(useLocalSettings) {
     // Force value into boolean to be consistent.
     TS.dbFlags.setFlag('localSettings', useLocalSettings === true);
     // Re-setup socket to use possibly different server.
-    TS.controller.setupSocket();
-};
-
-/**
- * Set client's id for server communication from vimspire.
- * @param {string} clientId The id to be known by on server.
- */
-TS.controller.setClientId = function(clientId) {
-    if (clientId.search('/') !== -1) {
-        // Invalid client id contains '/'.
-        debug('Client Id is Invalid: has /');
-        return;
-    }
-
-    // Register new, unregister old if applicable.
-    var oldClientId = localStorage.getItem('clientId');
-    TS.io.emit('id:register', {
-        'socketId': clientId,
-        'oldSocketId': oldClientId || ''
-    });
-    localStorage.setItem('clientId', clientId);
-};
-
-/**
- * Upload existing clientId to server.  Useful after reconnect.
- */
-TS.controller.uploadClientId = function() {
-    var clientId = localStorage.getItem('clientId');
-    TS.io.emit('id:register', {
-        'socketId': clientId || '',
-        'oldSocketId': clientId || ''
-    });
-};
-
-/**
- * Connect socket to server and setup listeners.
- */
-TS.controller.setupSocket = function() {
-    var serverHost = (TS.dbFlags.getFlag('localSettings') ?
-            'http://localhost:3000' : 'cmdsync.com:3000');
-
-    TS.io = io.connect(serverHost, {
-        'max reconnection attempts': Infinity
-    });
-
-    TS.io.socket.on('reconnecting', function(delay) {
-       TS.io.socket.reconnectionDelay = 5 * 60 * 1000;
-    });
-    TS.io.socket.on('reconnect', function() {
-        TS.controller.uploadClientId();
-    });
-    // Starts reconnecting engines...
-    TS.io.socket.reconnect();
-
-    // Register clientId with server on restarting app.
-    var clientId = localStorage.getItem('clientId');
-    debug('Connecting to', serverHost, 'with clientId:', clientId);
-    if (clientId && clientId !== '') {
-        TS.io.emit('id:register', {
-            'socketId': clientId
-        });
-    }
-    // Connect incoming messages.
-    TS.io.on('search:normal', function(data) {
-        debug('search:normal', data);
-        TS.controller.openSearchTab({
-            'query': 'query' in data ? data.query : '',
-            'lucky': false
-        });
-    });
-    TS.io.on('search:lucky', function(data) {
-        TS.controller.openSearchTab({
-            'query': 'query' in data ? data.query : '',
-            'lucky': true
-        });
-    });
-    TS.io.on('tab:openByName', function(data) {
-        debug('tab:openByName', data);
-        if (!('name' in data)) {
-            return;
-        }
-        TS.controller.openTabByFuzzyName(data['name']);
-    });
-    TS.io.on('tab:openByURL', function(data) {
-        debug('tab:openByURL', data);
-        TS.controller.openTab({
-            'url': data.url
-        });
-    });
-    TS.io.on('tab:reloadByName', function(data) {
-        debug('tab:reloadByName', data);
-        TS.controller.reloadTabByFuzzyName(
-            'tabName' in data ? data.tabName : '');
-    });
-    TS.io.on('tab:reloadByURL', function(data) {
-        debug('tab:reloadByURL', data);
-        TS.controller.openTab({
-            'url': 'url' in data ? data.url : ''
-        }, true);
-    });
-    TS.io.on('tab:reloadCurrent', function(data) {
-        debug('tab:reloadCurrent', data);
-        TS.controller.reloadCurrentTab();
-    });
-    TS.io.on('tab:reloadFocusMark', function(data) {
-        debug('tab:reloadFocusMark', data);
-        var charCodeMark = data.mark.charCodeAt(0);
-        TS.controller.reloadFocusMark(charCodeMark, true);
-    });
-    TS.io.on('tab:focusMark', function(data) {
-        debug('tab:focusMark', data);
-        var charCodeMark = data.mark.charCodeAt(0);
-        TS.controller.reloadFocusMark(charCodeMark, false);
-    });
+    TS.io.setupSocket();
 };
 
 /**
  * Initialization
  */
 $(document).ready(function() {
-    TS.controller.setupSocket();
+    TS.io.setupSocket();
     debug('Initialization Done!');
 });
 
