@@ -201,6 +201,13 @@ TS.controller.focusExistingTab_ = function(
     }
     chrome.tabs.update(tabs[0].id, updateInfo);
     TS.controller.focusWindowById(tabs[0].windowId);
+
+    // Send request to tab being focused with lastMark info.
+    chrome.tabs.sendRequest(
+        tabs[0].id,
+        TS.lastMark
+    );
+
 };
 
 /**
@@ -302,7 +309,6 @@ TS.controller.focusTabIndex = function(tabIndex) {
     });
 };
 
-
 chrome.extension.onMessage.addListener(
     function(msg, sender, sendResponse) {
         debug(msg, sender);
@@ -311,6 +317,8 @@ chrome.extension.onMessage.addListener(
             TS.controller.openTab({
                 url: msg.url
             });
+        } else if (action === 'cmdLine.checkMark') {
+            sendResponse(TS.lastMark);
         } else if (action === 'cmdLine.inputChanged') {
             //TODO(wstyke:10-24-2012) Divide omnibox into:
             // 1. Omnibox-specific code
@@ -322,6 +330,14 @@ chrome.extension.onMessage.addListener(
                 TS.dbMark.addMark(keyCode, tabInfo);
                 debug('Added Mark:', keyCode, tabInfo);
             });
+        } else if (action === 'cmdLine.savePosMark') {
+            var keyCode = msg.code;
+            TS.controller.fetchSelectedTab(function(tabInfo) {
+                tabInfo.scrollX = msg.scrollX;
+                tabInfo.scrollY = msg.scrollY;
+                TS.dbMark.addMark(keyCode, tabInfo);
+                debug('Added Mark:', keyCode, tabInfo);
+            });
         } else if (action === 'cmdLine.gotoMark') {
             debug('gotoMark:', msg.code);
             var markInfo = TS.dbMark.getMarkByKey(msg.code);
@@ -330,8 +346,10 @@ chrome.extension.onMessage.addListener(
                 //debug('Goto tab #', digits[msg.code]);
                 TS.controller.focusTabIndex(digits[msg.code]);
             }
+            TS.lastMark = markInfo;
             TS.controller.openTab({
                 'url': markInfo.url
             });
+
         }
 });

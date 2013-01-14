@@ -42,10 +42,9 @@ var vent = vent || _.extend({}, Backbone.Events);
 var duct = duct || _.extend({}, Backbone.Events);
 
 /**
- * Initialize command line code.
- *
+ * Create input textarea floating at top of screen.
  */
-CL.init = function() {
+CL.createInput = function() {
   box = document.createElement('div');
   box.setAttribute('id', 'cmdLineBox');
   box.style.position = 'fixed';
@@ -62,7 +61,6 @@ CL.init = function() {
   input.style.width = '400px';
   input.style.fontSize = '16px';
   box.appendChild(input);
-
   /*
   document.body.appendChild(box);
   setTimeout(function() {
@@ -81,13 +79,44 @@ CL.init = function() {
   */
 };
 
+
+/**
+ * Initialize command line code.
+ *
+ */
+CL.init = function() {
+    CL.createInput();
+    CL.checkMark();
+};
+
+
+/**
+ * Check if this tab was opened via mark,
+ * and whether it needs to have any special effects.
+ */
+CL.checkMark = function() {
+    debug('CL.checkMark called');
+    chrome.extension.sendMessage({
+        action: 'cmdLine.checkMark'
+    }, function(data) {
+        debug('checkMark cb:', data);
+        if (data === null || data === undefined) {
+            return;
+        }
+        if ('scrollX' in data && 'scrollY' in data) {
+            window.scrollTo(data.scrollX, data.scrollY);
+        }
+    });
+};
+
 /**
  * Map from key to keyCode.
  */
 CL.keyCodes = {
     ESC: 27,
     APOSTROPHE: 39,
-    m: 109
+    m: 109,
+    M: 77
 };
 
 $(document).live('keyup', function(e) {
@@ -121,10 +150,21 @@ CL.checkKeysForCommand = function() {
     if (keys.length === 2 && keys[0].charCode === CL.keyCodes.m) {
         var markCode = keys[1].charCode;
         //debug('Save Mark Code:', markCode);
-
         chrome.extension.sendMessage({
             action: 'cmdLine.saveMark',
             code: markCode
+        });
+        CL.clearKeys();
+    }
+    // Try markPos using:  M<mark-letter>
+    if (keys.length === 2 && keys[0].charCode === CL.keyCodes.M) {
+        var markCode = keys[1].charCode;
+        //debug('Save Mark Code:', markCode);
+        chrome.extension.sendMessage({
+            action: 'cmdLine.savePosMark',
+            code: markCode,
+            scrollX: window.scrollX,
+            scrollY: window.scrollY
         });
         CL.clearKeys();
     }
@@ -138,8 +178,20 @@ CL.checkKeysForCommand = function() {
             code: markCode
         });
         CL.clearKeys();
+        setTimeout(CL.checkMark, 10);
     }
 };
+
+
+chrome.extension.onRequest.addListener(function(data) {
+    debug('data from onRequest:', data);
+    if (data === null || data === undefined) {
+        return;
+    }
+    if ('scrollX' in data && 'scrollY' in data) {
+        window.scrollTo(data.scrollX, data.scrollY);
+    }
+});
 
 /** @private Private list of previously pressed keys. */
 CL.previousKeys_ = [];
@@ -153,8 +205,8 @@ CL.unregisterTime_ = 2 * 1000;
  * @param {Object} keyEvent The key press event, from jQuery.
  */
 CL.registerKeys = function(keyEvent) {
-    var key = keyEvent;
-    CL.previousKeys_.push(key);
+    debug('keyPress:', keyEvent),
+    CL.previousKeys_.push(keyEvent);
     //debug(CL.previousKeys_);
     CL.resetUnregisterKeys();
 };
