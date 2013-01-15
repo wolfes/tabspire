@@ -11,6 +11,7 @@ Add:
 	Mark (tab + scroll position) !!.
 		m{char} - mark: url
 		M{char} - mark: url + scrollPos
+			!FIXME! Clean this up, hackity hackity...
 		Overwrite old {char} marks.
 
 Create flash-pages.
@@ -34,6 +35,7 @@ v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
++ (01-14-2013) Added Mark & Goto (Tab URL + scrollX/Y).
 + (01-11-2013) Added TS.controller.focusTabIndex, focus i'th tab in curr window.
 + (01-10-2013) Added TS.controller.setLocalSettings(boolean useLocalSettings).
 	Enables one-method switching between local and remote server,

@@ -59,3 +59,19 @@ TS.dbMark.getMarkByKey = function(markKey) {
     var markdict = this.getAllMarks();
     return (markKey in markdict) ? markdict[markKey] : null;
 };
+
+/**
+ * Set last opened mark.
+ * @param {object} markInfo The last opened mark.
+ */
+TS.dbMark.setLastOpenedMark = function(markInfo) {
+    localStorage.setItem('lastOpenedMark', JSON.stringify(markInfo));
+};
+
+/**
+ * Get last opened mark.
+ * @return {?object} The last opened mark.
+ */
+TS.dbMark.getLastOpenedMark = function() {
+   return JSON.parse(localStorage.getItem('lastOpenedMark'));
+};

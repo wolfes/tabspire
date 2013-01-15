@@ -79,7 +79,6 @@ CL.createInput = function() {
   */
 };
 
-
 /**
  * Initialize command line code.
  *
@@ -89,17 +88,15 @@ CL.init = function() {
     CL.checkMark();
 };
 
-
 /**
  * Check if this tab was opened via mark,
  * and whether it needs to have any special effects.
  */
 CL.checkMark = function() {
-    debug('CL.checkMark called');
     chrome.extension.sendMessage({
         action: 'cmdLine.checkMark'
     }, function(data) {
-        debug('checkMark cb:', data);
+        //debug('checkMark cb:', data);
         if (data === null || data === undefined) {
             return;
         }
@@ -171,7 +168,7 @@ CL.checkKeysForCommand = function() {
     // Try goto using: '<mark-letter>
     if (keys.length === 2 && keys[0].charCode === CL.keyCodes.APOSTROPHE) {
         var markCode = keys[1].charCode;
-        debug('Goto Mark Code:', markCode);
+        //debug('Goto Mark Code:', markCode);
 
         chrome.extension.sendMessage({
             action: 'cmdLine.gotoMark',
@@ -184,7 +181,7 @@ CL.checkKeysForCommand = function() {
 
 
 chrome.extension.onRequest.addListener(function(data) {
-    debug('data from onRequest:', data);
+    //debug('data from onRequest:', data);
     if (data === null || data === undefined) {
         return;
     }
@@ -205,7 +202,7 @@ CL.unregisterTime_ = 2 * 1000;
  * @param {Object} keyEvent The key press event, from jQuery.
  */
 CL.registerKeys = function(keyEvent) {
-    debug('keyPress:', keyEvent),
+    //debug('keyPress:', keyEvent),
     CL.previousKeys_.push(keyEvent);
     //debug(CL.previousKeys_);
     CL.resetUnregisterKeys();

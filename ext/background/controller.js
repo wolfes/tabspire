@@ -24,7 +24,7 @@ TS.controller.setLocalSettings = function(useLocalSettings) {
  */
 $(document).ready(function() {
     TS.io.setupSocket();
-    debug('Initialization Done!');
+    //debug('Initialization Done!');
 });
 
 /**
@@ -191,8 +191,8 @@ TS.controller.closeNewTab = function(tab) {
  */
 TS.controller.focusExistingTab_ = function(
         tab, tabs, selectedTab, reloadIfOpen) {
-    debug('openTab -> Focusing existing tab:', tab.url);
-    debug('Reloading:', reloadIfOpen);
+    //debug('openTab -> Focusing existing tab:', tab.url);
+    //debug('Reloading:', reloadIfOpen);
     TS.controller.closeNewTab(selectedTab);
 
     var updateInfo = {active: true};
@@ -205,7 +205,7 @@ TS.controller.focusExistingTab_ = function(
     // Send request to tab being focused with lastMark info.
     chrome.tabs.sendRequest(
         tabs[0].id,
-        TS.lastMark
+        TS.dbMark.getLastOpenedMark()
     );
 
 };
@@ -230,11 +230,11 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
             } else {
                 if (selectedTab.url === 'chrome://newtab/') {
                     // Replace selected newtab page with opened tab url.
-                    debug('openTab -> open in place:', tab.url);
+                    //debug('openTab -> open in place:', tab.url);
                     chrome.tabs.update(selectedTab.id, {url: tab.url});
                     TS.controller.focusWindowById(selectedTab.windowId);
                 } else {
-                    debug('openTab -> open in new tab:', tab.url);
+                    //debug('openTab -> open in new tab:', tab.url);
                     chrome.tabs.create({url: tab.url}, function(newTab) {
                         TS.controller.focusWindowById(newTab.windowId);
                     });
@@ -318,7 +318,7 @@ chrome.extension.onMessage.addListener(
                 url: msg.url
             });
         } else if (action === 'cmdLine.checkMark') {
-            sendResponse(TS.lastMark);
+            sendResponse(TS.dbMark.getLastOpenedMark());
         } else if (action === 'cmdLine.inputChanged') {
             //TODO(wstyke:10-24-2012) Divide omnibox into:
             // 1. Omnibox-specific code
@@ -328,7 +328,7 @@ chrome.extension.onMessage.addListener(
             var keyCode = msg.code;
             TS.controller.fetchSelectedTab(function(tabInfo) {
                 TS.dbMark.addMark(keyCode, tabInfo);
-                debug('Added Mark:', keyCode, tabInfo);
+                //debug('Added Mark:', keyCode, tabInfo);
             });
         } else if (action === 'cmdLine.savePosMark') {
             var keyCode = msg.code;
@@ -336,17 +336,16 @@ chrome.extension.onMessage.addListener(
                 tabInfo.scrollX = msg.scrollX;
                 tabInfo.scrollY = msg.scrollY;
                 TS.dbMark.addMark(keyCode, tabInfo);
-                debug('Added Mark:', keyCode, tabInfo);
+                //debug('Added Mark:', keyCode, tabInfo);
             });
         } else if (action === 'cmdLine.gotoMark') {
-            debug('gotoMark:', msg.code);
             var markInfo = TS.dbMark.getMarkByKey(msg.code);
-            debug('gotoMark:', msg.code in digits, markInfo);
+            //debug('gotoMark:', msg.code in digits, markInfo);
             if (msg.code in digits && markInfo === null) {
                 //debug('Goto tab #', digits[msg.code]);
                 TS.controller.focusTabIndex(digits[msg.code]);
             }
-            TS.lastMark = markInfo;
+            TS.dbMark.setLastOpenedMark(markInfo);
             TS.controller.openTab({
                 'url': markInfo.url
             });
