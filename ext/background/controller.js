@@ -117,7 +117,7 @@ TS.controller.reloadCurrentTab = function() {
 TS.controller.reloadFocusMark = function(markCharCode, opt_reload) {
     var reloadTab = opt_reload || false;
     var markInfo = TS.dbMark.getMarkByKey(markCharCode);
-    if (markInfo === null) { return; }
+    if (!TS.util.isDef(markInfo)) { return; }
     TS.controller.openTab({'url': markInfo.url}, reloadTab);
 };
 
@@ -328,7 +328,7 @@ chrome.extension.onMessage.addListener(
             var keyCode = msg.code;
             TS.controller.fetchSelectedTab(function(tabInfo) {
                 TS.dbMark.addMark(keyCode, tabInfo);
-                //debug('Added Mark:', keyCode, tabInfo);
+                debug('Added Mark:', keyCode, tabInfo);
             });
         } else if (action === 'cmdLine.savePosMark') {
             var keyCode = msg.code;
@@ -336,19 +336,19 @@ chrome.extension.onMessage.addListener(
                 tabInfo.scrollX = msg.scrollX;
                 tabInfo.scrollY = msg.scrollY;
                 TS.dbMark.addMark(keyCode, tabInfo);
-                //debug('Added Mark:', keyCode, tabInfo);
+                debug('Added Mark:', keyCode, tabInfo);
             });
         } else if (action === 'cmdLine.gotoMark') {
             var markInfo = TS.dbMark.getMarkByKey(msg.code);
-            //debug('gotoMark:', msg.code in digits, markInfo);
-            if (msg.code in digits && markInfo === null) {
-                //debug('Goto tab #', digits[msg.code]);
-                TS.controller.focusTabIndex(digits[msg.code]);
-            } else {
+            debug('gotoMark:', msg.code in digits, markInfo);
+            if (TS.util.isDef(markInfo)) {
                 TS.dbMark.setLastOpenedMark(markInfo);
                 TS.controller.openTab({
                     'url': markInfo.url
                 });
+            } else if (msg.code in digits) {
+                //debug('Goto tab #', digits[msg.code]);
+                TS.controller.focusTabIndex(digits[msg.code]);
             }
         }
 });

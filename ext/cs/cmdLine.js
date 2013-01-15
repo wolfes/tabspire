@@ -97,7 +97,7 @@ CL.checkMark = function() {
         action: 'cmdLine.checkMark'
     }, function(data) {
         //debug('checkMark cb:', data);
-        if (data === null || data === undefined) {
+        if (!TS.util.isDef(data)) {
             return;
         }
         if ('scrollX' in data && 'scrollY' in data) {
@@ -182,7 +182,7 @@ CL.checkKeysForCommand = function() {
 
 chrome.extension.onRequest.addListener(function(data) {
     //debug('data from onRequest:', data);
-    if (data === null || data === undefined) {
+    if (!TS.util.isDef(data)) {
         return;
     }
     if ('scrollX' in data && 'scrollY' in data) {

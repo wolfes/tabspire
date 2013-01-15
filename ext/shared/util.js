@@ -17,6 +17,15 @@ function debug() {
 }
 
 /**
+ * Return true if value is defined.
+ * @param {any} value The value to check.
+ * @return {boolean} Is true if value isn't undefined or null.
+ */
+TS.util.isDef = function(value) {
+    return (value !== undefined && value !== null);
+};
+
+/**
  * Returns true if urlString looks like a url.
  * TODO(wstyke:10-06-12): Improve this with regexp.
  * @param {string} urlString The string to check.
