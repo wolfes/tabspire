@@ -344,11 +344,11 @@ chrome.extension.onMessage.addListener(
             if (msg.code in digits && markInfo === null) {
                 //debug('Goto tab #', digits[msg.code]);
                 TS.controller.focusTabIndex(digits[msg.code]);
+            } else {
+                TS.dbMark.setLastOpenedMark(markInfo);
+                TS.controller.openTab({
+                    'url': markInfo.url
+                });
             }
-            TS.dbMark.setLastOpenedMark(markInfo);
-            TS.controller.openTab({
-                'url': markInfo.url
-            });
-
         }
 });
