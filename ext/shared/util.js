@@ -7,7 +7,7 @@ TS.util = TS.util || {};
 /**
  * Debug toggle boolean.
  */
-TS.DEBUG = true;
+TS.DEBUG = false;
 
 function debug() {
     // Only global function, for ease of typing.
