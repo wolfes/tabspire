@@ -32,13 +32,10 @@ TS.util.isDef = function(value) {
  * @return {boolean} isUrl True if urlString is a url.
  */
 TS.util.isUrl = function(urlString) {
-    var isUrl = false;
-    if (urlString.search('http') === 0 ||
+    return (urlString.search('http') === 0 ||
             urlString.search('https') === 0 ||
-            urlString.search('chrome') === 0) {
-        return true;
-    }
-    return isUrl;
+            urlString.search('chrome') === 0 ||
+            urlString.search('file') === 0);
 };
 
 /**

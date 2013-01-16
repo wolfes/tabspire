@@ -21,7 +21,7 @@ TS.dbUtil = TS.dbUtil || {};
  */
 TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
     var matches = [];
-    if (queryName === undefined) {
+    if (!TS.util.isDef(queryName)) {
         for (var name in itemDict) {
             matches.push(itemDict[name]);
         }
@@ -57,7 +57,7 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
                     break;
                 }
             }
-            if (match.rankPos === undefined &&
+            if (!TS.util.isDef(match.rankPos) &&
                     fuzzyNameRegExp.test(match.name)) {
                 // Fuzzy Match.
                 match.rankOrder = 3;

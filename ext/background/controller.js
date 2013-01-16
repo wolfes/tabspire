@@ -70,7 +70,7 @@ TS.controller.openTabByName = function(tabName) {
  * @param {string} tabName The name of the tab to open.
  */
 TS.controller.openTabByFuzzyName = function(tabName) {
-    if (tabName === undefined) {
+    if (!TS.util.isDef(tabName)) {
         tabName = ''; // Open first match.
     }
     var tabs = TS.model.getTabsByFuzzyName(tabName);
@@ -126,7 +126,7 @@ TS.controller.reloadFocusMark = function(markCharCode, opt_reload) {
  * @param {string} fuzzyTabName The tabname to search and destroy.
  */
 TS.controller.reloadTabByFuzzyName = function(fuzzyTabName) {
-    if (fuzzyTabName === undefined) {
+    if (!TS.util.isDef(fuzzyTabName)) {
         fuzzyTabName = ''; // Open first match.
     }
     var tabs = TS.model.getTabsByFuzzyName(fuzzyTabName);
@@ -150,7 +150,7 @@ TS.controller.reloadTabByFuzzyName = function(fuzzyTabName) {
  * @param {string} fuzzyTabName The tabname to search and destroy.
  */
 TS.controller.deleteTabByFuzzyName = function(fuzzyTabName) {
-    if (fuzzyTabName === undefined) {
+    if (!TS.util.isDef(fuzzyTabName)) {
         fuzzyTabName = ''; // Open first match.
     }
     var tabs = TS.model.getTabsByFuzzyName(fuzzyTabName);
@@ -217,7 +217,7 @@ TS.controller.focusExistingTab_ = function(
  */
 TS.controller.openTab = function(tab, opt_reloadIfOpen) {
     var reloadIfOpen = opt_reloadIfOpen || false;
-    if (tab === undefined) {
+    if (!TS.util.isDef(tab)) {
         return;
     }
     tab.url = TS.util.fixUrlProtocol(tab.url);

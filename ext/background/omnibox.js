@@ -478,7 +478,7 @@ TS.omni._getCmd = function(text) {
  */
 TS.omni.inputChanged = function(text, suggest) {
     cmd = TS.omni._getCmd(text);
-    if (cmd === undefined) {
+    if (!TS.util.isDef(cmd)) {
         TS.omni.updateDefaultSuggestion(text);
         return;
     }
@@ -603,7 +603,7 @@ TS.omni.cmdReload = function(cmd) {
                 chrome.tabs.get(tab.id, function(recentTab) {
                     // recentTab is undefined
                     // if reloaded tab is closed
-                    if (recentTab === undefined) {
+                    if (!TS.util.isDef(recentTab)) {
                         clearInterval(TS.omni.tabId);
                         return;
                     }
