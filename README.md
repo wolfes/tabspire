@@ -39,7 +39,7 @@ v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 + (01-11-2013) Added TS.controller.focusTabIndex, focus i'th tab in curr window.
 + (01-10-2013) Added TS.controller.setLocalSettings(boolean useLocalSettings).
 	Enables one-method switching between local and remote server,
-	using persistent flag storage.
+	using persistent dbFlag storage.
 + (01-09-2013) Added dbFlags for persistent flag storage in localStorage.
 + (01-09-2013) Added reloadFocusMark method for remote-controlling marks.
 + (01-03-2013) Mark + Goto (ma + 'a)
@@ -54,9 +54,9 @@ v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 + (10-13-2012) Show matching tab names on tab add.
 + (11-13-2012) History Search (basic str.search method)
 + (10-12-2012) Bookmarklets
-  (10-17-2012)
-+ Activity logging (all the logs!)
-+ HTML5 Notifications with links to site where notif was made.
++ (10-17-2012)
+- Activity logging (all the logs!)
+- HTML5 Notifications with links to site where notif was made.
 
 Pending Feature Ideas:
 

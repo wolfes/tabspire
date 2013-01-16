@@ -15,11 +15,8 @@ TS.dbBook = TS.dbBook || {};
  * @return {Object} bookdict Dict mapping name to bookmarklet.
  */
 TS.dbBook.getNamedBooks = function() {
-  var bookdict = JSON.parse(localStorage.getItem('bookdict'));
-  if (bookdict === null) {
-      bookdict = {};
-  }
-  return bookdict;
+    var bookdict = localStorage.getItem('bookdict');
+    return TS.util.isDef(bookdict) ? JSON.parse(bookdict) : {};
 };
 
 /**
@@ -40,19 +37,12 @@ TS.dbBook.saveNamedBooks = function(bookdict) {
 /**
  * Add a new uniquely named book to TS.dbBook.
  * @param {Object} data Dict with book name and book info.
- * @return {boolean} true if save worked.
  * @this TS.dbBook
  */
 TS.dbBook.addNamedBook = function(data) {
     var bookdict = this.getNamedBooks();
-    if (bookdict[data.name] !== undefined) {
-        // Name already saved to a book.
-        // Skip saving?
-        //return false;
-    }
     bookdict[data.name] = data;
     this.saveNamedBooks(bookdict);
-    return true;
 };
 
 /**
@@ -72,6 +62,6 @@ TS.dbBook.getBookByName = function(bookName) {
  * @return {object} Bookmarklets matching requested name.
  */
 TS.dbBook.getBooksByFuzzyName = function(queryName) {
-    var bookDict = TS.dbBook.getNamedBooks();
-    return TS.dbUtil.getMatchesByFuzzyName(bookDict, queryName);
+    var bookdict = TS.dbBook.getNamedBooks();
+    return TS.dbUtil.getMatchesByFuzzyName(bookdict, queryName);
 };

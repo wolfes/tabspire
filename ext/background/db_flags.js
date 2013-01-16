@@ -49,7 +49,7 @@ TS.dbFlags.setFlag = function(name, value) {
 /**
  * Get a flag's value by name.
  * @param {string} name The name of the flag to fetch.
- * @return {string|boolean|Object|null} The flag or null.
+ * @return {?any} The flag value if flag exists, or null.
  */
 TS.dbFlags.getFlag = function(name) {
     var flags = TS.dbFlags.getAll();
