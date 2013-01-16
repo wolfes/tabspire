@@ -26,24 +26,19 @@ TS.dbLogs.DB_NAME = 'actlogs';
  */
 TS.dbLogs.getAllLogs = function() {
     var logs = localStorage.getItem(TS.dbLogs.DB_NAME);
-    if (!TS.util.isDef(logs)) {
-        return [];
-    }
-    return JSON.parse(logs);
+    return TS.util.isDef(logs) ? JSON.parse(logs) : [];
 };
 
 /**
  * Save array of activity logs.
  * @param {array} logs The activity logs to save in database.
- * @return {boolean} The success of saving the logs.
  */
 TS.dbLogs.saveAllLogs = function(logs) {
-    if (!TS.util.isDef(logs)) {
-        return false;
+    if (TS.util.isDef(logs)) {
+        localStorage.setItem(
+            TS.dbLogs.DB_NAME,
+            JSON.stringify(logs));
     }
-    logs = JSON.stringify(logs);
-    localStorage.setItem(TS.dbLogs.DB_NAME, logs);
-    return true;
 };
 
 /**

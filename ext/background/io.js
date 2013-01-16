@@ -11,16 +11,20 @@ var TS = TS || {};
 TS.io = TS.io || {};
 
 /**
- * Upload opt_clientId or existing id to server.
- * @param {?string} opt_clientId The new client id.
+ * Upload new opt_clientId or existing stored client id to the server.
+ * @param {?string} opt_clientId The new client id. Default: saved clientId.
  * @param {?string} opt_oldClientId The previous client id.
  */
 TS.io.uploadClientId = function(opt_clientId, opt_oldClientId) {
     var clientId = opt_clientId || localStorage.getItem('clientId');
     var oldClientId = opt_oldClientId || clientId;
+    if (!TS.util.isDef(clientId)) {
+        debug('Client Id Missing.');
+        return;
+    }
     TS.io.port.emit('id:register', {
-        'socketId': clientId || '',
-        'oldSocketId': clientId || ''
+        'socketId': clientId,
+        'oldSocketId': clientId
     });
 };
 
@@ -56,7 +60,7 @@ TS.io.setupSocket = function() {
     TS.io.port.socket.on('reconnect', function() {
         TS.io.uploadClientId();
     });
-    // Starts reconnecting engines...
+    // Starts reconnecting engines.
     TS.io.port.socket.reconnect();
 
     // Register clientId with server on restarting app.

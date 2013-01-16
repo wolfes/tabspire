@@ -16,8 +16,8 @@ TS.dbMark = TS.dbMark || {};
  * @return {Object} markdict Dict mapping mark key to tab info.
  */
 TS.dbMark.getAllMarks = function() {
-  var markdict = JSON.parse(localStorage.getItem('markdict'));
-  return (markdict === null) ? {} : markdict;
+  var markdict = localStorage.getItem('markdict');
+  return TS.util.isDef(markdict) ? JSON.parse(markdict) : {};
 };
 
 /** Nukes all stored marks. */
@@ -41,10 +41,6 @@ TS.dbMark.saveMarks = function(markdict) {
  */
 TS.dbMark.addMark = function(keyCode, tabInfo) {
     var markdict = this.getAllMarks();
-    if (markdict[keyCode] !== undefined) {
-        // Name already saved to a mark.
-        // Skip saving?
-    }
     markdict[keyCode] = tabInfo;
     this.saveMarks(markdict);
 };
@@ -62,7 +58,7 @@ TS.dbMark.getMarkByKey = function(markKey) {
 
 /**
  * Set last opened mark.
- * @param {object} markInfo The last opened mark.
+ * @param {object} markInfo The last opened mark's info.
  */
 TS.dbMark.setLastOpenedMark = function(markInfo) {
     localStorage.setItem('lastOpenedMark', JSON.stringify(markInfo));
@@ -70,7 +66,7 @@ TS.dbMark.setLastOpenedMark = function(markInfo) {
 
 /**
  * Get last opened mark.
- * @return {?object} The last opened mark.
+ * @return {?object} The last opened mark, or null.
  */
 TS.dbMark.getLastOpenedMark = function() {
    return JSON.parse(localStorage.getItem('lastOpenedMark'));
