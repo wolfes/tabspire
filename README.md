@@ -35,6 +35,9 @@ v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
++ (01-17-2013) Added window.focusCurrent method to focus Chrome App via remote.
+-	Added tabs.js and windows.js for modular controls.
++ (01-16-2013) Refactoring tab control into background/tabs.js.
 + (01-14-2013) Added Mark & Goto (Tab URL + scrollX/Y).
 + (01-11-2013) Added TS.controller.focusTabIndex, focus i'th tab in curr window.
 + (01-10-2013) Added TS.controller.setLocalSettings(boolean useLocalSettings).

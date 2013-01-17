@@ -522,7 +522,7 @@ chrome.omnibox.onInputEntered.addListener(TS.omni.inputEntered);
  */
 TS.omni.cmdAddTab = function(cmd) {
     var firstParam = cmd.params[0];
-    TS.controller.fetchSelectedTab(function(tab) {
+    TS.tabs.getSelected(function(tab) {
         TS.controller.addTab({
             'name': firstParam,
             'url': tab.url,
@@ -591,7 +591,7 @@ TS.omni.cmdReload = function(cmd) {
     var firstParam = cmd.params[0];
     var reloadTime = parseInt(firstParam, 10);
     if (reloadTime > 0) {
-        TS.controller.fetchSelectedTab(function(tab) {
+        TS.tabs.getSelected(function(tab) {
             var tabId = tab.id;
             TS.controller.saveActivityLog({
                 action: 'rTab',
@@ -675,7 +675,7 @@ TS.omni.cmdMessageAt = function(cmd) {
     }
     var msecToMsg = (minToMsg * 60 * 1000) - (currSec * 1000 + currMSec);
 
-    TS.controller.fetchSelectedTab(function(tab) {
+    TS.tabs.getSelected(function(tab) {
         var notification = TS.omni.createNotification(
             time + ' hours says:',
             {'msg': msg, 'url': tab.url, 'title': tab.title}
@@ -706,7 +706,7 @@ TS.omni.cmdMessageIn = function(cmd) {
     var msecToMsg = (minToMsg * 60 * 1000) - currMSec;
     var timeAgo = minToMsg === 1 ? ' minute ago...' : ' minutes ago...';
 
-    TS.controller.fetchSelectedTab(function(tab) {
+    TS.tabs.getSelected(function(tab) {
         var notification = TS.omni.createNotification(
             'From ' + minToMsg + timeAgo, // Title
             {'msg': msg, 'url': tab.url, 'title': tab.title}

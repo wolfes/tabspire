@@ -89,27 +89,6 @@ TS.controller.openTabByFuzzyName = function(tabName) {
 };
 
 /**
- * Reload Currently Focused Tab.
- */
-TS.controller.reloadCurrentTab = function() {
-    TS.controller.fetchSelectedTab(function(tab) {
-        // Reload & Focus currently Focused Tab.
-        chrome.tabs.update(tab.id, {
-            active: true,
-            url: tab.url
-        });
-        // Record Activity.
-        TS.controller.saveActivityLog({
-            action: 'reloadCurrentTab',
-            info: {
-                title: tab.title,
-                url: tab.url
-            }
-        });
-    });
-};
-
-/**
  * Reload/Open and Focus Marked Tab.
  * @param {number} markCharCode The charCode of the mark.
  * @param {?boolean} opt_reload Reload tab if true, default: false.
@@ -136,7 +115,7 @@ TS.controller.reloadTabByFuzzyName = function(fuzzyTabName) {
     var tabToReload = tabs[0];
     TS.controller.openTab(tabToReload, true);
     TS.controller.saveActivityLog({
-        action: 'reloadTab',
+        action: 'reloadTabByFuzzyName',
         info: {
             query: fuzzyTabName,
             title: tabToReload.name,
@@ -171,16 +150,6 @@ TS.controller.getTabsByFuzzyName = function(tabName) {
 };
 
 /**
- * Close tab if it is a Chrome 'newtab' page.
- * @param {object} tab The tab to check for closing.
- */
-TS.controller.closeNewTab = function(tab) {
-    if (tab.url === 'chrome://newtab/') {
-        chrome.tabs.remove(tab.id);
-    }
-};
-
-/**
  * Focus a tab that is already open in Chrome,
  * and close currently selected tab if it is a newtab.
  * @param {Object} tab The tab with the url to focus.
@@ -193,14 +162,14 @@ TS.controller.focusExistingTab_ = function(
         tab, tabs, selectedTab, reloadIfOpen) {
     //debug('openTab -> Focusing existing tab:', tab.url);
     //debug('Reloading:', reloadIfOpen);
-    TS.controller.closeNewTab(selectedTab);
+    TS.tabs.closeIfNewTab(selectedTab);
 
     var updateInfo = {active: true};
     if (reloadIfOpen) {
         updateInfo['url'] = tab.url;
     }
     chrome.tabs.update(tabs[0].id, updateInfo);
-    TS.controller.focusWindowById(tabs[0].windowId);
+    TS.windows.focusById(tabs[0].windowId);
 
     // Send request to tab being focused with lastMark info.
     chrome.tabs.sendRequest(
@@ -223,7 +192,7 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
     tab.url = TS.util.fixUrlProtocol(tab.url);
     var tabUrlNoHashtag = TS.util.removeHashtag(tab.url);
     chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
-        TS.controller.fetchSelectedTab(function(selectedTab) {
+        TS.tabs.getSelected(function(selectedTab) {
             if (tabs.length > 0) {
                 TS.controller.focusExistingTab_(
                     tab, tabs, selectedTab, reloadIfOpen);
@@ -232,35 +201,15 @@ TS.controller.openTab = function(tab, opt_reloadIfOpen) {
                     // Replace selected newtab page with opened tab url.
                     //debug('openTab -> open in place:', tab.url);
                     chrome.tabs.update(selectedTab.id, {url: tab.url});
-                    TS.controller.focusWindowById(selectedTab.windowId);
+                    TS.windows.focusById(selectedTab.windowId);
                 } else {
                     //debug('openTab -> open in new tab:', tab.url);
                     chrome.tabs.create({url: tab.url}, function(newTab) {
-                        TS.controller.focusWindowById(newTab.windowId);
+                        TS.windows.focusById(newTab.windowId);
                     });
                 }
             }
         });
-    });
-};
-/**
- * Focuses a window by its id.
- * @param {number} windowId The ID of the window to focus.
- */
-TS.controller.focusWindowById = function(windowId) {
-    chrome.windows.update(windowId, {focused: true});
-};
-
-/**
- * Fetch currently focused tab for callback.
- * @param {function} callback Passed focused tab.
- */
-TS.controller.fetchSelectedTab = function(callback) {
-    chrome.tabs.query({
-        active: true,
-        currentWindow: true
-    }, function(tabs) {
-        callback(tabs[0]);
     });
 };
 
@@ -271,7 +220,7 @@ TS.controller.fetchSelectedTab = function(callback) {
 TS.controller.saveActivityLog = function(log) {
     // Add Timestamp if not already present.
     log.when = 'when' in log ? log.when : Date.now();
-    TS.controller.fetchSelectedTab(function(tab) {
+    TS.tabs.getSelected(function(tab) {
         log.activeTab = tab;
         TS.dbLogs.addLog(log);
     });
@@ -280,33 +229,6 @@ TS.controller.saveActivityLog = function(log) {
 var digits = {
     49: 1, 50: 2, 51: 3, 52: 4, 53: 5,
     54: 6, 55: 7, 56: 8, 57: 9, 48: 0
-};
-
-/**
- * Call continuation with list of tabs in current window.
- * @param {function} callWithCurrTabs Continuation for curr window's tabs.
- */
-TS.controller.cbCurrWindowTabs = function(callWithCurrTabs) {
-    chrome.windows.getCurrent(function(currWindow) {
-        chrome.tabs.getAllInWindow(currWindow.id, callWithCurrTabs);
-    });
-};
-
-/**
- * Focus i'th tab in current window.
- * @param {number} tabIndex The tab index to focus.
- */
-TS.controller.focusTabIndex = function(tabIndex) {
-    TS.controller.cbCurrWindowTabs(function(tabList) {
-        // Focus last tab if tabIndex is greater than length.
-        tabIndex = Math.min(tabIndex, tabList.length);
-        // tabIndex=1 selects first tab
-        tabIndex = Math.max(tabIndex - 1, 0);
-        var tab = tabList[tabIndex];
-        chrome.tabs.update(tab.id, {
-            active: true
-        });
-    });
 };
 
 chrome.extension.onMessage.addListener(
@@ -326,13 +248,13 @@ chrome.extension.onMessage.addListener(
             // Then use (2) here.
         } else if (action === 'cmdLine.saveMark') {
             var keyCode = msg.code;
-            TS.controller.fetchSelectedTab(function(tabInfo) {
+            TS.tabs.getSelected(function(tabInfo) {
                 TS.dbMark.addMark(keyCode, tabInfo);
                 debug('Added Mark:', keyCode, tabInfo);
             });
         } else if (action === 'cmdLine.savePosMark') {
             var keyCode = msg.code;
-            TS.controller.fetchSelectedTab(function(tabInfo) {
+            TS.tabs.getSelected(function(tabInfo) {
                 tabInfo.scrollX = msg.scrollX;
                 tabInfo.scrollY = msg.scrollY;
                 TS.dbMark.addMark(keyCode, tabInfo);
@@ -348,7 +270,7 @@ chrome.extension.onMessage.addListener(
                 });
             } else if (msg.code in digits) {
                 //debug('Goto tab #', digits[msg.code]);
-                TS.controller.focusTabIndex(digits[msg.code]);
+                TS.tabs.focusIndex(digits[msg.code]);
             }
         }
 });

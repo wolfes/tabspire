@@ -111,7 +111,7 @@ TS.io.setupSocket = function() {
     });
     TS.io.port.on('tab:reloadCurrent', function(data) {
         debug('tab:reloadCurrent', data);
-        TS.controller.reloadCurrentTab();
+        TS.tabs.reloadCurrent();
     });
     TS.io.port.on('tab:reloadFocusMark', function(data) {
         debug('tab:reloadFocusMark', data);
@@ -122,5 +122,16 @@ TS.io.setupSocket = function() {
         debug('tab:focusMark', data);
         var charCodeMark = data.mark.charCodeAt(0);
         TS.controller.reloadFocusMark(charCodeMark, false);
+    });
+    TS.io.port.on('tab:highlightMark', function(data) {
+        debug('tab:highlightMark', data);
+        // TODO:(wstyke:01-16-2013): Unimplemented on tab/vim-spire + server.
+        var charCodeMark = data.mark.charCodeAt(0);
+        TS.controller.highlightMark(charCodeMark);
+    });
+    TS.io.port.on('window:focusCurrent', function(data) {
+        debug('window:focusCurrent', data);
+        // TODO:(wstyke:01-16-2013): Unimplemented on server/vimspire.
+        TS.tabs.focusFocusedTab();
     });
 };

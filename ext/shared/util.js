@@ -26,6 +26,40 @@ TS.util.isDef = function(value) {
 };
 
 /**
+ * Get first index of array where list[index][key]=value.
+ * @param {Object} dictList The list of dictionaries.
+ * @param {String} key The key to filter by.
+ * @param {String} value The value to check for.
+ * @return {Object} firstIndex The first index that matches.
+ */
+TS.util.getDictIndex = function(dictList, key, value) {
+    var firstIndex = -1;
+    dictList.map(function(dict, index) {
+        if (firstIndex === -1 && dict[key] === value) {
+            firstIndex = index;
+        }
+    });
+    return firstIndex;
+};
+
+/**
+ * Get all indexes of array where list[index][key]=value.
+ * @param {Object} dictList The list of dictionaries.
+ * @param {String} key The key to filter by.
+ * @param {String} value The value to check for.
+ * @return {Object} indexes All indexes that match.
+ */
+TS.util.getDictIndexes = function(dictList, key, value) {
+    var indexes = [];
+    dictList.map(function(dict, index) {
+        if (dict[key] === value) {
+            indexes.push(index);
+        }
+    });
+    return indexes;
+};
+
+/**
  * Returns true if urlString looks like a url.
  * TODO(wstyke:10-06-12): Improve this with regexp.
  * @param {string} urlString The string to check.
