@@ -8,11 +8,10 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 Add:
 	showMark -> to switch selected tab, without focusing browser.
 	Clear Number / All Marks.
-	Mark (tab + scroll position) !!.
+	Added Mark (tab + scroll position) !!.
 		m{char} - mark: url
 		M{char} - mark: url + scrollPos
-			!FIXME! Clean this up, hackity hackity...
-		Overwrite old {char} marks.
+			!FIXME! Clean this up, hackity hackity... ...cleaning...
 
 Create flash-pages.
 	t p

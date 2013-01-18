@@ -122,6 +122,7 @@ TS.tabs.focusIndex = function(tabIndex) {
         // tabIndex=1 selects first tab
         tabIndex = Math.max(tabIndex - 1, 0);
         var tab = tabList[tabIndex];
+        TS.windows.focusById(tab.windowId);
         chrome.tabs.update(tab.id, {
             active: true
         });
@@ -156,6 +157,7 @@ TS.tabs.focusFocusedTab = function(opt_callWithFocusedTab) {
 TS.tabs.reloadCurrent = function() {
     TS.tabs.getSelected(function(tab) {
         // Reload & Focus currently Focused Tab.
+        TS.windows.focusById(tab.windowId);
         chrome.tabs.update(tab.id, {
             active: true,
             url: tab.url
@@ -170,8 +172,6 @@ TS.tabs.reloadCurrent = function() {
         });
     });
 };
-
-
 
 /**
  * Close a tab by url.
@@ -192,8 +192,3 @@ TS.tabs.closeIfNewTab = function(tab) {
         chrome.tabs.remove(tab.id);
     }
 };
-
-/**
- *
- *
- */
