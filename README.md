@@ -5,6 +5,9 @@ A command line for your Chrome address bar.
 
 Name the tabs you want at your fingertips to re-open or re-focus later.
 
+
+Crazy Awesome: Chrome API Remote Control
+
 Add:
 	showMark -> to switch selected tab, without focusing browser.
 	Clear Number / All Marks.
@@ -34,6 +37,9 @@ v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
++ (02-05-2013) Added marks:
+  '' to focus last focused tab, and
+  '" to focus last focused window.
 + (01-17-2013) Added window.focusCurrent method to focus Chrome App via remote.
 -	Added tabs.js and windows.js for modular controls.
 + (01-16-2013) Refactoring tab control into background/tabs.js.

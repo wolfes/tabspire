@@ -271,6 +271,14 @@ chrome.extension.onMessage.addListener(
             } else if (msg.code in digits) {
                 //debug('Goto tab #', digits[msg.code]);
                 TS.tabs.focusIndex(digits[msg.code]);
+            } else if (msg.code === 39) {
+                // Apostrophe: '
+                // Focus last focused tab.
+                TS.obsTab.selectPrevFocusedTab();
+            } else if (msg.code === 34) {
+                // Dbl Quote: "
+                // Focus last focused window.
+                TS.obsWin.selectPrevFocusedWindow();
             }
         }
 });

@@ -15,7 +15,9 @@
 	"history",
 	"bookmarks",
 	"http://*/*",
-	"https://*/*"
+	"https://*/*",
+	"clipboardRead",
+	"clipboardWrite"
   ],
   "omnibox": {
     "keyword": "t"

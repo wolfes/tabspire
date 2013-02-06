@@ -134,4 +134,7 @@ TS.io.setupSocket = function() {
         // TODO:(wstyke:01-16-2013): Unimplemented on server/vimspire.
         TS.tabs.focusFocusedTab();
     });
+    TS.io.port.on('room:msg:recieve', function(data) {
+        debug('room:msg:recieve', data);
+    });
 };

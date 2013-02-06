@@ -4,6 +4,17 @@
  * Author: Wolfe Styke - <wstyke@gmail.com>
  */
 
+/**
+ * Restructure these into their parts:
+ *
+ * Parse Input for which Suggestion or Command is intended.
+ *
+ * Gather Relevant Items.
+ *
+ * Make Suggestions or Do Command.
+ */
+
+
 var TS = TS || {};
 /** Namespace: TS.omni */
 TS.omni = TS.omni || {};
