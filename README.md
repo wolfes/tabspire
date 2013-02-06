@@ -37,6 +37,9 @@ v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
++ (02-06-2013) Improved "Focus Last Focused Tab"
+  to remember the previous N focused tab PER WINDOW ID
+  --> focus last focused tab in same window..
 + (02-05-2013) Added marks:
   '' to focus last focused tab, and
   '" to focus last focused window.
