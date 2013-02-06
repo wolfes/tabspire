@@ -1,6 +1,7 @@
 /**
  * Observe Chrome Windows Events.
  *
+ * Observing last N focused windows works like:
  * On selection change,
  * push newly selected window into register,
  * push previously selected window from register
