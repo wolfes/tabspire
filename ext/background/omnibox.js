@@ -901,7 +901,7 @@ TS.omni.openBookmark = function(cmd) {
  */
 TS.omni.setClientId = function(cmd) {
     var newId = cmd.params[0];
-    TS.controller.setClientId(newId);
+    TS.io.setClientId(newId);
 };
 
 /**
