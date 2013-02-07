@@ -30,6 +30,7 @@ Create flash-pages.
 
 More info: http://wstyke.com/tabspire
 
+v1.0.0.0 - Added `''` and `'"` to focus previously focused tab(in same window)/window.
 v0.9.9 - Added reloadCurrentTab + reloadFocusMark + focusMark.
 v0.9.8 - Added Mark Tab `ma` and Goto Tab `'a` like in Vim.
 v0.9.6 - Added delete tab by name/url with 't d tabName'.

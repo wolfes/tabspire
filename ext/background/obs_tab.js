@@ -37,6 +37,19 @@ TS.obsTab.focusedTabsByWindow = {};
 /** The currently focused tab. */
 TS.obsTab.currentlyFocusedTab = false;
 
+
+/**
+ * Get previously focused tabs for a window, or empty list.
+ * @param {number} windowId Id of window to find prev focused tabs.
+ * @return {Array} List of tabIds, or empty list.
+ * @private
+ */
+TS.obsTab.getTabsByWindow_ = function(windowId) {
+    var tabsByWindowId = TS.obsTab.focusedTabsByWindow;
+    return (windowId in tabsByWindowId ?
+            tabsByWindowId[windowId] : []);
+};
+
 /**
  * Helper Method for managing current/previous tab update.
  * @param {Object} activeInfo The currently active tab.
@@ -45,27 +58,15 @@ TS.obsTab.currentlyFocusedTab = false;
 TS.obsTab.updateTabFocusChange_ = function(activeInfo) {
     var tabId = activeInfo.tabId;
     var windowId = activeInfo.windowId;
-    /*
-    if (TS.obsTab.currentlyFocusedTab !== false) {
-        TS.obsTab.prevFocusedTabs = ([
-            TS.obsTab.currentlyFocusedTab
-        ].concat(TS.obsTab.prevFocusedTabs)).slice(0, 10);
-    }
-    TS.obsTab.currentlyFocusedTab = activeInfo;
-    */
-    // Get previously focused tabs for this window.
-    var prevTabs = [];
-    if (windowId in TS.obsTab.focusedTabsByWindow) {
-        prevTabs = TS.obsTab.focusedTabsByWindow[windowId];
-    }
+    var prevTabs = TS.obsTab.getTabsByWindow_(windowId);
     if (prevTabs.length > 0 &&
             prevTabs[0].windowId === windowId &&
             prevTabs[0].tabId === tabId) {
-        // Focused tab was the last focused tab in this window, abort saving.
-        debug('Aborting updateTabFocusChange_ - same as prev. focused tab.');
+        // Focused tab was the last tab focused in this window, abort dup save.
+        debug('Aborting updateTabFocusChange_ - same as prev. tab focused.');
         return;
     }
-    // Save prepended focused tab.
+    // Save focused tab by prepending to window's tabs, trim list to fit.
     prevTabs = ([activeInfo].concat(prevTabs)).slice(0, 10);
     TS.obsTab.focusedTabsByWindow[windowId] = prevTabs;
 };
@@ -83,24 +84,12 @@ chrome.tabs.onActivated.addListener(TS.obsTab.selectionChange);
  * Focus previously focused tab.
  */
 TS.obsTab.selectPrevFocusedTab = function() {
-    /*
-    var lastActiveTabInfo = TS.obsTab.prevFocusedTabs.shift();
-    if (lastActiveTabInfo === undefined) {
-        return;
-    }
-    */
     // Figure out selected window.
     chrome.windows.getCurrent(function(currWinInfo) {
         var currWinId = currWinInfo.id;
-        if (!(currWinId in TS.obsTab.focusedTabsByWindow)) {
-            // No previously focused tabs for this window.
-            debug('Abort selectPrevFocusedTab: no prev focused tabs for win.');
-            return;
-        }
-        var prevTabs = TS.obsTab.focusedTabsByWindow[currWinId];
+        var prevTabs = TS.obsTab.getTabsByWindow_(currWinId);
         if (prevTabs.length < 2) {
-            // Only one tab ever focused in this window,
-            // can't focus previous tab.
+            debug('Abort selectPrevFocusedTab: no prev focused tabs for win.');
             return;
         }
         var tabToFocus = prevTabs.splice(1, 1)[0];
@@ -109,7 +98,5 @@ TS.obsTab.selectPrevFocusedTab = function() {
         chrome.tabs.update(tabToFocus.tabId, {
             active: true
         });
-
     });
 };
-

@@ -53,7 +53,7 @@ chrome.windows.onFocusChanged.addListener(TS.obsWin.selectionChange);
 /**
  * Focus previously focused window.
  */
-TS.obsWin.selectPrevFocusedWindow = function() {
+TS.obsWin.focusLastWindow = function() {
     var lastActiveWindowId = TS.obsWin.prevFocusedWins.shift();
     if (lastActiveWindowId === undefined) {
         return;
@@ -62,4 +62,3 @@ TS.obsWin.selectPrevFocusedWindow = function() {
         focused: true
     });
 };
-
