@@ -10,6 +10,7 @@ Crazy Awesome: Chrome API Remote Control
 
 "Extraction" - ADDED
 - `t e reddit` extracts all tabs with urls containing `reddit`.
+- `t E reddit` clones matching tabs into new window.
 - TS.controller.extractTabsByUrl(string urlFragment, boolean closeExtractedTabs)
 	Move all urls containing 'youtube' into a newly created window,
 	removing them from their old window.

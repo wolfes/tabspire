@@ -114,7 +114,14 @@ TS.omni.commands.push({
     'desc': 'Extract Tabs',
     'suggest': 'suggestExtraction'
 });
-
+// Add command to extract all tabs with matching urls
+// into new window, keeping original tabs open.
+TS.omni.commands.push({
+    'opt': 'E',
+    'cmd': 'extractClones',
+    'desc': 'Clone Tabs',
+    'suggest': 'suggestExtraction'
+});
 /**
  * Message to show to user when no results match command.
  */
@@ -480,7 +487,9 @@ TS.omni._getCmd = function(text) {
     var command;
     for (var i = 0, N = TS.omni.commands.length; i < N; i++) {
         var cmdInfo = TS.omni.commands[i];
-        if (text !== '' && cmdInfo.cmd.indexOf(cmdInput) === 0) {
+        //if (text !== '' && cmdInfo.cmd.indexOf(cmdInput) === 0) {
+        // Only allow matching Command Opt.
+        if (text !== '' && cmdInput.search(cmdInfo.opt) === 0) {
             // The command we're looking for!
             command = cmdInfo;
             command.params = params;
@@ -539,6 +548,7 @@ TS.omni.inputEntered = function(text) {
         'b': TS.omni.openBookmark,
         'c': TS.omni.setClientId,
         'e': TS.omni.cmdExtractUrl,
+        'E': TS.omni.cmdExtractUrlClones,
         ' ': TS.omni.queryAllItems
     };
     optToCmd[cmd.opt](cmd);
@@ -930,6 +940,15 @@ TS.omni.setClientId = function(cmd) {
 TS.omni.cmdExtractUrl = function(cmd) {
     var urlFragment = cmd.params[0];
     TS.controller.extractTabsByUrl(urlFragment);
+};
+
+/**
+ * Clones all tabs matching url fragment into new window,
+ * @param {object} cmd The user's command.
+ */
+TS.omni.cmdExtractUrlClones = function(cmd) {
+    var urlFragment = cmd.params[0];
+    TS.controller.extractTabsByUrl(urlFragment, false);
 };
 
 /**
