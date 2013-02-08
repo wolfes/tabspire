@@ -71,7 +71,13 @@ TS.io.setupSocket = function() {
             'socketId': clientId
         });
     }
-    // Connect incoming messages.
+    TS.io.registerCommands();
+};
+
+/**
+ * Register remote-control commands.
+ */
+TS.io.registerCommands = function() {
     TS.io.port.on('search:normal', function(data) {
         debug('search:normal', data);
         TS.controller.openSearchTab({

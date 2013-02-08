@@ -66,6 +66,70 @@ TS.controller.openTabByName = function(tabName) {
 };
 
 /**
+ * Get tabs info that match a url fragment.
+ * @param {string} urlFragment The url fragment to match.
+ * @param {function} callWithMatchingTabs Called with a dict,
+ *   keys: 'ids': list of matching tab ids and 'urls'.
+ */
+TS.controller.getTabsByUrl = function(urlFragment, callWithMatchingTabs) {
+    chrome.tabs.query({}, function(allTabs) {
+        var tabIds = [];
+        var matchingURLs = [];
+        for (var i = 0, n = allTabs.length; i < n; i++) {
+            var tab = allTabs[i];
+            var url = tab.url;
+            var fragmentIdx = url.toLowerCase().search(urlFragment);
+            if (fragmentIdx !== -1) {
+                tabIds.push(tab.id);
+                matchingURLs.push(url);
+            }
+        }
+        if (tabIds.length !== 0) {
+            callWithMatchingTabs({
+                'ids': tabIds,
+                'urls': matchingURLs
+            });
+        }
+    });
+};
+
+/**
+ * Extract all tabs with matching urls into new window.
+ * @param {string} urlFragment The url fragment to match tabs on.
+ * @param {boolean} opt_closeExtractedTabs Default true, remove extracted tabs.
+ */
+TS.controller.extractTabsByUrl = function(urlFragment, opt_closeExtractedTabs) {
+    var closeExtractedTabs = ( // Default: true
+        (opt_closeExtractedTabs === undefined) || opt_closeExtractedTabs);
+
+    var extractMethod = TS.controller.extractTabMatches;
+    if (!closeExtractedTabs) {
+        extractMethod = TS.controller.cloneTabMatches;
+    }
+    // Get all tabs with matching urls.
+    TS.controller.getTabsByUrl(urlFragment, extractMethod);
+};
+
+/**
+ * Clone matching tabs into a new window.
+ * @param {Object} matchingInfo A dict with 'ids' and 'urls' keys.
+ */
+TS.controller.cloneTabMatches = function(matchingInfo) {
+    chrome.windows.create({
+        url: matchingInfo.urls
+    });
+};
+
+/**
+ * Extract matching tabs into a new window, close extracted tabs.
+ * @param {Object} matchingInfo A dict with 'ids' and 'urls' keys.
+ */
+TS.controller.extractTabMatches = function(matchingInfo) {
+    chrome.tabs.remove(matchingInfo.ids);
+    TS.controller.cloneTabMatches(matchingInfo);
+};
+
+/**
  * Open first tab that matches fuzzy name match algorithm.
  * @param {string} tabName The name of the tab to open.
  */

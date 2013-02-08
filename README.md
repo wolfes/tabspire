@@ -8,6 +8,12 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 
 Crazy Awesome: Chrome API Remote Control
 
+"Extraction" - ADDED
+- `t e reddit` extracts all tabs with urls containing `reddit`.
+- TS.controller.extractTabsByUrl(string urlFragment, boolean closeExtractedTabs)
+	Move all urls containing 'youtube' into a newly created window,
+	removing them from their old window.
+
 Add:
 	showMark -> to switch selected tab, without focusing browser.
 	Clear Number / All Marks.

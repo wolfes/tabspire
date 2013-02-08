@@ -106,6 +106,14 @@ TS.omni.commands.push({
     'desc': 'Set Client Id',
     'suggest': 'suggestMessage'
 });
+// Add command to extract all tabs with matching urls
+// into new window.
+TS.omni.commands.push({
+    'opt': 'e',
+    'cmd': 'extract',
+    'desc': 'Extract Tabs',
+    'suggest': 'suggestExtraction'
+});
 
 /**
  * Message to show to user when no results match command.
@@ -242,6 +250,16 @@ TS.omni.suggestReload = function(params) {
  * @return {array} suggestions For Chrome's Omnibox.
  */
 TS.omni.suggestMessage = function(params) {
+    var suggestions = [];
+    return suggestions;
+};
+
+/**
+ * Return suggestions for Extract command.
+ * @param {string} params User's input for message.
+ * @return {array} suggestions For Chrome's Omnibox.
+ */
+TS.omni.suggestExtraction = function(params) {
     var suggestions = [];
     return suggestions;
 };
@@ -520,6 +538,7 @@ TS.omni.inputEntered = function(text) {
         'h': TS.omni.openHistory,
         'b': TS.omni.openBookmark,
         'c': TS.omni.setClientId,
+        'e': TS.omni.cmdExtractUrl,
         ' ': TS.omni.queryAllItems
     };
     optToCmd[cmd.opt](cmd);
@@ -902,6 +921,15 @@ TS.omni.openBookmark = function(cmd) {
 TS.omni.setClientId = function(cmd) {
     var newId = cmd.params[0];
     TS.io.setClientId(newId);
+};
+
+/**
+ * Extract all tabs matching url fragment into new window.
+ * @param {object} cmd The user's command.
+ */
+TS.omni.cmdExtractUrl = function(cmd) {
+    var urlFragment = cmd.params[0];
+    TS.controller.extractTabsByUrl(urlFragment);
 };
 
 /**
