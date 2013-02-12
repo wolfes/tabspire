@@ -66,30 +66,45 @@ TS.controller.openTabByName = function(tabName) {
 };
 
 /**
+ * Open first tab that matches fuzzy name match algorithm.
+ * @param {string} tabName The name of the tab to open.
+ */
+TS.controller.openTabByFuzzyName = function(tabName) {
+    if (!TS.util.isDef(tabName)) {
+        tabName = ''; // Open first match.
+    }
+    var tabs = TS.model.getTabsByFuzzyName(tabName);
+    if (tabs.length >= 1) {
+        var tab = tabs[0];
+        TS.controller.openTab(tab);
+        TS.controller.saveActivityLog({
+            action: 'openTab',
+            info: {
+                query: tabName,
+                title: tab.name,
+                url: tab.url
+            }
+        });
+    }
+};
+
+
+/**
  * Get tabs info that match a url fragment.
  * @param {string} urlFragment The url fragment to match.
- * @param {function} callWithMatchingTabs Called with a dict,
+ * @param {function} cbMatchingTabs Called with a dict,
  *   keys: 'ids': list of matching tab ids and 'urls'.
  */
-TS.controller.getTabsByUrl = function(urlFragment, callWithMatchingTabs) {
+TS.controller.getTabsByUrl = function(urlFragment, cbMatchingTabs) {
     chrome.tabs.query({}, function(allTabs) {
-        var tabIds = [];
-        var matchingURLs = [];
+        var matchingTabs = [];
         for (var i = 0, n = allTabs.length; i < n; i++) {
             var tab = allTabs[i];
-            var url = tab.url;
-            var fragmentIdx = url.toLowerCase().search(urlFragment);
-            if (fragmentIdx !== -1) {
-                tabIds.push(tab.id);
-                matchingURLs.push(url);
+            if (tab.url.toLowerCase().search(urlFragment) !== -1) {
+                matchingTabs.push(tab);
             }
         }
-        if (tabIds.length !== 0) {
-            callWithMatchingTabs({
-                'ids': tabIds,
-                'urls': matchingURLs
-            });
-        }
+        cbMatchingTabs(TS.controller.createTabMatchInfo(matchingTabs));
     });
 };
 
@@ -122,6 +137,8 @@ TS.controller.cloneTabMatches = function(matchingInfo) {
 
 /**
  * Extract matching tabs into a new window, close extracted tabs.
+ * TODO(wstyke:02/08/2013): Instead of remove and create tabs,
+ * add new window, then move old tabs to new window, preserve tab openerId.
  * @param {Object} matchingInfo A dict with 'ids' and 'urls' keys.
  */
 TS.controller.extractTabMatches = function(matchingInfo) {
@@ -129,27 +146,67 @@ TS.controller.extractTabMatches = function(matchingInfo) {
     TS.controller.cloneTabMatches(matchingInfo);
 };
 
+
 /**
- * Open first tab that matches fuzzy name match algorithm.
- * @param {string} tabName The name of the tab to open.
+ * Get all tabs that were opened from this tab, recursively.
+ * @param {Object} tab A chrome tab.
+ * @param {function} cbTabChildren Callback takes children tab list.
  */
-TS.controller.openTabByFuzzyName = function(tabName) {
-    if (!TS.util.isDef(tabName)) {
-        tabName = ''; // Open first match.
-    }
-    var tabs = TS.model.getTabsByFuzzyName(tabName);
-    if (tabs.length >= 1) {
-        var tab = tabs[0];
-        TS.controller.openTab(tab);
-        TS.controller.saveActivityLog({
-            action: 'openTab',
-            info: {
-                query: tabName,
-                title: tab.name,
-                url: tab.url
+TS.controller.getChildrenOfTab = function(tab, cbTabChildren) {
+    chrome.tabs.query({}, function(openTabs) {
+        var childTabs = {};
+        var childTabList = [tab];
+        childTabs[tab.id] = tab;
+        var numTabs = openTabs.length;
+        var unexpandedChildren = true;
+        while (unexpandedChildren) {
+            // Expand with children of previously known children.
+            unexpandedChildren = false;
+            for (var i = 0; i < numTabs; i++) {
+                var openTab = openTabs[i];
+                var openTabId = openTab.id;
+                var parentId = openTab.openerTabId;
+                if (parentId in childTabs && !(openTabId in childTabs)) {
+                    childTabs[openTabId] = openTab;
+                    childTabList.push(openTab);
+                    unexpandedChildren = true;
+                }
             }
-        });
+        }
+        cbTabChildren(childTabList);
+    });
+};
+
+/**
+ * Create tabMatchInfo dictionary with keys: 'ids', 'urls', 'tabs'.
+ * @param {Array} tabList List of tabs to create match info for.
+ * @return {Object} tabMatchInfo Has keys [ids, urls, tabs] mapping to lists.
+ */
+TS.controller.createTabMatchInfo = function(tabList) {
+    var tabMatchInfo = {
+        'ids': [],
+        'urls': [],
+        'tabs': tabList
+    };
+    for (var i = 0, n = tabList.length; i < n; i++) {
+        var tab = tabList[i];
+        tabMatchInfo['ids'].push(tab.id);
+        tabMatchInfo['urls'].push(tab.url);
     }
+    return tabMatchInfo;
+};
+
+/**
+ * Extract tabs that were opened by currently focused tab.
+ */
+TS.controller.extractChildTabs = function() {
+    // @TODO(wstyke:02-08-2013): Refactor this!
+    TS.tabs.getSelected(function(sourceTab) { // The focused tab.
+        TS.controller.getChildrenOfTab(sourceTab, function(childTabs) {
+            var tabMatchInfo = TS.controller.createTabMatchInfo(childTabs);
+            TS.controller.extractTabMatches(tabMatchInfo);
+        });
+    });
 };
 
 /**
@@ -251,30 +308,43 @@ TS.controller.focusExistingTab_ = function(
 TS.controller.openTab = function(tab, opt_reloadIfOpen) {
     var reloadIfOpen = opt_reloadIfOpen || false;
     if (!TS.util.isDef(tab)) {
+        // Input Validation.
         return;
     }
     tab.url = TS.util.fixUrlProtocol(tab.url);
     var tabUrlNoHashtag = TS.util.removeHashtag(tab.url);
-    chrome.tabs.query({url: tabUrlNoHashtag}, function(tabs) {
+    chrome.tabs.query({url: tabUrlNoHashtag}, function(matchTabs) {
         TS.tabs.getSelected(function(selectedTab) {
-            if (tabs.length > 0) {
-                TS.controller.focusExistingTab_(
-                    tab, tabs, selectedTab, reloadIfOpen);
-            } else {
-                if (selectedTab.url === 'chrome://newtab/') {
-                    // Replace selected newtab page with opened tab url.
-                    //debug('openTab -> open in place:', tab.url);
-                    chrome.tabs.update(selectedTab.id, {url: tab.url});
-                    TS.windows.focusById(selectedTab.windowId);
-                } else {
-                    //debug('openTab -> open in new tab:', tab.url);
-                    chrome.tabs.create({url: tab.url}, function(newTab) {
-                        TS.windows.focusById(newTab.windowId);
-                    });
-                }
-            }
+            TS.controller.openTab_(tab, selectedTab, matchTabs, reloadIfOpen);
         });
     });
+};
+
+/**
+ * Open tab url: focus existing tab, replace newtab, or open new tab.
+ * @param {Object} tab The tab with url to open.
+ * @param {Object} selectedTab The currently selected tab in Chrome.
+ * @param {Array} matchTabs A list of open tabs matching tab's url.
+ * @param {boolean} reloadIfOpen Reload tab if already open.
+ * @private
+ */
+TS.controller.openTab_ = function(tab, selectedTab, matchTabs, reloadIfOpen) {
+    if (matchTabs.length > 0) {
+        // debug('openTab: Focusing existing tab with same url.');
+        TS.controller.focusExistingTab_(
+            tab, matchTabs, selectedTab, reloadIfOpen);
+    } else {
+        if (selectedTab.url === 'chrome://newtab/') {
+            //debug('openTab: Replacing newtab with url:', tab.url);
+            chrome.tabs.update(selectedTab.id, {url: tab.url});
+            TS.windows.focusById(selectedTab.windowId);
+        } else {
+            //debug('openTab: Open in new tab:', tab.url);
+            chrome.tabs.create({url: tab.url}, function(newTab) {
+                TS.windows.focusById(newTab.windowId);
+            });
+        }
+    }
 };
 
 /**

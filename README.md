@@ -5,15 +5,30 @@ A command line for your Chrome address bar.
 
 Name the tabs you want at your fingertips to re-open or re-focus later.
 
-
 Crazy Awesome: Chrome API Remote Control
 
 "Extraction" - ADDED
 - `t e reddit` extracts all tabs with urls containing `reddit`.
 - `t E reddit` clones matching tabs into new window.
 - TS.controller.extractTabsByUrl(string urlFragment, boolean closeExtractedTabs)
-	Move all urls containing 'youtube' into a newly created window,
-	removing them from their old window.
+-- Extract all urls containing 'youtube' into a newly created window,
+-- removing them from their old window.
+- `t d tabName` deletes saved tab to with matching name.
+
+Vim-Like Commands
+> <Esc>
+-- Clear special command input.  ie: `,{char} <Esc> '{char}`.
+> m{char}
+-- Mark current tab's url with {char}.
+> M{char}
+-- Mark current tab's url and scrollX/Y position with {char}.
+> '{char}
+-- Goto url with mark {char}, optionally scroll to saved position.
+> ''
+-- Goto last focused tab in same window.
+> '"
+-- Goto last focused window.
+
 
 Add:
 	showMark -> to switch selected tab, without focusing browser.
@@ -37,7 +52,9 @@ Create flash-pages.
 
 More info: http://wstyke.com/tabspire
 
-v1.0.0.0 - Added `''` and `'"` to focus previously focused tab(in same window)/window.
+v1.0.1.0 - Added `t e urlFragment` & `t E urlFragment`:
+- Extract/clone tabs with urls matching urlFragment into a new window..
+v1.0.0.0 - Added `''` and `'"`: focus prev. focused tab(in same window)/window.
 v0.9.9 - Added reloadCurrentTab + reloadFocusMark + focusMark.
 v0.9.8 - Added Mark Tab `ma` and Goto Tab `'a` like in Vim.
 v0.9.6 - Added delete tab by name/url with 't d tabName'.
