@@ -184,15 +184,10 @@ TS.controller.getChildrenOfTab = function(tab, cbTabChildren) {
  */
 TS.controller.createTabMatchInfo = function(tabList) {
     var tabMatchInfo = {
-        'ids': [],
-        'urls': [],
+        'ids': _.pluck(tabList, 'id'),
+        'urls': _.pluck(tabList, 'url'),
         'tabs': tabList
     };
-    for (var i = 0, n = tabList.length; i < n; i++) {
-        var tab = tabList[i];
-        tabMatchInfo['ids'].push(tab.id);
-        tabMatchInfo['urls'].push(tab.url);
-    }
     return tabMatchInfo;
 };
 
