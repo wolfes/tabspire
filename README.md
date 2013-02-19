@@ -13,7 +13,7 @@ Crazy Awesome: Chrome API Remote Control
 - TS.controller.extractTabsByUrl(string urlFragment, boolean closeExtractedTabs)
 -- Extract all urls containing 'youtube' into a newly created window,
 -- removing them from their old window.
-- `t d tabName` deletes saved tab to with matching name.
+- `t d tabName` deletes saved tab with matching name.
 
 Vim-Like Commands
 > <Esc>

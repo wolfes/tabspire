@@ -20,7 +20,7 @@ TS.dbBook.getNamedBooks = function() {
 };
 
 /**
- * Nukes all Book info.
+ * Nukes (overwrites) all Book info.
  */
 TS.dbBook.nukeAllBooks = function() {
     TS.dbBook.saveNamedBooks({});
@@ -37,12 +37,11 @@ TS.dbBook.saveNamedBooks = function(bookdict) {
 /**
  * Add a new uniquely named book to TS.dbBook.
  * @param {Object} data Dict with book name and book info.
- * @this TS.dbBook
  */
 TS.dbBook.addNamedBook = function(data) {
-    var bookdict = this.getNamedBooks();
+    var bookdict = TS.dbBook.getNamedBooks();
     bookdict[data.name] = data;
-    this.saveNamedBooks(bookdict);
+    TS.dbBook.saveNamedBooks(bookdict);
 };
 
 /**
