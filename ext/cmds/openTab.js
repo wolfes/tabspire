@@ -26,24 +26,24 @@ TS.cmds.all.push({
  * Initialize command listeners.
  */
 $(document).ready(function() {
-    TS.vent.on('document:ready', TS.cmds.initOpenTab);
-    TS.vent.on('cmd:suggest:omni:openTab', TS.cmds.suggestOpenTab);
-    TS.vent.on('cmd:perform:omni:openTab', TS.cmds.openTab);
+    TS.cmds.initOpenTab();
 });
 
 /**
  * Add openTab cmd listeners.
  */
 TS.cmds.initOpenTab = function() {
-    debug('addOpenTabListeners');
+    TS.vent.on('cmd:omni:openTab:suggest', TS.cmds.suggestOpenTab);
+    TS.vent.on('cmd:omni:openTab:perform', TS.cmds.openTab);
 };
 
 /**
  * Return suggestions for Open command.
- * @param {string} params for open named tab.
- * @return {array} suggestions For Chrome's Omnibox.
+ * @param {!Object} msg The message event info.
  */
-TS.cmds.suggestOpenTab = function(params) {
+TS.cmds.suggestOpenTab = function(msg) {
+    debug(msg);
+    var params = msg.params;
     var requestedTabName = params[0];
     var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
     var suggestions = TS.suggest.suggestItems(tabs, function(tabInfo) {
@@ -53,12 +53,13 @@ TS.cmds.suggestOpenTab = function(params) {
                 TS.util.encodeXml(tabInfo.url))
         };
     });
-    return suggestions;
+    msg.showSuggestions(suggestions);
+//    return suggestions;
 };
 
 /**
  * Open tab by name (or by url if selected from suggestions).
- * @param {object} msg The message from pubsub with cmd.
+ * @param {!Object} msg The message from pubsub with cmd.
  */
 TS.cmds.openTab = function(msg) {
     var cmd = msg.cmd;

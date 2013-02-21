@@ -1,5 +1,5 @@
 /**
- * Create Suggestions for each type of command.
+ * Create Omnibox Suggestions for each type of command.
  *
  * Used by:
  *  TS.omni: Get suggestions to show in Chrome's omnibox.

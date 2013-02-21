@@ -48,7 +48,8 @@ TS.omni.commands.push({
     'opt': 'o',
     'cmd': 'open',
     'desc': 'Open Tab',
-    'suggest': 'suggestOpen'
+    'suggest': 'suggestOpen',
+    'cmdName': 'openTab'
 });
 TS.omni.commands.push({
     'opt': 'rw',
@@ -296,10 +297,21 @@ TS.omni.inputChanged = function(text, suggest) {
         TS.omni.updateDefaultSuggestion(text);
         return;
     }
-    if (cmd.suggest in TS.suggest) {
+
+    if ('cmdName' in cmd) {
+        // TODO(wstyke:02/20/2013): Migrate cmd.suggest to msg callback:
+        // - from calling TS.suggest.methodName
+        // - to sending cmd suggest message with showSuggestions callback.
+        // Think hard about which is better.
+        TS.vent.trigger(
+            'cmd:omni:' + cmd.cmdName + ':suggest', {
+                'showSuggestions': suggest,
+                'params': cmd.params
+        });
+    } else if (cmd.suggest in TS.suggest) {
         suggestions = TS.suggest[cmd.suggest](cmd.params);
+        suggest(suggestions);
     }
-    suggest(suggestions);
 };
 chrome.omnibox.onInputChanged.addListener(TS.omni.inputChanged);
 
@@ -362,8 +374,7 @@ TS.omni.cmdAddTab = function(cmd) {
 TS.omni.cmdOpenTab = function(cmd) {
    // log this cmd's source?
    var msg = {'cmd': cmd};
-   TS.vent.trigger('cmd:perform:omni:openTab', msg);
-
+   TS.vent.trigger('cmd:omni:openTab:perform', msg);
 /*
     var firstParam = cmd.params[0];
     var nameOrUrl = (cmd.params.length !== 0) ? firstParam : '';

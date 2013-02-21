@@ -7,6 +7,14 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 
 Crazy Awesome: Chrome API Remote Control
 
+Where to determine which cmd?
+	Omnibox controller figures out which cmd
+	-> publishes to that cmd's channel to be performed by cmds/...
+	Alt. Input controller figures out which cmd
+	-> publishes to that cmd's channel to be performed by cmds/...
+	==> Extract cmd-recognition logic from both controllers <==
+
+
 "Extraction" - ADDED
 - `t e reddit` extracts all tabs with urls containing `reddit`.
 - `t E reddit` clones matching tabs into new window.

@@ -1,0 +1,27 @@
+Tab Commands
+
+addTab
+	ByName
+	ByFuzzyName
+
+openTab
+
+reload
+	CurrentTab
+	FocusMark
+	TabByFuzzyName
+
+delete
+	TabByFuzzyName
+
+close
+	NewTab
+
+focus
+	ExistingTab_
+	TabIndex
+	WindowById
+
+cbCurrWindowTabs
+
+saveActivityLog
