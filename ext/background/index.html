@@ -1,30 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title></title>
-<!-- Libraries -->
+<title>Chrome Extension Background Page</title>
+
+<!-- External Libraries -->
 <script src="../lib/jquery-1.7.2.min.js"></script>
 <script src="../lib/underscore-1.4.4.js"></script>
 <script src="../lib/backbone-0.9.10.js"></script>
 <script src="../lib/doT.js"></script>
-<script src="../shared/util.js"></script>
 <script src="../lib/socket.io.js"></script>
+
+<!-- Utility Libraries -->
+<script src="../shared/util.js"></script>
 
 <!-- PubSub for 'TS' -->
 <script src="pubsub.js"></script>
 
-<!-- Models -->
+<!-- Models / LocalStorage Persistence -->
 <script src="db_util.js"></script>
+<script src="db_tabs.js"></script>
 <script src="db_flags.js"></script>
 <script src="db_logs.js"></script>
 <script src="db_marks.js"></script>
-<script src="db_bookmarklet.js"></script>
+<script src="db_booklet.js"></script>
 <script src="model.js"></script>
 
 <!-- Controller -->
 <script src="suggest.js"></script>
-<script src="../cmds/openTab.js"></script>
 <script src="omnibox.js"></script>
+<script src="../cmds/register.js"></script>
+<script src="../cmds/addTab.js"></script>
+<script src="../cmds/openTab.js"></script>
+<script src="../cmds/deleteTab.js"></script>
+<script src="../cmds/reloadWindow.js"></script>
+<script src="../cmds/reloadTab.js"></script>
+<script src="../cmds/msgAt.js"></script>
+<script src="../cmds/msgIn.js"></script>
+<script src="../cmds/addBooklet.js"></script>
+<script src="../cmds/useBooklet.js"></script>
+<script src="../cmds/openHistory.js"></script>
+<script src="../cmds/openBookmark.js"></script>
+<script src="../cmds/extractTabs.js"></script>
+<script src="../cmds/setClientId.js"></script>
 <script src="obs_tab.js"></script>
 <script src="obs_window.js"></script>
 <script src="io.js"></script>

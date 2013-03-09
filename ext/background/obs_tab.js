@@ -1,5 +1,5 @@
 /**
- * Observe Chrome Tabs Events.
+ * Observe Chrome Tabs Events for features to use.
  *
  * Observing last N focused tabs works like:
  * - On selection change,
@@ -24,6 +24,7 @@ TS.obsTab.prevTabsMax = 10;
 
 /** Buffer of previous N focused tabs. */
 TS.obsTab.prevFocusedTabs = [];
+
 /** List of prev. N focused tabs per window id.
  *
  * Ex: For window with id 42,
@@ -36,7 +37,6 @@ TS.obsTab.focusedTabsByWindow = {};
 
 /** The currently focused tab. */
 TS.obsTab.currentlyFocusedTab = false;
-
 
 /**
  * Get previously focused tabs for a window, or empty list.

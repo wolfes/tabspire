@@ -53,7 +53,7 @@ TS.controller.openSearchTab = function(searchInfo) {
  * @param {object} tab Contains 'url' and 'name'.
  */
 TS.controller.addTab = function(tab) {
-    TS.model.addNamedTab(tab);
+    TS.dbTabs.addNamedTab(tab);
 };
 
 /**
@@ -61,7 +61,7 @@ TS.controller.addTab = function(tab) {
  * @param {string} tabName The name of a tab.
  */
 TS.controller.openTabByName = function(tabName) {
-    var tab = TS.model.getTabByName(tabName);
+    var tab = TS.dbTabs.getTabByName(tabName);
     TS.controller.openTab(tab);
 };
 
@@ -73,7 +73,7 @@ TS.controller.openTabByFuzzyName = function(tabName) {
     if (!TS.util.isDef(tabName)) {
         tabName = ''; // Open first match.
     }
-    var tabs = TS.model.getTabsByFuzzyName(tabName);
+    var tabs = TS.dbTabs.getTabsByFuzzyName(tabName);
     if (tabs.length >= 1) {
         var tab = tabs[0];
         TS.controller.openTab(tab);
@@ -224,7 +224,7 @@ TS.controller.reloadTabByFuzzyName = function(fuzzyTabName) {
     if (!TS.util.isDef(fuzzyTabName)) {
         fuzzyTabName = ''; // Open first match.
     }
-    var tabs = TS.model.getTabsByFuzzyName(fuzzyTabName);
+    var tabs = TS.dbTabs.getTabsByFuzzyName(fuzzyTabName);
     if (tabs.length === 0) {
         return; // No tabs found.
     }
@@ -248,12 +248,12 @@ TS.controller.deleteTabByFuzzyName = function(fuzzyTabName) {
     if (!TS.util.isDef(fuzzyTabName)) {
         fuzzyTabName = ''; // Open first match.
     }
-    var tabs = TS.model.getTabsByFuzzyName(fuzzyTabName);
+    var tabs = TS.dbTabs.getTabsByFuzzyName(fuzzyTabName);
     if (tabs.length === 0) {
         return; // No matching tabs to delete.
     }
     var tabToDelete = tabs[0];
-    TS.model.removeNamedTab(tabToDelete.name);
+    TS.dbTabs.removeNamedTab(tabToDelete.name);
 };
 
 /**
@@ -262,7 +262,7 @@ TS.controller.deleteTabByFuzzyName = function(fuzzyTabName) {
  * @return {array} The matching tabs.
  */
 TS.controller.getTabsByFuzzyName = function(tabName) {
-    return TS.model.getTabsByFuzzyName(tabName);
+    return TS.dbTabs.getTabsByFuzzyName(tabName);
 };
 
 /**

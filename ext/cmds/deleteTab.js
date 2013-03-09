@@ -1,5 +1,5 @@
 /**
- * Methods for `Open Tab` command.
+ * Methods for `Delete Tab` command.
  * Defines command info, suggestion generator, and actual command.
  *
  * @author Wolfe Styke - <wstyke@gmail.com>
@@ -12,44 +12,42 @@ var TS = TS || {};
 /** Module Namespace */
 TS.cmds = TS.cmds || {};
 
-/** List of commands. */
-TS.cmds.all = TS.cmds.all || [];
-
 TS.omni.commands.push({
-    'opt': 'o',
-    'cmd': 'open',
-    'desc': 'Open Tab',
-    'suggest': 'suggestOpen',
-    'cmdName': 'openTab'
+    'opt': 'd',
+    'cmd': 'delete',
+    'desc': 'Del Tab',
+    'suggest': 'suggestDelete',
+    'cmdName': 'deleteTab'
 });
 
 /**
  * Initialize command listeners.
  */
 $(document).ready(function() {
-    TS.cmds.initOpenTab();
+    TS.cmds.initDeleteTab();
 });
 
 /**
- * Add openTab cmd listeners.
+ * Add deleteTab cmd listeners.
  */
-TS.cmds.initOpenTab = function() {
-    TS.vent.on('cmd:omni:openTab:suggest', TS.cmds.suggestOpenTab);
-    TS.vent.on('cmd:omni:openTab:perform', TS.cmds.openTab);
+TS.cmds.initDeleteTab = function() {
+    TS.vent.on('cmd:omni:deleteTab:suggest', TS.cmds.suggestDeleteTab);
+    TS.vent.on('cmd:omni:deleteTab:perform', TS.cmds.deleteTab);
 };
 
 /**
- * Return suggestions for Open command.
- * @param {!Object} msg The message event info.
+ * Return suggestions for Delete Tab by Name command.
+ * @param {Object} msg Has params for delete named tab.
  */
-TS.cmds.suggestOpenTab = function(msg) {
+TS.cmds.suggestDeleteTab = function(msg) {
+    debug('suggestDeleteTab(', msg);
     var params = msg.params;
     var requestedTabName = params[0];
     var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
     var suggestions = TS.suggest.suggestItems(tabs, function(tabInfo) {
         return {
-            content: 'open ' + tabInfo.url,
-            description: ('open ' + tabInfo.name + ' -> ' +
+            content: 'delete ' + tabInfo.url,
+            description: ('delete ' + tabInfo.name + ' -> ' +
                 TS.util.encodeXml(tabInfo.url))
         };
     });
@@ -57,16 +55,16 @@ TS.cmds.suggestOpenTab = function(msg) {
 };
 
 /**
- * Open tab by name (or by url if selected from suggestions).
- * @param {!Object} msg The message from pubsub with cmd.
+ * Delete tab by name (or by url if selected from suggestions).
+ * @param {object} msg Has 'cmd' command object with user's input.
  */
-TS.cmds.openTab = function(msg) {
+TS.cmds.deleteTab = function(msg) {
     var cmd = msg.cmd;
-    debug('ts.cmds.openTab called');
-
     var firstParam = cmd.params[0];
     var nameOrUrl = (cmd.params.length !== 0) ? firstParam : '';
     var xmlParsedName = TS.util.decodeXml(nameOrUrl);
+    debug('cmdDeleteTab: xmlParsedName', xmlParsedName,
+            ', nameOrUrl:', nameOrUrl);
     if (nameOrUrl === TS.omni.NO_MATCH_MESSAGE) {
         // User entered the no match message, do nothing.
         // Pass on opening tab.
@@ -74,8 +72,10 @@ TS.cmds.openTab = function(msg) {
     } else if (TS.util.isUrl(xmlParsedName)) {
         // User selected from dropdown.
         // Fragile, depends on open suggest text.
-        TS.controller.openTab({url: xmlParsedName});
+        TS.dbTabs.removeTabByURL(xmlParsedName);
     } else {
-        TS.controller.openTabByFuzzyName(nameOrUrl);
+        TS.controller.deleteTabByFuzzyName(nameOrUrl);
     }
 };
+
+

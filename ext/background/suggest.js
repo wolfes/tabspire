@@ -48,96 +48,6 @@ TS.suggest.suggestItems = function(items, itemToSuggest, opt_noDefault) {
     return suggestions;
 };
 
-/**
- * Return suggestions for Add command.
- * @param {string} params for add new named tab.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestAdd = function(params) {
-    var suggestions = [];
-    var name = params[0] !== undefined ? params[0] : '';
-    chrome.omnibox.setDefaultSuggestion({
-        'description': 'Add named tab: ' + name
-    });
-    var tabs = TS.controller.getTabsByFuzzyName(name);
-    var suggestions = TS.suggest.suggestItems(
-        tabs,
-        function(tabInfo) {
-            return {
-                content: '',
-                description: 'Saved Tab: ' + tabInfo.name
-            };
-        },
-        true // Skip Showing Default Suggestions.
-    );
-    return suggestions;
-};
-
-/**
- * Return suggestions for Delete Tab by Name command.
- * @param {string} params for delete named tab.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestDelete = function(params) {
-    var requestedTabName = params[0];
-    var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
-    var suggestions = TS.suggest.suggestItems(tabs, function(tabInfo) {
-        return {
-            content: 'delete ' + tabInfo.url,
-            description: ('delete ' + tabInfo.name + ' -> ' +
-                TS.util.encodeXml(tabInfo.url))
-        };
-    });
-    return suggestions;
-};
-
-/**
- * Return suggestions for Open command.
- * @param {string} params for open named tab.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestOpen = function(params) {
-    var requestedTabName = params[0];
-    var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
-    var suggestions = TS.suggest.suggestItems(tabs, function(tabInfo) {
-        return {
-            content: 'open ' + tabInfo.url,
-            description: ('open ' + tabInfo.name + ' -> ' +
-                TS.util.encodeXml(tabInfo.url))
-        };
-    });
-    return suggestions;
-};
-
-/**
- * Return suggestions for Reload command.
- * @param {string} params User's input for reload.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestReload = function(params) {
-    var suggestions = [];
-    return suggestions;
-};
-
-/**
- * Return suggestions for MessageAt command.
- * @param {string} params User's input for message.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestMessage = function(params) {
-    var suggestions = [];
-    return suggestions;
-};
-
-/**
- * Return suggestions for Extract command.
- * @param {string} params User's input for message.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestExtraction = function(params) {
-    var suggestions = [];
-    return suggestions;
-};
 
 /**
  * Suggest all matches (saved tabs, bookmarks, history).
@@ -148,7 +58,7 @@ TS.suggest.suggestAllItems = function(params) {
     var suggestions = [];
     /*
     var query = params[0];
-    var savedTabs = TS.model.getNamedTabs();
+    var savedTabs = TS.dbTabs.getNamedTabs();
     var bookmarkMatches = 1;
     var historyMatches = 1;
     var allItems = [];
@@ -170,76 +80,3 @@ TS.suggest.suggestAllItems = function(params) {
     return suggestions;
 };
 
-/**
- * Return suggestions for history search matches.
- * @param {string} params User's input for search.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestHistory = function(params) {
-    var suggestions = [];
-    var query = params[0];
-    var queryRegExp = new RegExp(query, 'i');
-
-    var history = TS.omni.history;
-    var numHistory = history.length;
-    for (var i = 0; i < numHistory; i++) {
-        var site = history[i];
-        if (queryRegExp.test(site.url) ||
-                queryRegExp.test(site.title)) {
-            suggestions.push({
-                content: 'h ' + TS.util.encodeXml(site.url),
-                description: 'Open ' + TS.util.encodeXml(site.title)
-            });
-        }
-    }
-    return suggestions;
-};
-
-/**
- * Return suggestions for Chrome's bookmark matches.
- * @param {string} params User's input for search.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestChromeBookmarks = function(params) {
-    // TODO(wstyke:11-14-2012): Fully un-tree-ify bookmark tree.
-    // There are still children within the bookmark list...
-    // Name the children via "parentFolderName/bookmarkName".
-    var suggestions = [];
-    var query = new RegExp(params[0], 'i');
-    var bookmarks = TS.omni.bookmarks;
-    for (var i = 0, n = bookmarks.length; i < n; i++) {
-        var bookmark = bookmarks[i];
-        if (!('url' in bookmark && 'title' in bookmark)) {
-            continue;
-        }
-        if (query.test(bookmark.name)) {
-            suggestions.push(bookmark);
-        }
-    }
-    suggestions = TS.suggest.suggestItems(suggestions, function(bmark) {
-        return {
-            'description': 'b ' + TS.util.encodeXml(bmark.name), //.title
-            'content': 'b ' + TS.util.encodeXml(bmark.url)
-        };
-    });
-    return suggestions;
-};
-
-
-/**
- * Return suggestions for bookmarks to use.
- * @param {string} params User's input for bookmark.
- * @return {array} suggestions For Chrome's Omnibox.
- */
-TS.suggest.suggestBookmarks = function(params) {
-    var suggestions = [];
-    var requestedBookName = params[0];
-    var books = TS.dbBook.getBooksByFuzzyName(requestedBookName);
-    var suggestions = TS.suggest.suggestItems(books, function(bookInfo) {
-        return {
-            content: 'use ' + bookInfo.name,
-            description: 'use ' + bookInfo.name + ' bookmarket'
-        };
-    });
-    return suggestions;
-};

@@ -100,6 +100,9 @@ CL.checkMark = function() {
         if (!TS.util.isDef(data)) {
             return;
         }
+        if (data.url !== window.location.href) {
+            return; // Request is for another url.
+        }
         if ('scrollX' in data && 'scrollY' in data) {
             window.scrollTo(data.scrollX, data.scrollY);
         }
@@ -179,12 +182,12 @@ CL.checkKeysForCommand = function() {
     }
 };
 
-
 chrome.extension.onRequest.addListener(function(data) {
     //debug('data from onRequest:', data);
     if (!TS.util.isDef(data)) {
         return;
     }
+    console.log('chrome.extension.onRequest.addListener(data:', data);
     if ('scrollX' in data && 'scrollY' in data) {
         window.scrollTo(data.scrollX, data.scrollY);
     }

@@ -8,34 +8,31 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 Crazy Awesome: Chrome API Remote Control
 
 Where to determine which cmd?
-	Omnibox controller figures out which cmd
-	-> publishes to that cmd's channel to be performed by cmds/...
-	Alt. Input controller figures out which cmd
-	-> publishes to that cmd's channel to be performed by cmds/...
-	==> Extract cmd-recognition logic from both controllers <==
+
+* Omnibox controller figures out which cmd
+	publishes to that cmd's channel to be performed by cmds/...
+* Alt. Input controller figures out which cmd
+* -> publishes to that cmd's channel to be performed by cmds/...
+* Extract cmd-recognition logic from both controllers
 
 
 "Extraction" - ADDED
-- `t e reddit` extracts all tabs with urls containing `reddit`.
-- `t E reddit` clones matching tabs into new window.
-- TS.controller.extractTabsByUrl(string urlFragment, boolean closeExtractedTabs)
--- Extract all urls containing 'youtube' into a newly created window,
--- removing them from their old window.
-- `t d tabName` deletes saved tab with matching name.
 
-Vim-Like Commands
-> <Esc>
--- Clear special command input.  ie: `,{char} <Esc> '{char}`.
-> m{char}
--- Mark current tab's url with {char}.
-> M{char}
--- Mark current tab's url and scrollX/Y position with {char}.
-> '{char}
--- Goto url with mark {char}, optionally scroll to saved position.
-> ''
--- Goto last focused tab in same window.
-> '"
--- Goto last focused window.
+* `t e reddit` extracts all tabs with urls containing `reddit`.
+* `t E reddit` clones matching tabs into new window.
+* TS.controller.extractTabsByUrl(string urlFragment, boolean closeExtractedTabs)
+* Extract all urls containing 'youtube' into a newly created window,
+* removing them from their old window.
+* `t d tabName` deletes saved tab with matching name.
+
+Vim-Like Commands from any Tab
+
+* Esc -- Clear special command input.  ie: `,{char} <Esc> '{char}`.
+* m{char} -- Mark current tab's url with {char}.
+* M{char} -- Mark current tab's url and scrollX/Y position with {char}.
+* '{char} -- Goto url with mark {char}, optionally scroll to saved position.
+* '' -- Goto last focused tab in same window.
+* '" -- Goto last focused window.
 
 
 Add:
