@@ -13,7 +13,7 @@ var TS = TS || {};
 /**
  * Activity Log Database Namespace.
  */
-TS.dbTabs = TS.dbLogs || {};
+TS.dbTabs = TS.dbTabs || {};
 
 /**
  * Name of activity log database in local storage.
