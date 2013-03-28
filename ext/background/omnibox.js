@@ -133,22 +133,24 @@ $(document).ready(function() {
  * @return {object} Command The command item.
  */
 TS.omni._getCmd = function(text) {
-    var terms = text.split(' '); // ['o', 'listit']
-    var cmdInput = terms[0];
-    var params = terms.splice(1);
     var command;
+    if (text === '') {
+        return command;
+    }
+    var terms = text.split(' '); // ['o', 'listit']
+    var cmdQuery = terms[0];
+    var cmdParams = terms.splice(1);
     for (var i = 0, N = TS.omni.commands.length; i < N; i++) {
         var cmdInfo = TS.omni.commands[i];
-        //if (text !== '' && cmdInfo.cmd.indexOf(cmdInput) === 0) {
-        // Only allow matching Command Opt.
-        if (text !== '' && cmdInput.search(cmdInfo.opt) === 0) {
-            // The command we're looking for - (first matched cmd)!
+        // Only allow for exactly matching Command Opt.
+        if (cmdQuery === cmdInfo.opt) {
+            // The command we're looking for: first matched cmd.
             command = cmdInfo;
-            command.params = params;
+            command.params = cmdParams;
             break;
         }
     }
-    if (!command && cmdInput.length > 1) {
+    if (!command && cmdQuery.length > 1) {
         // No recognized command, query all item command.
         // Experiment.
         command = {

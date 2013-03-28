@@ -7,6 +7,14 @@ Name the tabs you want at your fingertips to re-open or re-focus later.
 
 Crazy Awesome: Chrome API Remote Control
 
+New Ideas:
+
+* Save / Load "Named" set of marks.
+  'Default' marks:apply when not over-ridden by loaded named marks.
+  'Clojure' marks: learning clojure.
+  'Spire' marks: tab/n/vim-spire work.
+  ...
+
 Where to determine which cmd?
 
 * Omnibox controller figures out which cmd

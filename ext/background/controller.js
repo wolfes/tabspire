@@ -1,6 +1,6 @@
 /**
  * Controller for connecting views/server to background model.
-*
+ *
  * @author Wolfe Styke <wstyke@gmail.com>
  */
 var TS = TS || {};

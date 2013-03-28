@@ -91,7 +91,10 @@ TS.tabs.highlightTabIndexes = function(windowId, indexes) {
  */
 TS.tabs.highlightUrl = function(url) {
     TS.tabs.getByUrl(url, function(tab) {
-        chrome.windows.get(tab.windowId, {populate: true}, function(window) {
+        chrome.windows.get(
+                tab.windowId,
+                {populate: true},
+                function(window) {
             var indexes = TS.util.getDictIndexes(window.tabs, 'url', url);
             TS.tabs.highlightTabs(indexes);
         });
