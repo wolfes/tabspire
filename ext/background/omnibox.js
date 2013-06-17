@@ -91,8 +91,12 @@ TS.omni.updateDefaultSuggestion = function(text) {
     }
     description += rb;
 
+    console.log('desc:', description);
+
     chrome.omnibox.setDefaultSuggestion({
-        description: description
+      'description': description
+        //content: description
+      // TODO(wstyke): Fix recently added requirement for content.
     });
 };
 
@@ -213,6 +217,7 @@ TS.omni.inputEntered = function(text) {
         'h': TS.omni.openHistory,
         'b': TS.omni.openBookmark,
         'c': TS.omni.setClientId,
+        //'C': TS.omni.setGroupId,
         'e': TS.omni.cmdExtractUrl,
         'E': TS.omni.cmdExtractUrlClones,
         ' ': TS.omni.queryAllItems  // Undocumented method for test.

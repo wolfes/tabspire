@@ -39,7 +39,7 @@ TS.suggest.suggestItems = function(items, itemToSuggest, opt_noDefault) {
         var suggestion = itemToSuggest(items[i]);
         if (i === 0 && !noDefault) {
             chrome.omnibox.setDefaultSuggestion({
-                description: suggestion.description
+                'description': suggestion.description
            });
         } else {
             suggestions.push(suggestion);

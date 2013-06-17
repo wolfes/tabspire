@@ -96,7 +96,6 @@ CL.checkMark = function() {
     chrome.extension.sendMessage({
         action: 'cmdLine.checkMark'
     }, function(data) {
-        //debug('checkMark cb:', data);
         if (!TS.util.isDef(data)) {
             return;
         }
@@ -149,7 +148,6 @@ CL.checkKeysForCommand = function() {
     // Try mark using:  m<mark-letter>
     if (keys.length === 2 && keys[0].charCode === CL.keyCodes.m) {
         var markCode = keys[1].charCode;
-        //debug('Save Mark Code:', markCode);
         chrome.extension.sendMessage({
             action: 'cmdLine.saveMark',
             code: markCode
@@ -159,7 +157,6 @@ CL.checkKeysForCommand = function() {
     // Try markPos using:  M<mark-letter>
     if (keys.length === 2 && keys[0].charCode === CL.keyCodes.M) {
         var markCode = keys[1].charCode;
-        //debug('Save Mark Code:', markCode);
         chrome.extension.sendMessage({
             action: 'cmdLine.savePosMark',
             code: markCode,
@@ -171,7 +168,6 @@ CL.checkKeysForCommand = function() {
     // Try goto using: '<mark-letter>
     if (keys.length === 2 && keys[0].charCode === CL.keyCodes.APOSTROPHE) {
         var markCode = keys[1].charCode;
-        //debug('Goto Mark Code:', markCode);
 
         chrome.extension.sendMessage({
             action: 'cmdLine.gotoMark',
@@ -183,11 +179,9 @@ CL.checkKeysForCommand = function() {
 };
 
 chrome.extension.onRequest.addListener(function(data) {
-    //debug('data from onRequest:', data);
     if (!TS.util.isDef(data)) {
         return;
     }
-    console.log('chrome.extension.onRequest.addListener(data:', data);
     if ('scrollX' in data && 'scrollY' in data) {
         window.scrollTo(data.scrollX, data.scrollY);
     }
@@ -205,9 +199,7 @@ CL.unregisterTime_ = 2 * 1000;
  * @param {Object} keyEvent The key press event, from jQuery.
  */
 CL.registerKeys = function(keyEvent) {
-    //debug('keyPress:', keyEvent),
     CL.previousKeys_.push(keyEvent);
-    //debug(CL.previousKeys_);
     CL.resetUnregisterKeys();
 };
 

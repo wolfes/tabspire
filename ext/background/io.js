@@ -1,7 +1,7 @@
 /**
- * IO controller for connection to cmdsync server.
+ * Websocket module for connecting to nspire request routing server.
  *
- * @author Wolfe Styke -- <wstyke@gmail.com
+ * @author Wolfe Styke -- <wstyke@gmail.com>
  */
 
 /** Project Namespace */
@@ -10,137 +10,129 @@ var TS = TS || {};
 /** Module Namespace */
 TS.io = TS.io || {};
 
-/**
- * Upload new opt_clientId or existing stored client id to the server.
- * @param {?string} opt_clientId The new client id. Default: saved clientId.
- * @param {?string} opt_oldClientId The previous client id.
- */
-TS.io.uploadClientId = function(opt_clientId, opt_oldClientId) {
-    var clientId = opt_clientId || localStorage.getItem('clientId');
-    var oldClientId = opt_oldClientId || clientId;
-    if (!TS.util.isDef(clientId)) {
-        debug('Client Id Missing.');
-        return;
-    }
-    TS.io.port.emit('id:register', {
-        'socketId': clientId,
-        'oldSocketId': clientId
-    });
-};
+/** Base Server API url. */
+TS.io.BASE_URL = 'ws://cmdsync.com:3000/tabspire/api/0/';
+
+/** Base Test Server API url. */
+TS.io.BASE_TEST_URL = 'ws://localhost:3000/tabspire/api/0/';
+
 
 /**
- * Set client's id for server communication from vimspire.
- * @param {string} clientId The id to be known by on server.
+ * Set up socket with a given private client id.
+ * @param {string} clientId Alphabetic string to identify this connection.
  */
 TS.io.setClientId = function(clientId) {
-    if (clientId.search('/') !== -1) {
-        debug('Client Id is Invalid. Cannot contain slash "/".');
-        return;
-    }
-    // Register new, unregister old if applicable.
-    TS.io.uploadClientId(
-        clientId, localStorage.getItem('clientId'));
-    localStorage.setItem('clientId', clientId);
+  if (clientId.search('/') !== -1) {
+    debug('Client ID invalid.  Cannot contain slashes.');
+    return;
+  }
+  localStorage.setItem('clientId', clientId);
+  TS.io.setupSocket(clientId);
 };
 
 /**
- * Connect socket to server and setup listeners.
+ * Create websocket to server for receiving requests sent to clientId.
+ * @param {string} clientId Alphabetic string to identify this connection.
  */
-TS.io.setupSocket = function() {
-    var serverHost = (TS.dbFlags.getFlag('localSettings') ?
-            'http://localhost:3000' : 'cmdsync.com:3000');
+TS.io.setupSocket = function(clientId) {
+  var clientId = clientId || localStorage.getItem('clientId') || '';
+  if (clientId === '') {
+    debug('Client ID is empty string.  Aborting setting up socket.');
+    return;
+  }
 
-    TS.io.port = io.connect(serverHost, {
-        'max reconnection attempts': Infinity
-    });
+  TS.io.registerCommands();
 
-    TS.io.port.socket.on('reconnecting', function(delay) {
-       TS.io.port.socket.reconnectionDelay = 5 * 60 * 1000;
-    });
-    TS.io.port.socket.on('reconnect', function() {
-        TS.io.uploadClientId();
-    });
-    // Starts reconnecting engines.
-    TS.io.port.socket.reconnect();
-
-    // Register clientId with server on restarting app.
-    var clientId = localStorage.getItem('clientId');
-    debug('Connecting to', serverHost, 'with clientId:', clientId);
-    if (clientId && clientId !== '') {
-        TS.io.port.emit('id:register', {
-            'socketId': clientId
-        });
-    }
-    TS.io.registerCommands();
+  var baseSocketUrl = (
+    TS.dbFlags.getFlag('localSettings') ?
+    TS.io.BASE_TEST_URL : TS.io.BASE_URL);
+  var connectUrl = baseSocketUrl + clientId + '/join-private';
+  debug('Connecting to:', connectUrl);
+  TS.io.port = new WebSocket(connectUrl);
+  TS.io.port.onmessage = TS.io.routeIncomingPrivateRequest;
+  localStorage.setItem('clientId', clientId);
 };
 
 /**
- * Register remote-control commands.
+ * Route an incoming private request from nspire server.
+ * @param {Object} request Request from nspire server.
+ */
+TS.io.routeIncomingPrivateRequest = function(request) {
+  var requestData = JSON.parse(request.data);
+  debug('Route Incoming Private Request:', requestData);
+  // Publish the incoming command request.
+  if (requestData.hasOwnProperty('command') &&
+      requestData.hasOwnProperty('command-data')) {
+    TS.vent.trigger(
+      'nspire:' + requestData.command,
+      requestData['command-data']);
+  }
+};
+
+/**
+ * Boolean flag indicating whether command listeners have been registered.
+ */
+TS.io.commandsRegistered = false;
+
+/**
+ * Register handlers for command requests published on vent.
  */
 TS.io.registerCommands = function() {
-    TS.io.port.on('search:normal', function(data) {
-        debug('search:normal', data);
-        TS.controller.openSearchTab({
-            'query': 'query' in data ? data.query : '',
-            'lucky': false
-        });
+  if (TS.io.commandsRegistered) {
+    return;
+  }
+  TS.io.commandsRegistered = true;
+
+  TS.vent.on('nspire:openGoogleSearch', function(data) {
+    TS.controller.openSearchTab({
+      'query': 'query' in data ? data.query : '',
+      'lucky': false
     });
-    TS.io.port.on('search:lucky', function(data) {
-        TS.controller.openSearchTab({
-            'query': 'query' in data ? data.query : '',
-            'lucky': true
-        });
+  });
+
+  TS.vent.on('nspire:openTabByName', function(data) {
+    if (!('tabName' in data)) {
+      return;
+    }
+    TS.controller.openTabByFuzzyName(data['tabName']);
+  });
+
+  TS.vent.on('nspire:reloadTabByName', function(data) {
+    TS.controller.reloadTabByFuzzyName(
+      'tabName' in data ? data.tabName : '');
+  });
+
+  TS.vent.on('nspire:reloadCurrentTab', function(data) {
+    TS.tabs.reloadCurrent();
+  });
+
+  TS.vent.on('nspire:openURL', function(data) {
+    TS.controller.openTab({
+      'url': data.url
     });
-    TS.io.port.on('tab:openByName', function(data) {
-        debug('tab:openByName', data);
-        if (!('name' in data)) {
-            return;
-        }
-        TS.controller.openTabByFuzzyName(data['name']);
-    });
-    TS.io.port.on('tab:openByURL', function(data) {
-        debug('tab:openByURL', data);
-        TS.controller.openTab({
-            'url': data.url
-        });
-    });
-    TS.io.port.on('tab:reloadByName', function(data) {
-        debug('tab:reloadByName', data);
-        TS.controller.reloadTabByFuzzyName(
-            'tabName' in data ? data.tabName : '');
-    });
-    TS.io.port.on('tab:reloadByURL', function(data) {
-        debug('tab:reloadByURL', data);
-        TS.controller.openTab({
-            'url': 'url' in data ? data.url : ''
-        }, true);
-    });
-    TS.io.port.on('tab:reloadCurrent', function(data) {
-        debug('tab:reloadCurrent', data);
-        TS.tabs.reloadCurrent();
-    });
-    TS.io.port.on('tab:reloadFocusMark', function(data) {
-        debug('tab:reloadFocusMark', data);
-        var charCodeMark = data.mark.charCodeAt(0);
-        TS.controller.reloadFocusMark(charCodeMark, true);
-    });
-    TS.io.port.on('tab:focusMark', function(data) {
-        debug('tab:focusMark', data);
-        var charCodeMark = data.mark.charCodeAt(0);
-        TS.controller.reloadFocusMark(charCodeMark, false);
-    });
-    TS.io.port.on('tab:highlightMark', function(data) {
-        debug('tab:highlightMark', data);
-        // TODO:(wstyke:01-16-2013): Unimplemented on tab/vim-spire + server.
-        var charCodeMark = data.mark.charCodeAt(0);
-        TS.controller.highlightMark(charCodeMark);
-    });
-    TS.io.port.on('window:focusCurrent', function(data) {
-        debug('window:focusCurrent', data);
-        // TODO:(wstyke:01-16-2013): Unimplemented on server/vimspire.
-        TS.tabs.focusFocusedTab();
-    });
-    TS.io.port.on('room:msg:recieve', function(data) {
-        debug('room:msg:recieve', data);
-    });
+  });
+
+  TS.vent.on('nspire:focusMark', function(data) {
+    var charCodeMark = data.markChar.charCodeAt(0);
+    TS.controller.reloadFocusMark(charCodeMark, false);
+  });
+
+  TS.vent.on('nspire:reloadFocusMark', function(data) {
+    var charCodeMark = data.markChar.charCodeAt(0);
+    TS.controller.reloadFocusMark(charCodeMark, true);
+  });
+
+  TS.vent.on('nspire:reloadCurrentTab', function(data) {
+    TS.tabs.reloadCurrent();
+  });
+
+  TS.vent.on('nspire:focusCurrentWindow', function(data) {
+    TS.tabs.focusFocusedTab();
+  });
+
+  TS.vent.on('nspire:highlightMark', function(data) {
+    // TODO:(wstyke:01-16-2013): Unimplemented on tab/vim-spire + server.
+    var charCodeMark = data.mark.charCodeAt(0);
+    TS.controller.highlightMark(charCodeMark);
+  });
 };
