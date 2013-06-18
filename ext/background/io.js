@@ -15,7 +15,10 @@ TS.io.BASE_URL = 'ws://cmdsync.com:3000/tabspire/api/0/';
 
 /** Base Test Server API url. */
 TS.io.BASE_TEST_URL = 'ws://localhost:3000/tabspire/api/0/';
+TS.io.BASE_TEST_URL = 'ws://lhost:3000/tabspire/api/0/';
 
+/** Attempt websocket reconnection every N seconds. */
+TS.io.WAIT_BEFORE_RECONNECTING = 60 * 1000;
 
 /**
  * Set up socket with a given private client id.
@@ -50,6 +53,15 @@ TS.io.setupSocket = function(clientId) {
   debug('Connecting to:', connectUrl);
   TS.io.port = new WebSocket(connectUrl);
   TS.io.port.onmessage = TS.io.routeIncomingPrivateRequest;
+  TS.io.port.onopen = function() {
+    debug('Connected!');
+  };
+  TS.io.port.onclose = function() {
+    // Recreate websocket connection when current socket closes.
+    setTimeout(function() {
+      TS.io.setupSocket(clientId);
+    }, TS.io.WAIT_BEFORE_RECONNECTING);
+  };
   localStorage.setItem('clientId', clientId);
 };
 
