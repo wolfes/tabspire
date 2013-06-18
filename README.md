@@ -5,9 +5,10 @@ A command line for your Chrome address bar.
 
 Name the tabs you want at your fingertips to re-open or re-focus later.
 
-Crazy Awesome: Chrome API Remote Control
+Crazy Awesome: Chrome API Remote Control w/ Vimspire
 
-New Ideas:
+New Ideas
+=========
 
 * Save / Load "Named" set of marks.
   'Default' marks:apply when not over-ridden by loaded named marks.
@@ -15,7 +16,11 @@ New Ideas:
   'Spire' marks: tab/n/vim-spire work.
   ...
 
+Inner Workings
+==============
+
 Where to determine which cmd?
+-----------------------------
 
 * Omnibox controller figures out which cmd
 	publishes to that cmd's channel to be performed by cmds/...
@@ -43,7 +48,8 @@ Vim-Like Commands from any Tab
 * '" -- Goto last focused window.
 
 
-Add:
+Todos: Features
+--------------
 	showMark -> to switch selected tab, without focusing browser.
 	Clear Number / All Marks.
 	Added Mark (tab + scroll position) !!.
@@ -65,6 +71,9 @@ Create flash-pages.
 
 More info: http://wstyke.com/tabspire
 
+Release Notes
+-------------
+v2.0.0.0 - Updated WebSocket module to connect to new Clojure nspire server.
 v1.0.1.0 - Added `t e urlFragment` & `t E urlFragment`:
 - Extract/clone tabs with urls matching urlFragment into a new window..
 v1.0.0.0 - Added `''` and `'"`: focus prev. focused tab(in same window)/window.
@@ -75,6 +84,9 @@ v0.9.5 - Added infinite socket.io reconnect every 5 mins.
 v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
+Release Info
+------------
++ (06-18-2013) v2.0.0.0 with websocket upgrades for clojure nspire server.
 + (02-06-2013) Improved "Focus Last Focused Tab"
   to remember the previous N focused tab PER WINDOW ID
   --> focus last focused tab in same window..
@@ -107,17 +119,22 @@ v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 - Activity logging (all the logs!)
 - HTML5 Notifications with links to site where notif was made.
 
-Pending Feature Ideas:
+Bugs
+----
 
-CATASTROPHIC
+Catastrophic
+- None
+Major
+- None
+Minor
+- None
+Cosmetic
+- None
 
-MAJOR
+Feature Ideas
+-------------
+
 - Figure out: Copy to Clipboard (it exists!).
-
-MINOR
-
-COSMETIC
-
 
 - chrome.pageCapture to save all pages in window at once.
 - Badges for completing X actions of each type: 1, 3, 10, 30, 100, 300, ...
