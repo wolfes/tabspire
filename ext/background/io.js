@@ -15,7 +15,6 @@ TS.io.BASE_URL = 'ws://cmdsync.com:3000/tabspire/api/0/';
 
 /** Base Test Server API url. */
 TS.io.BASE_TEST_URL = 'ws://localhost:3000/tabspire/api/0/';
-TS.io.BASE_TEST_URL = 'ws://lhost:3000/tabspire/api/0/';
 
 /** Attempt websocket reconnection every N seconds. */
 TS.io.WAIT_BEFORE_RECONNECTING = 60 * 1000;
