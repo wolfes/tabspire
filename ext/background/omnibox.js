@@ -108,7 +108,6 @@ TS.omni.inputStarted = function() {
 };
 chrome.omnibox.onInputStarted.addListener(TS.omni.inputStarted);
 
-
 /**
  * Setup TS.omni.bookmarks with flattened bookmark list.
  */
@@ -154,17 +153,6 @@ TS.omni._getCmd = function(text) {
             break;
         }
     }
-    if (!command && cmdQuery.length > 1) {
-        // No recognized command, query all item command.
-        // Experiment.
-        command = {
-            opt: ' ',
-            cmd: ' ',
-            desc: 'Suggest All',
-            suggest: 'suggestAllItems',
-            params: terms
-        };
-    }
     return command;
 };
 
@@ -190,9 +178,6 @@ TS.omni.inputChanged = function(text, suggest) {
                 'showSuggestions': suggest,
                 'params': cmd.params
         });
-    } else if (cmd.suggest in TS.suggest) {
-        suggestions = TS.suggest[cmd.suggest](cmd.params);
-        suggest(suggestions);
     }
 };
 chrome.omnibox.onInputChanged.addListener(TS.omni.inputChanged);
@@ -236,18 +221,6 @@ TS.omni.inputEntered = function(text) {
 chrome.omnibox.onInputEntered.addListener(TS.omni.inputEntered);
 
 /**
- * Get bookmarks matching bookmarkName.
- * @param {string} bookmarkName The queried name.
- * @return {object} bookmarks List of bookmarks matching query.
- */
-TS.omni._getMatchingBookmarks = function(bookmarkName) {
-    // UNUSED -- refactor
-    var bookmarks = TS.db.getBookmarksByFuzzyName(bookmarkName);
-    return bookmarks;
-};
-
-
-/**
  * Get flattened list of bookmarks from Chrome's bookmark tree.
  * @param {object} bookmarkTree A Chrome Bookmark Tree.
  * @param {string} opt_prefix Optional prefix for bookmark name.
@@ -270,8 +243,6 @@ TS.omni.flattenBookmarks = function(bookmarkTree, opt_prefix) {
     }
     return bookmarks;
 };
-
-
 
 /**
  * Create, return, optionally show HTML5 Notification.

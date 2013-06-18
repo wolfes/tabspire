@@ -45,6 +45,11 @@ TS.cmds.initOpenTab = function() {
 TS.cmds.suggestOpenTab = function(msg) {
     var params = msg.params;
     var requestedTabName = params[0];
+    if (requestedTabName === undefined || requestedTabName.trim() === '') {
+        TS.suggest.showDefaultSuggestion(
+            'Recognized Command: Open Tab By Name.');
+        return;
+    }
     var tabs = TS.controller.getTabsByFuzzyName(requestedTabName);
     var suggestions = TS.suggest.suggestItems(tabs, function(tabInfo) {
         return {

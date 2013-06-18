@@ -42,6 +42,8 @@ TS.cmds.initSetClientId = function() {
  */
 TS.cmds.suggestSetClientId = function(msg) {
     var params = msg.params;
+    TS.suggest.showDefaultSuggestion(
+        'Recognized Command: Set Client ID.');
     var suggestions = [];
     msg.showSuggestions(suggestions);
 };

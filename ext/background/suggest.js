@@ -17,6 +17,16 @@ TS.suggest = TS.suggest || {};
 TS.suggest.NO_MATCH_MSG = 'No more results?  Try backspace!';
 
 /**
+ * Show message, or default message of no-match.
+ * @param {string=} opt_message Optional message to show.
+ */
+TS.suggest.showDefaultSuggestion = function(opt_message) {
+    chrome.omnibox.setDefaultSuggestion({
+        'description': opt_message || TS.suggest.NO_MATCH_MSG
+    });
+};
+
+/**
  * Suggest items using content and desc fns.
  * @param {array} items List of items to show.
  * @param {function} itemToSuggest Creates suggestion for item.
@@ -29,9 +39,7 @@ TS.suggest.suggestItems = function(items, itemToSuggest, opt_noDefault) {
     var numItems = items.length;
     // If no items, display standard error.
     if (numItems === 0 && !opt_noDefault) {
-        chrome.omnibox.setDefaultSuggestion({
-            'description': TS.suggest.NO_MATCH_MSG
-        });
+        TS.suggest.showDefaultSuggestion();
         return suggestions;
     }
     // Create suggestions, with first item as default suggestion.
@@ -56,21 +64,11 @@ TS.suggest.suggestItems = function(items, itemToSuggest, opt_noDefault) {
  */
 TS.suggest.suggestAllItems = function(params) {
     var suggestions = [];
-    /*
-    var query = params[0];
-    var savedTabs = TS.dbTabs.getNamedTabs();
-    var bookmarkMatches = 1;
-    var historyMatches = 1;
-    var allItems = [];
-    allItems = allItems.concat(savedTabs);
-    allItems = allItems.concat(bookmarkMatches);
-    allItems = allItems.concat(historyMatches);
-    */
-    var savedTabSuggestions = TS.suggest.suggestOpen(params);
+    var savedTabSuggestions = TS.cmds.suggestOpenTab(params);
     debug('saved tab:', savedTabSuggestions);
-    var bookmarkSuggestions = TS.suggest.suggestChromeBookmarks(params);
+    var bookmarkSuggestions = TS.cmds.suggestOpenBookmarks(params);
     debug('bookmark:', bookmarkSuggestions);
-    var historySuggestions = TS.suggest.suggestHistory(params);
+    var historySuggestions = TS.cmds.suggestOpenHistory(params);
     debug('history:', historySuggestions);
 
     suggestions = suggestions.concat(savedTabSuggestions);
