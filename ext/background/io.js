@@ -33,12 +33,36 @@ TS.io.setClientId = function(clientId) {
 };
 
 /**
+ * Join the group with specified id.
+ * @param {string} groupName The name of the group to join.
+ */
+TS.io.joinGroupById = function(groupName) {
+  if (groupName.trim() === '') {
+    return;
+  }
+
+  TS.dbFlags.setFlag('lastGroupName', newGroupId);
+
+  var baseSocketUrl = (
+    TS.dbFlags.getFlag('localSettings') ?
+    TS.io.BASE_TEST_URL : TS.io.BASE_URL);
+  var connectUrl = baseSocketUrl + groupName + '/join-group';
+
+  TS.io.port = new WebSocket(connectUrl);
+  TS.io.port.onmessage = debug; //TS.io.routeIncomingPrivateRequest;
+  TS.io.port.onopen = function() {
+    debug('Connected!');
+  };
+
+};
+
+/**
  * Create websocket to server for receiving requests sent to clientId.
  * @param {string} clientId Alphabetic string to identify this connection.
  */
 TS.io.setupSocket = function(clientId) {
   var clientId = clientId || localStorage.getItem('clientId') || '';
-  if (clientId === '') {
+  if (clientId.trim() === '') {
     debug('Client ID is empty string.  Aborting setting up socket.');
     return;
   }
