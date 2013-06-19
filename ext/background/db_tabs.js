@@ -18,7 +18,7 @@ TS.dbTabs = TS.dbTabs || {};
 /**
  * Name of activity log database in local storage.
  */
-TS.dbTabs.DB_NAME = 'namedTabs';
+TS.dbTabs.DB_NAME = 'tabdict';
 
 /**
  * Return dict of tab names to saved tab info objects.
