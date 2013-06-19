@@ -47,11 +47,11 @@ TS.cmds.suggestMessageAt = function(msg) {
 
 /**
  * Compute milliseconds to target hour and minute later today from now.
- * @param {number} hour An hour later today.
- * @param {number} minute A minute of that hour later today.
+ * @param {number} targetHour An hour later today.
+ * @param {number} targetMin A minute of that hour later today.
  * @return {number} msecToTime The number of milliseconds until the time.
  */
-TS.cmds.msecToTime = function(hour, minute) {
+TS.cmds.msecToTime = function(targetHour, targetMin) {
     var currDate = new Date();
     var currHour = currDate.getHours();
     var currMin = currDate.getMinutes();
@@ -78,7 +78,7 @@ TS.cmds.msecToTime = function(hour, minute) {
  * @param {object} msg The broadcast message for this cmd.
  *   'cmd': The command object augmented with user's input.
  */
-TS.cmds.cmdMessageAt = function(msg) {
+TS.cmds.messageAt = function(msg) {
     var cmd = msg.cmd;
     var time = cmd.params[0];
     var msg = cmd.params.splice(1).join(' ');
@@ -89,13 +89,12 @@ TS.cmds.cmdMessageAt = function(msg) {
     var msecToMsg = TS.cmds.msecToTime(targetHour, targetMin);
 
     TS.tabs.getSelected(function(tab) {
-        var notification = TS.omni.createNotification(
-            time + ' hours says:',
-            {'msg': msg, 'url': tab.url, 'title': tab.title}
-        );
-        setTimeout(function() {
-            notification.show();
-        }, msecToMsg);
+        debug('Setting up msgAt notification for seconds delay:', msecToMsg);
+        TS.omni.createNotification(
+            'From ' + time + ' hours ago:',
+            msg,
+            '../img/tabscape24.png',
+            msecToMsg);
         TS.controller.saveActivityLog({
             action: 'msgAt',
             info: {

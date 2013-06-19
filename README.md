@@ -5,7 +5,74 @@ A command line for your Chrome address bar.
 
 Name the tabs you want at your fingertips to re-open or re-focus later.
 
-Crazy Awesome: Chrome API Remote Control w/ Vimspire
+Provides Chrome API Remote Control w/ Vimspire.
+
+
+Omnibox Commands
+================
+
+
+Named Tab Manipulation
+----------------------
+
+### Add Tab: `t a name/of/tab`
+
+### Open Tab: `t o name/tab`
+- Fuzzy search enabled!
+
+### Delete Tab: `t d name/tab`
+- Fuzzy Search enabled!
+
+### Open Bookmark: `t b bookmark-name`
+- Fuzzy Search Bookmarks: folder1/folder2/bookmark-name.
+
+### Open History: `t h url-or-title-query`
+
+General Tab Manipulation
+-------------------------
+
+### Extract Tab: `t e url-fragment`
+- Extracts all tabs in current window matching url-fragment into new window.
+
+### Clone Tab: `t E url-fragment`
+- Like Extract Tabs, but leaves original tabs unaffected.
+
+### Reload Tab: `t r number-of-seconds`
+- Reloads current tab every number-of-seconds.
+
+### Reload All Tabs in Current Window: `t rw`
+
+
+Timed Reminders
+---------------
+
+### Message At: `t m 13:30 At half past one in the afternoon tell me...`
+- Use Military Time.
+
+### Notify In: `t n 30 In thirty minutes tell me to...`
+- Notify in takes a number of minutes to wait before notification.
+
+
+Bookmarklet Manipulation
+------------------------
+
+- Experimental, ymmv.
+
+### Add Bookmarklet: `t s bookmarklet-script`
+
+### Use Bookmarklet: `t u bookmarklet-script`
+
+
+Client Identity Management
+--------------------------
+
+### Setting Client ID: `t c your-client-id`
+- Set your private client id for Vimspire to send you messages.
+
+### Joining Named Groups: `t C your-group-name`
+- Currently Experimental.
+- Join a multi-client group for sharing commands.
+
 
 New Ideas
 =========
@@ -15,6 +82,7 @@ New Ideas
   'Clojure' marks: learning clojure.
   'Spire' marks: tab/n/vim-spire work.
   ...
+
 
 Inner Workings
 ==============
@@ -72,7 +140,7 @@ Create flash-pages.
 More info: http://wstyke.com/tabspire
 
 Release Notes
--------------
+============
 v2.0.0.0 - Updated WebSocket module to connect to new Clojure nspire server.
 v1.0.1.0 - Added `t e urlFragment` & `t E urlFragment`:
 - Extract/clone tabs with urls matching urlFragment into a new window..
@@ -85,7 +153,7 @@ v0.9.4 - Added support for openURL
 v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
 Release Info
-------------
+============
 + (06-18-2013) v2.0.0.0 with websocket upgrades for clojure nspire server.
 + (02-06-2013) Improved "Focus Last Focused Tab"
   to remember the previous N focused tab PER WINDOW ID
@@ -120,7 +188,7 @@ Release Info
 - HTML5 Notifications with links to site where notif was made.
 
 Bugs
-----
+====
 
 Catastrophic
 - None
@@ -132,7 +200,7 @@ Cosmetic
 - None
 
 Feature Ideas
--------------
+=============
 
 - Figure out: Copy to Clipboard (it exists!).
 

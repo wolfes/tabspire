@@ -5,6 +5,7 @@
  * @author Wolfe Styke - <wstyke@gmail.com>
  */
 
+// TODO(wstyke): Finish switching over to using command registration.
 
 /** Tabspire Namespace */
 var TS = TS || {};

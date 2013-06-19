@@ -61,13 +61,12 @@ TS.cmds.messageIn = function(msg) {
     var timeAgo = minToMsg === 1 ? ' minute ago...' : ' minutes ago...';
 
     TS.tabs.getSelected(function(tab) {
-        var notification = TS.omni.createNotification(
+        TS.omni.createNotification(
             'From ' + minToMsg + timeAgo, // Title
-            {'msg': msg, 'url': tab.url, 'title': tab.title}
+            msg,
+            '../img/tabscape24.png',
+            msecToMsg
         );
-        setTimeout(function() {
-            notification.show();
-        }, msecToMsg);
         TS.controller.saveActivityLog({
             action: 'msgIn',
             info: {

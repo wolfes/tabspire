@@ -245,30 +245,35 @@ TS.omni.flattenBookmarks = function(bookmarkTree, opt_prefix) {
 };
 
 /**
- * Create, return, optionally show HTML5 Notification.
+ * Show HTML5 Notification after a msecToMessage delay.
  * @param {string} opt_title The notification's title.
  * @param {string} opt_content The body text.
  * @param {string} opt_image The image src.
- * @return {object} notification The html5 notification.
+ * @param {number} msecToMessage Delay in msec before showing notification.
  */
 TS.omni.createNotification = function(
-        opt_title, opt_content, opt_image) {
-    var notification = webkitNotifications.createNotification(
-        opt_image || '',
-        opt_title || '',
-        opt_content || ''
-    );
-    TS.controller.msg = opt_content;
-    notification = webkitNotifications.createHTMLNotification(
-      '../notif/notif.html'  // html url - can be relative
-    );
-    notification.addEventListener('click', function(e) {
-        var this_ = this;
-        setTimeout(function() {
-            this_.cancel();
-        }, 200);
-    });
-    return notification;
+        opt_title, opt_content, opt_image, msecToMessage) {
+
+    var title = opt_title || (
+        'Notification from ' +
+        String(msecToMessage / (60000)) +
+        ' minutes ago.');
+    var content = (opt_content ||
+        'No content was provided for this notification.');
+    TS.controller.msg = content;
+    var img = opt_image || '../img/tabscape24.png';
+
+    setTimeout(function() {
+        chrome.notifications.create(
+            String(Math.random() * 1000000),
+            {
+              'type': 'basic',
+            'title': title,
+            'message': content,
+            'iconUrl': img
+            },
+            function() {});
+    }, msecToMessage);
 };
 
 /**
