@@ -23,13 +23,13 @@ Named Tab Manipulation
 ### Delete Tab: `t d name/tab`
 - Fuzzy Search enabled!
 
+General Tab Manipulation
+-------------------------
+
 ### Open Bookmark: `t b bookmark-name`
 - Fuzzy Search Bookmarks: folder1/folder2/bookmark-name.
 
 ### Open History: `t h url-or-title-query`
-
-General Tab Manipulation
--------------------------
 
 ### Extract Tab: `t e url-fragment`
 - Extracts all tabs in current window matching url-fragment into new window.
