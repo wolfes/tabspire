@@ -32,7 +32,7 @@ $(document).ready(function() {
  * Add cmd listeners.
  */
 TS.cmds.initOpenBookmark = function() {
-    TS.vent.on('cmd:omni:openBookmark:suggest', TS.cmds.suggestOpenBookmark);
+    TS.vent.on('cmd:omni:openBookmark:suggest', TS.cmds.suggestOpenBookmarks);
     TS.vent.on('cmd:omni:openBookmark:perform', TS.cmds.openBookmark);
 };
 
@@ -48,6 +48,13 @@ TS.cmds.suggestOpenBookmarks = function(msg) {
     var params = msg.params;
     var suggestions = [];
     var query = new RegExp(params[0], 'i');
+
+    if (params[0] === undefined || params[0].trim() === '') {
+        TS.suggest.showDefaultSuggestion(
+            'Open Bookmark: bookmark-name');
+        return;
+    }
+
     var bookmarks = TS.omni.bookmarks;
     for (var i = 0, n = bookmarks.length; i < n; i++) {
         var bookmark = bookmarks[i];

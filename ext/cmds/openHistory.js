@@ -64,6 +64,12 @@ TS.cmds.suggestOpenHistory = function(msg) {
     var query = params[0];
     var queryRegExp = new RegExp(query, 'i');
 
+    if (query === undefined || query.trim() === '') {
+        TS.suggest.showDefaultSuggestion(
+            'Open History: url-or-title-query');
+        return;
+    }
+
     var history = TS.cmds.historyList;
     var numHistory = history.length;
     for (var i = 0; i < numHistory; i++) {

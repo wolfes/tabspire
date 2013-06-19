@@ -154,6 +154,7 @@ v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
 Release Info
 ============
++ (06-18-2013) v2.0.2.0 adds auto-complete omnibox message to remind user of command signature.
 + (06-18-2013) v2.0.0.0 with websocket upgrades for clojure nspire server.
 + (02-06-2013) Improved "Focus Last Focused Tab"
   to remember the previous N focused tab PER WINDOW ID

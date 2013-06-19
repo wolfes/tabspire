@@ -43,6 +43,11 @@ TS.cmds.suggestReloadTab = function(msg) {
     debug('suggestReloadTab(', msg);
     var params = msg.params;
     var suggestions = [];
+    if (params[0] === undefined || params[0].trim() === '') {
+        TS.suggest.showDefaultSuggestion(
+            'Reload Current Tab Every: seconds');
+        return;
+    }
     msg.showSuggestions(suggestions);
 };
 

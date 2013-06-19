@@ -42,6 +42,11 @@ TS.cmds.initMessageIn = function() {
 TS.cmds.suggestMessageIn = function(msg) {
     var params = msg.params;
     var suggestions = [];
+    if (params[0] === undefined || params[0].trim() === '') {
+        TS.suggest.showDefaultSuggestion(
+            'Notify In: minutes Message...');
+        return;
+    }
     msg.showSuggestions(suggestions);
 };
 

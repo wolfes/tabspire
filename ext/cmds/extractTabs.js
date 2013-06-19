@@ -46,17 +46,37 @@ TS.cmds.initExtractTabs = function() {
     TS.vent.on('cmd:omni:extractTabs:suggest', TS.cmds.suggestExtractTabs);
     TS.vent.on('cmd:omni:extractTabs:perform', TS.cmds.extractTabs);
     // Extract & Clone
-    TS.vent.on('cmd:omni:cloneTabs:suggest', TS.cmds.suggestExtractTabs);
+    TS.vent.on('cmd:omni:cloneTabs:suggest', TS.cmds.suggestCloneTabs);
     TS.vent.on('cmd:omni:cloneTabs:perform', TS.cmds.extractTabClones);
 };
 
 /**
- * Return suggestions for MessageAt command.
+ * Return suggestions for ExtractTabs command.
  * @param {string} msg Has 'params', 'showSuggestions'.
  */
 TS.cmds.suggestExtractTabs = function(msg) {
     var params = msg.params;
     var suggestions = [];
+    if (params[0] === undefined || params[0].trim() === '') {
+        TS.suggest.showDefaultSuggestion(
+            'Extract Tabs: url-fragment');
+        return;
+    }
+    msg.showSuggestions(suggestions);
+};
+
+/**
+ * Return suggestions for CloneTabs command.
+ * @param {string} msg Has 'params', 'showSuggestions'.
+ */
+TS.cmds.suggestCloneTabs = function(msg) {
+    var params = msg.params;
+    var suggestions = [];
+    if (params[0] === undefined || params[0].trim() === '') {
+        TS.suggest.showDefaultSuggestion(
+            'Clone Tabs: url-fragment');
+        return;
+    }
     msg.showSuggestions(suggestions);
 };
 

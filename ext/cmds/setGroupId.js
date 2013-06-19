@@ -1,5 +1,5 @@
 /**
- * Methods for `Set Client Id` command.
+ * Methods for `Set Group Id` command.
  * Defines command info, suggestion generator, and actual command.
  *
  * @author Wolfe Styke - <wstyke@gmail.com>
@@ -14,47 +14,48 @@ TS.cmds = TS.cmds || {};
 
 // Add command to set id for server.
 TS.omni.commands.push({
-    'opt': 'c',
-    'cmd': 'clientId',
-    'desc': 'Set Client Id',
+    'opt': 'C',
+    'cmd': 'groupId',
+    'desc': 'Set Group Id',
     'suggest': 'suggestMessage',
-    'cmdName': 'setClientId'
+    'cmdName': 'setGroupId'
 });
 
 /**
  * Initialize command listeners.
  */
 $(document).ready(function() {
-    TS.cmds.initSetClientId();
+    TS.cmds.initSetGroupId();
 });
 
 /**
  * Add cmd listeners.
  */
-TS.cmds.initSetClientId = function() {
-    TS.vent.on('cmd:omni:setClientId:suggest', TS.cmds.suggestSetClientId);
-    TS.vent.on('cmd:omni:setClientId:perform', TS.cmds.setClientId);
+TS.cmds.initSetGroupId = function() {
+    TS.vent.on('cmd:omni:setGroupId:suggest', TS.cmds.suggestSetGroupId);
+    TS.vent.on('cmd:omni:setGroupId:perform', TS.cmds.setGroupId);
 };
 
 /**
- * Return suggestions for MessageAt command.
+ * Return suggestions for 'Set Group Id' command.
  * @param {string} msg Has 'params', 'showSuggestions'.
  */
-TS.cmds.suggestSetClientId = function(msg) {
+TS.cmds.suggestSetGroupId = function(msg) {
     var params = msg.params;
-    TS.suggest.showDefaultSuggestion(
-        'Set Client ID: client-id-no-slashes');
     var suggestions = [];
+    TS.suggest.showDefaultSuggestion(
+        'Join Group Name: group-name-no-slashes');
     msg.showSuggestions(suggestions);
 };
 
 /**
- * Set client id for server.
+ * Join group on server.
  * @param {object} msg The broadcast cmd msg.
  *  {object} cmd The user's command.
  */
-TS.cmds.setClientId = function(msg) {
+TS.cmds.joinGroupId = function(msg) {
     var cmd = msg.cmd;
-    var newId = cmd.params[0];
-    TS.io.setClientId(newId);
+    var newGroupName = cmd.params[0];
+    //TS.io.setClientId(newId);
+    TS.io.joinGroupWithId(newGroupName);
 };

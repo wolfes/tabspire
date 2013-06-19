@@ -42,6 +42,11 @@ TS.cmds.initMessageAt = function() {
 TS.cmds.suggestMessageAt = function(msg) {
     var params = msg.params;
     var suggestions = [];
+    if (params[0] === undefined || params[0].trim() === '') {
+        TS.suggest.showDefaultSuggestion(
+            'Message At: hour:minute Message...');
+        return;
+    }
     msg.showSuggestions(suggestions);
 };
 
