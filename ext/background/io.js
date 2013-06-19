@@ -170,4 +170,11 @@ TS.io.registerCommands = function() {
     var charCodeMark = data.mark.charCodeAt(0);
     TS.controller.highlightMark(charCodeMark);
   });
+
+  TS.vent.on('nspire:focusNextTab', function(data) {
+    TS.tabs.focusNextTab();
+  });
+  TS.vent.on('nspire:focusPrevTab', function(data) {
+    TS.tabs.focusPrevTab();
+  });
 };

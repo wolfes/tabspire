@@ -195,3 +195,43 @@ TS.tabs.closeIfNewTab = function(tab) {
         chrome.tabs.remove(tab.id);
     }
 };
+
+/**
+ * Focus next tab in currently active window.
+ */
+TS.tabs.focusNextTab = function() {
+  TS.tabs.getSelected(function(tab) {
+    chrome.tabs.getAllInWindow(tab.windowId, function(tabs) {
+      for (var i = 0, n = tabs.length; i < n; i++) {
+        var tab = tabs[i];
+        if (tab.active) {
+          var nextTab = i === (tabs.length - 1) ? tabs[0] : tabs[i + 1];
+          chrome.tabs.update(nextTab.id, {
+            active: true
+          });
+          break;
+        }
+      }
+    });
+  });
+};
+
+/**
+ * Focus previous tab in currently active window.
+ */
+TS.tabs.focusPrevTab = function() {
+  TS.tabs.getSelected(function(tab) {
+    chrome.tabs.getAllInWindow(tab.windowId, function(tabs) {
+      for (var i = 0, n = tabs.length; i < n; i++) {
+        var tab = tabs[i];
+        if (tab.active) {
+          var lastTab = i > 0 ? tabs[i - 1] : tabs[tabs.length - 1];
+          chrome.tabs.update(lastTab.id, {
+            active: true
+          });
+          break;
+        }
+      }
+    });
+  });
+};
