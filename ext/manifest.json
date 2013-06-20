@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "description": "Command Line / GUI for saving & opening tabs.",
   "browser_action": {
-    "default_icon": "img/tabscape16.png"
+    "default_icon": "img/catalog.png"
   },
   "background": {
     "page": "background/index.html"

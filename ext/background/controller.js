@@ -24,6 +24,9 @@ TS.controller.setLocalSettings = function(useLocalSettings) {
  */
 $(document).ready(function() {
     TS.io.setupSocket();
+    chrome.browserAction.onClicked.addListener(function(tab) {
+       TS.controller.openTab({'url': 'http://github.com/wolfes/tabspire'});
+    });
     //debug('Initialization Done!');
 });
 
