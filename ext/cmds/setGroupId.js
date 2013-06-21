@@ -33,7 +33,7 @@ $(document).ready(function() {
  */
 TS.cmds.initSetGroupId = function() {
     TS.vent.on('cmd:omni:setGroupId:suggest', TS.cmds.suggestSetGroupId);
-    TS.vent.on('cmd:omni:setGroupId:perform', TS.cmds.setGroupId);
+    TS.vent.on('cmd:omni:setGroupId:perform', TS.cmds.joinGroupId);
 };
 
 /**
@@ -57,5 +57,5 @@ TS.cmds.joinGroupId = function(msg) {
     var cmd = msg.cmd;
     var newGroupName = cmd.params[0];
     //TS.io.setClientId(newId);
-    TS.io.joinGroupWithId(newGroupName);
+    TS.io.joinGroupById(newGroupName);
 };

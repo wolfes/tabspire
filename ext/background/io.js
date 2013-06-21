@@ -41,7 +41,7 @@ TS.io.joinGroupById = function(groupName) {
     return;
   }
 
-  TS.dbFlags.setFlag('lastGroupName', newGroupId);
+  TS.dbFlags.setFlag('lastGroupName', groupName);
 
   var baseSocketUrl = (
     TS.dbFlags.getFlag('localSettings') ?
@@ -49,7 +49,8 @@ TS.io.joinGroupById = function(groupName) {
   var connectUrl = baseSocketUrl + groupName + '/join-group';
 
   TS.io.port = new WebSocket(connectUrl);
-  TS.io.port.onmessage = debug; //TS.io.routeIncomingPrivateRequest;
+  //TODO(wstyke): Consider using routeIncomingGroupRequest handler.
+  TS.io.port.onmessage = TS.io.routeIncomingPrivateRequest;
   TS.io.port.onopen = function() {
     debug('Connected!');
   };
