@@ -197,16 +197,23 @@ TS.tabs.closeIfNewTab = function(tab) {
 };
 
 /**
- * Focus next tab in currently active window.
+ * Focus tab a number of indices forward of currently focused tab.
+ * @param {number} indicesForward Negative indicates backwards.
  */
-TS.tabs.focusNextTab = function() {
+TS.tabs.focusTabByPosDiff = function(indicesForward) {
   TS.tabs.getSelected(function(tab) {
     chrome.tabs.getAllInWindow(tab.windowId, function(tabs) {
       for (var i = 0, n = tabs.length; i < n; i++) {
         var tab = tabs[i];
         if (tab.active) {
-          var nextTab = i === (tabs.length - 1) ? tabs[0] : tabs[i + 1];
-          chrome.tabs.update(nextTab.id, {
+          // Get the correct tab index to focus.
+          var focusIndex = (i + indicesForward) % tabs.length;
+          if (focusIndex < 0) {
+            focusIndex += tabs.length;
+          }
+          // Focus tab.
+          var focusTab = tabs[focusIndex];
+          chrome.tabs.update(focusTab.id, {
             active: true
           });
           break;
@@ -217,21 +224,15 @@ TS.tabs.focusNextTab = function() {
 };
 
 /**
+ * Focus next tab in currently active window.
+ */
+TS.tabs.focusNextTab = function() {
+  TS.tabs.focusTabByPosDiff(1);
+};
+
+/**
  * Focus previous tab in currently active window.
  */
 TS.tabs.focusPrevTab = function() {
-  TS.tabs.getSelected(function(tab) {
-    chrome.tabs.getAllInWindow(tab.windowId, function(tabs) {
-      for (var i = 0, n = tabs.length; i < n; i++) {
-        var tab = tabs[i];
-        if (tab.active) {
-          var lastTab = i > 0 ? tabs[i - 1] : tabs[tabs.length - 1];
-          chrome.tabs.update(lastTab.id, {
-            active: true
-          });
-          break;
-        }
-      }
-    });
-  });
+  TS.tabs.focusTabByPosDiff(-1);
 };

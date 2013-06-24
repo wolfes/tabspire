@@ -34,6 +34,7 @@ TS.io.setClientId = function(clientId) {
 
 /**
  * Join the group with specified id.
+ * TODO(wstyke:6-21-2013): Consider storing more than last joined group name.
  * @param {string} groupName The name of the group to join.
  */
 TS.io.joinGroupById = function(groupName) {
@@ -177,5 +178,11 @@ TS.io.registerCommands = function() {
   });
   TS.vent.on('nspire:focusPrevTab', function(data) {
     TS.tabs.focusPrevTab();
+  });
+  TS.vent.on('nspire:focusLastTab', function(data) {
+    TS.obsTab.selectPrevFocusedTab();
+  });
+  TS.vent.on('nspire:focusLastWindow', function(data) {
+    TS.obsWin.focusLastWindow();
   });
 };
