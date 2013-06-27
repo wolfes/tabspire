@@ -365,7 +365,7 @@ var digits = {
 
 chrome.extension.onMessage.addListener(
     function(msg, sender, sendResponse) {
-        debug(msg, sender);
+        // debug(msg, sender);
         var action = msg.action;
         if (action === 'openTab') {
             TS.controller.openTab({
@@ -394,7 +394,7 @@ chrome.extension.onMessage.addListener(
             });
         } else if (action === 'cmdLine.gotoMark') {
             var markInfo = TS.dbMark.getMarkByKey(msg.code);
-            debug('gotoMark:', msg.code in digits, markInfo);
+            //debug('gotoMark:', msg.code in digits, markInfo);
             if (TS.util.isDef(markInfo)) {
                 TS.dbMark.setLastOpenedMark(markInfo);
                 TS.controller.openTab({

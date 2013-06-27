@@ -17,7 +17,27 @@ TS.io.BASE_URL = 'ws://cmdsync.com:3000/tabspire/api/0/';
 TS.io.BASE_TEST_URL = 'ws://localhost:3000/tabspire/api/0/';
 
 /** Attempt websocket reconnection every N seconds. */
-TS.io.WAIT_BEFORE_RECONNECTING = 60 * 1000;
+TS.io.WAIT_BEFORE_RECONNECTING = 10 * 1000;
+
+/** Heartbeat Timer for checking connection */
+TS.io.reconnectTimer;
+
+/**
+ * Start heartbeat to ensure connection stays open.
+ */
+TS.io.startSocketHeartbeat = function() {
+  //if (TS.io.port.readyState === TS.io.port.CLOSED) {
+     //Attempt to reconnect immediately if possible.
+    //TS.io.setupSocket();
+  //}
+  // Then continue attempting to reconnect if closed.
+  clearInterval(TS.io.reconnectTimer);
+  TS.io.reconnectTimer = setInterval(function() {
+    if (TS.io.port.readyState === TS.io.port.CLOSED) {
+      TS.io.setupSocket();
+    }
+  }, TS.io.WAIT_BEFORE_RECONNECTING);
+};
 
 /**
  * Set up socket with a given private client id.
@@ -81,11 +101,11 @@ TS.io.setupSocket = function(clientId) {
   TS.io.port.onopen = function() {
     debug('Connected!');
   };
+
   TS.io.port.onclose = function() {
+    // Restart socket reconnect heartbeat.
     // Recreate websocket connection when current socket closes.
-    setTimeout(function() {
-      TS.io.setupSocket(clientId);
-    }, TS.io.WAIT_BEFORE_RECONNECTING);
+    TS.io.startSocketHeartbeat();
   };
   localStorage.setItem('clientId', clientId);
 };

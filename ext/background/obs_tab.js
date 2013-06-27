@@ -67,7 +67,7 @@ TS.obsTab.updateTabFocusChange_ = function(activeInfo) {
         return;
     }
     // Save focused tab by prepending to window's tabs, trim list to fit.
-    prevTabs = ([activeInfo].concat(prevTabs)).slice(0, 10);
+    prevTabs = ([activeInfo].concat(prevTabs)).slice(0, TS.obsTab.prevTabsMax);
     TS.obsTab.focusedTabsByWindow[windowId] = prevTabs;
 };
 
@@ -85,8 +85,9 @@ chrome.tabs.onActivated.addListener(TS.obsTab.selectionChange);
  */
 TS.obsTab.selectPrevFocusedTab = function() {
     // Figure out selected window.
-    chrome.windows.getCurrent(function(currWinInfo) {
-        var currWinId = currWinInfo.id;
+   // chrome.windows.getCurrent(function(currWinInfo) {
+    TS.tabs.getSelected(function(focusedTab) {
+        var currWinId = focusedTab.windowId;  // currWinInfo.id;
         var prevTabs = TS.obsTab.getTabsByWindow_(currWinId);
         if (prevTabs.length < 2) {
             debug('Abort selectPrevFocusedTab: no prev focused tabs for win.');

@@ -33,10 +33,14 @@ TS.obsWin.currentlyFocusedWin;
  * @private
  */
 TS.obsWin.updateWindowFocusChange_ = function(activeInfo) {
+    debug('updateWindowFocusChange(', activeInfo);
+    if (activeInfo === undefined || activeInfo === -1) {
+        return;
+    }
     if (TS.obsWin.currentlyFocusedWin !== undefined) {
         TS.obsWin.prevFocusedWins = ([
             TS.obsWin.currentlyFocusedWin
-        ].concat(TS.obsWin.prevFocusedWins)).slice(0, 10);
+        ].concat(TS.obsWin.prevFocusedWins)).slice(0, TS.obsWin.prevWinsMax);
     }
     TS.obsWin.currentlyFocusedWin = activeInfo;
 };
