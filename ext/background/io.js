@@ -96,15 +96,18 @@ TS.io.setupSocket = function(clientId) {
     TS.io.BASE_TEST_URL : TS.io.BASE_URL);
   var connectUrl = baseSocketUrl + clientId + '/join-private';
   debug('Connecting to:', connectUrl);
+
   TS.io.port = new WebSocket(connectUrl);
   TS.io.port.onmessage = TS.io.routeIncomingPrivateRequest;
   TS.io.port.onopen = function() {
     debug('Connected!');
   };
 
+  TS.io.startSocketHeartbeat();
   TS.io.port.onclose = function() {
     // Restart socket reconnect heartbeat.
     // Recreate websocket connection when current socket closes.
+    debug('WebSocket Disconnected.');
     TS.io.startSocketHeartbeat();
   };
   localStorage.setItem('clientId', clientId);
