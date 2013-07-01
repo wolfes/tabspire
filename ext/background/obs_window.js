@@ -29,12 +29,12 @@ TS.obsWin.currentlyFocusedWin;
 
 /**
  * Helper Method for managing current/previous window update.
- * @param {Object} activeInfo The currently active window.
+ * @param {number} activeWinId Currently active window's id.
  * @private
  */
-TS.obsWin.updateWindowFocusChange_ = function(activeInfo) {
-    debug('updateWindowFocusChange(', activeInfo);
-    if (activeInfo === undefined || activeInfo === -1) {
+TS.obsWin.updateWindowFocusChange_ = function(activeWinId) {
+    if (activeWinId === undefined || activeWinId === -1) {
+        // Active Win Id is -1 when Chrome loses focus.
         return;
     }
     if (TS.obsWin.currentlyFocusedWin !== undefined) {
@@ -42,7 +42,7 @@ TS.obsWin.updateWindowFocusChange_ = function(activeInfo) {
             TS.obsWin.currentlyFocusedWin
         ].concat(TS.obsWin.prevFocusedWins)).slice(0, TS.obsWin.prevWinsMax);
     }
-    TS.obsWin.currentlyFocusedWin = activeInfo;
+    TS.obsWin.currentlyFocusedWin = activeWinId;
 };
 
 /**
