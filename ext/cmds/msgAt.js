@@ -93,10 +93,13 @@ TS.cmds.messageAt = function(msg) {
     var targetMin = parseInt(hourMin[1], 10);
     var msecToMsg = TS.cmds.msecToTime(targetHour, targetMin);
 
+    //var minutesAgo = msecToMsg / (60 * 1000)
+    //var title = minutesAgo < 60 ? "" : "";
+
     TS.tabs.getSelected(function(tab) {
         debug('Setting up msgAt notification for seconds delay:', msecToMsg);
         TS.omni.createNotification(
-            'From ' + time + ' hours ago:',
+            'From ' + (msecToMsg / (3600 * 1000) + ' hours ago:',
             msg,
             '../img/tabscape24.png',
             msecToMsg);
