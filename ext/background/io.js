@@ -26,11 +26,7 @@ TS.io.reconnectTimer;
  * Start heartbeat to ensure connection stays open.
  */
 TS.io.startSocketHeartbeat = function() {
-  //if (TS.io.port.readyState === TS.io.port.CLOSED) {
-     //Attempt to reconnect immediately if possible.
-    //TS.io.setupSocket();
-  //}
-  // Then continue attempting to reconnect if closed.
+  // Repeatedly attempt to reconnect if socket is closed.
   clearInterval(TS.io.reconnectTimer);
   TS.io.reconnectTimer = setInterval(function() {
     if (TS.io.port.readyState === TS.io.port.CLOSED) {
