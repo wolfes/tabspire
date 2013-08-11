@@ -99,10 +99,11 @@ TS.cmds.messageAt = function(msg) {
     TS.tabs.getSelected(function(tab) {
         debug('Setting up msgAt notification for seconds delay:', msecToMsg);
         TS.omni.createNotification(
-            'From ' + (msecToMsg / (3600 * 1000) + ' hours ago:',
+            'From ' + (msecToMsg / (3600 * 1000)) + ' hours ago:',
             msg,
             '../img/tabscape24.png',
             msecToMsg);
+
         TS.controller.saveActivityLog({
             action: 'msgAt',
             info: {
