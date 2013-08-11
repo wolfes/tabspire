@@ -29,6 +29,5 @@
 	  "js": ["lib/underscore-1.4.4.js", "lib/backbone-0.9.10.js", "lib/jquery-1.7.2.min.js", "shared/util.js", "cs/cmdLine.js"]
     }
   ],
-  "options_page": "view/index.html",
-  "update_url": "http://wstyke.com/tabspire/updates.xml"
+  "options_page": "view/index.html"
 }

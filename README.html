@@ -14,29 +14,29 @@
 <li><a href="#tabspire">tabspire</a></li>
 <li><a href="#omnibox-commands">Omnibox Commands</a><ul>
 <li><a href="#named-tab-manipulation">Named Tab Manipulation</a><ul>
-<li><a href="#add-tab-t-a-nameoftab">Add Tab: <code>t a name/of/tab</code></a></li>
-<li><a href="#open-tab-t-o-nametab">Open Tab: <code>t o name/tab</code></a></li>
-<li><a href="#delete-tab-t-d-nametab">Delete Tab: <code>t d name/tab</code></a></li>
+<li><a href="#add-tab">Add Tab:</a></li>
+<li><a href="#open-tab">Open Tab:</a></li>
+<li><a href="#delete-tab">Delete Tab:</a></li>
 </ul></li>
 <li><a href="#general-tab-manipulation">General Tab Manipulation</a><ul>
-<li><a href="#open-bookmark-t-b-bookmark-name">Open Bookmark: <code>t b bookmark-name</code></a></li>
-<li><a href="#open-history-t-h-url-or-title-query">Open History: <code>t h url-or-title-query</code></a></li>
-<li><a href="#extract-tab-t-e-url-fragment">Extract Tab: <code>t e url-fragment</code></a></li>
-<li><a href="#clone-tab-t-e-url-fragment">Clone Tab: <code>t E url-fragment</code></a></li>
-<li><a href="#reload-tab-t-r-number-of-seconds">Reload Tab: <code>t r number-of-seconds</code></a></li>
-<li><a href="#reload-all-tabs-in-current-window-t-rw">Reload All Tabs in Current Window: <code>t rw</code></a></li>
+<li><a href="#open-bookmark">Open Bookmark:</a></li>
+<li><a href="#open-history">Open History:</a></li>
+<li><a href="#extract-tab">Extract Tab:</a></li>
+<li><a href="#clone-tab">Clone Tab:</a></li>
+<li><a href="#reload-tab">Reload Tab:</a></li>
+<li><a href="#reload-all-tabs-in-current-window">Reload All Tabs in Current Window:</a></li>
 </ul></li>
 <li><a href="#timed-reminders">Timed Reminders</a><ul>
-<li><a href="#message-at-t-m-1330-at-half-past-one-in-the-afternoon-tell-me...">Message At: <code>t m 13:30 At half past one in the afternoon tell me...</code></a></li>
-<li><a href="#notify-in-t-n-30-in-thirty-minutes-tell-me-to...">Notify In: <code>t n 30 In thirty minutes tell me to...</code></a></li>
+<li><a href="#message-at">Message At:</a></li>
+<li><a href="#notify-in">Notify In:</a></li>
 </ul></li>
 <li><a href="#bookmarklet-manipulation">Bookmarklet Manipulation</a><ul>
-<li><a href="#add-bookmarklet-t-s-bookmarklet-script">Add Bookmarklet: <code>t s bookmarklet-script</code></a></li>
-<li><a href="#use-bookmarklet-t-u-bookmarklet-script">Use Bookmarklet: <code>t u bookmarklet-script</code></a></li>
+<li><a href="#add-bookmarklet">Add Bookmarklet:</a></li>
+<li><a href="#use-bookmarklet">Use Bookmarklet:</a></li>
 </ul></li>
 <li><a href="#client-identity-management">Client Identity Management</a><ul>
-<li><a href="#setting-client-id-t-c-your-client-id">Setting Client ID: <code>t c your-client-id</code></a></li>
-<li><a href="#joining-named-groups-t-c-your-group-name">Joining Named Groups: <code>t C your-group-name</code></a></li>
+<li><a href="#setting-client-id">Setting Client ID:</a></li>
+<li><a href="#joining-named-groups">Joining Named Groups:</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#new-ideas">New Ideas</a></li>
@@ -56,56 +56,81 @@
 <p>Provides Chrome API Remote Control w/ Vimspire.</p>
 <h1 id="omnibox-commands"><a href="#omnibox-commands">Omnibox Commands</a></h1>
 <h2 id="named-tab-manipulation"><a href="#named-tab-manipulation">Named Tab Manipulation</a></h2>
-<h3 id="add-tab-t-a-nameoftab"><a href="#add-tab-t-a-nameoftab">Add Tab: <code>t a name/of/tab</code></a></h3>
-<h3 id="open-tab-t-o-nametab"><a href="#open-tab-t-o-nametab">Open Tab: <code>t o name/tab</code></a></h3>
+<h3 id="add-tab"><a href="#add-tab">Add Tab:</a></h3>
 <ul>
+<li><code>t a name/of/tab</code></li>
+</ul>
+<h3 id="open-tab"><a href="#open-tab">Open Tab:</a></h3>
+<ul>
+<li><code>t o name/tab</code></li>
 <li>Fuzzy search enabled!</li>
 </ul>
-<h3 id="delete-tab-t-d-nametab"><a href="#delete-tab-t-d-nametab">Delete Tab: <code>t d name/tab</code></a></h3>
+<h3 id="delete-tab"><a href="#delete-tab">Delete Tab:</a></h3>
 <ul>
+<li><code>t d name/tab</code></li>
 <li>Fuzzy Search enabled!</li>
 </ul>
 <h2 id="general-tab-manipulation"><a href="#general-tab-manipulation">General Tab Manipulation</a></h2>
-<h3 id="open-bookmark-t-b-bookmark-name"><a href="#open-bookmark-t-b-bookmark-name">Open Bookmark: <code>t b bookmark-name</code></a></h3>
+<h3 id="open-bookmark"><a href="#open-bookmark">Open Bookmark:</a></h3>
 <ul>
+<li><code>t b bookmark-name</code></li>
 <li>Fuzzy Search Bookmarks: folder1/folder2/bookmark-name.</li>
 </ul>
-<h3 id="open-history-t-h-url-or-title-query"><a href="#open-history-t-h-url-or-title-query">Open History: <code>t h url-or-title-query</code></a></h3>
-<h3 id="extract-tab-t-e-url-fragment"><a href="#extract-tab-t-e-url-fragment">Extract Tab: <code>t e url-fragment</code></a></h3>
+<h3 id="open-history"><a href="#open-history">Open History:</a></h3>
 <ul>
+<li><code>t h url-or-title-query</code></li>
+</ul>
+<h3 id="extract-tab"><a href="#extract-tab">Extract Tab:</a></h3>
+<ul>
+<li><code>t e url-fragment</code></li>
 <li>Extracts all tabs in current window matching url-fragment into new window.</li>
 </ul>
-<h3 id="clone-tab-t-e-url-fragment"><a href="#clone-tab-t-e-url-fragment">Clone Tab: <code>t E url-fragment</code></a></h3>
+<h3 id="clone-tab"><a href="#clone-tab">Clone Tab:</a></h3>
 <ul>
+<li><code>t E url-fragment</code></li>
 <li>Like Extract Tabs, but leaves original tabs unaffected.</li>
 </ul>
-<h3 id="reload-tab-t-r-number-of-seconds"><a href="#reload-tab-t-r-number-of-seconds">Reload Tab: <code>t r number-of-seconds</code></a></h3>
+<h3 id="reload-tab"><a href="#reload-tab">Reload Tab:</a></h3>
 <ul>
+<li><code>t r number-of-seconds</code></li>
 <li>Reloads current tab every number-of-seconds.</li>
 </ul>
-<h3 id="reload-all-tabs-in-current-window-t-rw"><a href="#reload-all-tabs-in-current-window-t-rw">Reload All Tabs in Current Window: <code>t rw</code></a></h3>
-<h2 id="timed-reminders"><a href="#timed-reminders">Timed Reminders</a></h2>
-<h3 id="message-at-t-m-1330-at-half-past-one-in-the-afternoon-tell-me..."><a href="#message-at-t-m-1330-at-half-past-one-in-the-afternoon-tell-me...">Message At: <code>t m 13:30 At half past one in the afternoon tell me...</code></a></h3>
+<h3 id="reload-all-tabs-in-current-window"><a href="#reload-all-tabs-in-current-window">Reload All Tabs in Current Window:</a></h3>
 <ul>
+<li><code>t rw</code></li>
+</ul>
+<h2 id="timed-reminders"><a href="#timed-reminders">Timed Reminders</a></h2>
+<h3 id="message-at"><a href="#message-at">Message At:</a></h3>
+<ul>
+<li><code>t m 13:30 At half past one in the afternoon tell me...</code></li>
 <li>Use Military Time.</li>
 </ul>
-<h3 id="notify-in-t-n-30-in-thirty-minutes-tell-me-to..."><a href="#notify-in-t-n-30-in-thirty-minutes-tell-me-to...">Notify In: <code>t n 30 In thirty minutes tell me to...</code></a></h3>
+<h3 id="notify-in"><a href="#notify-in">Notify In:</a></h3>
 <ul>
+<li><code>t n 30 In thirty minutes tell me to...</code></li>
 <li>Notify in takes a number of minutes to wait before notification.</li>
 </ul>
 <h2 id="bookmarklet-manipulation"><a href="#bookmarklet-manipulation">Bookmarklet Manipulation</a></h2>
 <ul>
 <li>Experimental, ymmv.</li>
 </ul>
-<h3 id="add-bookmarklet-t-s-bookmarklet-script"><a href="#add-bookmarklet-t-s-bookmarklet-script">Add Bookmarklet: <code>t s bookmarklet-script</code></a></h3>
-<h3 id="use-bookmarklet-t-u-bookmarklet-script"><a href="#use-bookmarklet-t-u-bookmarklet-script">Use Bookmarklet: <code>t u bookmarklet-script</code></a></h3>
-<h2 id="client-identity-management"><a href="#client-identity-management">Client Identity Management</a></h2>
-<h3 id="setting-client-id-t-c-your-client-id"><a href="#setting-client-id-t-c-your-client-id">Setting Client ID: <code>t c your-client-id</code></a></h3>
+<h3 id="add-bookmarklet"><a href="#add-bookmarklet">Add Bookmarklet:</a></h3>
 <ul>
+<li><code>t s bookmarklet-script</code></li>
+</ul>
+<h3 id="use-bookmarklet"><a href="#use-bookmarklet">Use Bookmarklet:</a></h3>
+<ul>
+<li><code>t u bookmarklet-script</code></li>
+</ul>
+<h2 id="client-identity-management"><a href="#client-identity-management">Client Identity Management</a></h2>
+<h3 id="setting-client-id"><a href="#setting-client-id">Setting Client ID:</a></h3>
+<ul>
+<li><code>t c your-client-id</code></li>
 <li>Set your private client id for Vimspire to send you messages.</li>
 </ul>
-<h3 id="joining-named-groups-t-c-your-group-name"><a href="#joining-named-groups-t-c-your-group-name">Joining Named Groups: <code>t C your-group-name</code></a></h3>
+<h3 id="joining-named-groups"><a href="#joining-named-groups">Joining Named Groups:</a></h3>
 <ul>
+<li><code>t C your-group-name</code></li>
 <li>Currently Experimental.</li>
 <li>Join a multi-client group for sharing commands.</li>
 </ul>
@@ -149,7 +174,18 @@ Added Mark (tab + scroll position) !!.
 <p>Create flash-pages. t p Create New FlashPage (HTML Page) Question div - contenteditable=true Answer div - contenteditable=true Store json blob in new db. t q Quiz me! Show questions “Show Answer” -&gt; “I got this!”, “Was Close”, “Totally Forgot” Periodic System-Pushed HTML5 Notif. Quiz Questions</p>
 <p>More info: http://wstyke.com/tabspire</p>
 <h1 id="release-notes"><a href="#release-notes">Release Notes</a></h1>
-<p>v2.0.0.0 - Updated WebSocket module to connect to new Clojure nspire server. v1.0.1.0 - Added <code>t e urlFragment</code> &amp; <code>t E urlFragment</code>: - Extract/clone tabs with urls matching urlFragment into a new window.. v1.0.0.0 - Added <code>''</code> and <code>'&quot;</code>: focus prev. focused tab(in same window)/window. v0.9.9 - Added reloadCurrentTab + reloadFocusMark + focusMark. v0.9.8 - Added Mark Tab <code>ma</code> and Goto Tab <code>'a</code> like in Vim. v0.9.6 - Added delete tab by name/url with ‘t d tabName’. v0.9.5 - Added infinite socket.io reconnect every 5 mins. v0.9.4 - Added support for openURL v0.9.3 - Added support for saving client id locally &amp; on cmdsync.com:3000.</p>
+<ul>
+<li>v2.0.0.0 - Updated WebSocket module to connect to new Clojure nspire server.</li>
+<li>v1.0.1.0 - Added <code>t e urlFragment</code> &amp; <code>t E urlFragment</code>:</li>
+<li>Extract/clone tabs with urls matching urlFragment into a new window..</li>
+<li>v1.0.0.0 - Added <code>''</code> and <code>'&quot;</code>: focus prev. focused tab(in same window)/window.</li>
+<li>v0.9.9 - Added reloadCurrentTab + reloadFocusMark + focusMark.</li>
+<li>v0.9.8 - Added Mark Tab <code>ma</code> and Goto Tab <code>'a</code> like in Vim.</li>
+<li>v0.9.6 - Added delete tab by name/url with ‘t d tabName’.</li>
+<li>v0.9.5 - Added infinite socket.io reconnect every 5 mins.</li>
+<li>v0.9.4 - Added support for openURL</li>
+<li>v0.9.3 - Added support for saving client id locally &amp; on cmdsync.com:3000.</li>
+</ul>
 <h1 id="release-info"><a href="#release-info">Release Info</a></h1>
 <ul>
 <li>(06-18-2013) v2.0.2.0 adds auto-complete omnibox message to remind user of command signature.</li>

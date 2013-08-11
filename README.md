@@ -15,41 +15,52 @@ Omnibox Commands
 Named Tab Manipulation
 ----------------------
 
-### Add Tab: `t a name/of/tab`
+### Add Tab:
+- `t a name/of/tab`
 
-### Open Tab: `t o name/tab`
+### Open Tab:
+- `t o name/tab`
 - Fuzzy search enabled!
 
-### Delete Tab: `t d name/tab`
+### Delete Tab: 
+- `t d name/tab`
 - Fuzzy Search enabled!
 
 General Tab Manipulation
 -------------------------
 
-### Open Bookmark: `t b bookmark-name`
+### Open Bookmark: 
+- `t b bookmark-name`
 - Fuzzy Search Bookmarks: folder1/folder2/bookmark-name.
 
-### Open History: `t h url-or-title-query`
+### Open History:
+- `t h url-or-title-query`
 
-### Extract Tab: `t e url-fragment`
+### Extract Tab:
+- `t e url-fragment`
 - Extracts all tabs in current window matching url-fragment into new window.
 
-### Clone Tab: `t E url-fragment`
+### Clone Tab:
+- `t E url-fragment`
 - Like Extract Tabs, but leaves original tabs unaffected.
 
-### Reload Tab: `t r number-of-seconds`
+### Reload Tab:
+- `t r number-of-seconds`
 - Reloads current tab every number-of-seconds.
 
-### Reload All Tabs in Current Window: `t rw`
+### Reload All Tabs in Current Window:
+- `t rw`
 
 
 Timed Reminders
 ---------------
 
-### Message At: `t m 13:30 At half past one in the afternoon tell me...`
+### Message At:
+- `t m 13:30 At half past one in the afternoon tell me...`
 - Use Military Time.
 
-### Notify In: `t n 30 In thirty minutes tell me to...`
+### Notify In:
+- `t n 30 In thirty minutes tell me to...`
 - Notify in takes a number of minutes to wait before notification.
 
 
@@ -58,18 +69,22 @@ Bookmarklet Manipulation
 
 - Experimental, ymmv.
 
-### Add Bookmarklet: `t s bookmarklet-script`
+### Add Bookmarklet:
+- `t s bookmarklet-script`
 
-### Use Bookmarklet: `t u bookmarklet-script`
+### Use Bookmarklet:
+- `t u bookmarklet-script`
 
 
 Client Identity Management
 --------------------------
 
-### Setting Client ID: `t c your-client-id`
+### Setting Client ID:
+- `t c your-client-id`
 - Set your private client id for Vimspire to send you messages.
 
-### Joining Named Groups: `t C your-group-name`
+### Joining Named Groups:
+- `t C your-group-name`
 - Currently Experimental.
 - Join a multi-client group for sharing commands.
 
@@ -141,16 +156,16 @@ More info: http://wstyke.com/tabspire
 
 Release Notes
 ============
-v2.0.0.0 - Updated WebSocket module to connect to new Clojure nspire server.
-v1.0.1.0 - Added `t e urlFragment` & `t E urlFragment`:
+- v2.0.0.0 - Updated WebSocket module to connect to new Clojure nspire server.
+- v1.0.1.0 - Added `t e urlFragment` & `t E urlFragment`:
 - Extract/clone tabs with urls matching urlFragment into a new window..
-v1.0.0.0 - Added `''` and `'"`: focus prev. focused tab(in same window)/window.
-v0.9.9 - Added reloadCurrentTab + reloadFocusMark + focusMark.
-v0.9.8 - Added Mark Tab `ma` and Goto Tab `'a` like in Vim.
-v0.9.6 - Added delete tab by name/url with 't d tabName'.
-v0.9.5 - Added infinite socket.io reconnect every 5 mins.
-v0.9.4 - Added support for openURL
-v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
+- v1.0.0.0 - Added `''` and `'"`: focus prev. focused tab(in same window)/window.
+- v0.9.9 - Added reloadCurrentTab + reloadFocusMark + focusMark.
+- v0.9.8 - Added Mark Tab `ma` and Goto Tab `'a` like in Vim.
+- v0.9.6 - Added delete tab by name/url with 't d tabName'.
+- v0.9.5 - Added infinite socket.io reconnect every 5 mins.
+- v0.9.4 - Added support for openURL
+- v0.9.3 - Added support for saving client id locally & on cmdsync.com:3000.
 
 Release Info
 ============
