@@ -103,6 +103,7 @@ TS.io.setupSocket = function(clientId) {
   TS.io.port.onclose = function() {
     // Restart socket reconnect heartbeat.
     // Recreate websocket connection when current socket closes.
+    TS.io.port.readyState = TS.io.port.CLOSED;
     debug('WebSocket Disconnected.');
     TS.io.startSocketHeartbeat();
   };
