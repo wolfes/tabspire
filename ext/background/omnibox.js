@@ -91,7 +91,7 @@ TS.omni.updateDefaultSuggestion = function(text) {
     }
     description += rb;
 
-    console.log('desc:', description);
+    //console.log('desc:', description);
 
     chrome.omnibox.setDefaultSuggestion({
       'description': description
