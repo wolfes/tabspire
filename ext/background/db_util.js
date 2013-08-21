@@ -70,12 +70,16 @@ TS.dbUtil.getMatchesByFuzzyName = function(itemDict, queryName) {
         }
     }
     // Order matches by rank: Order then Position.
-    function sortMatches(a, b) {
-        return ((a.rankOrder !== b.rankOrder) ?
-                a.rankOrder > b.rankOrder :
-                (a.rankPos !== b.rankPos ?
-                 a.rankPos > b.rankPos :
-                 a.name.length > b.name.length));
+    function sortMatches(x, y) {
+      // Sort two matching results, first by rankOrder, and second by rankPos.
+      // Multiplier should be larger than rankPos (char idx of first match).
+      var xScore = 1000 * parseInt(x.rankOrder, 10) + parseInt(x.rankPos, 10);
+      var yScore = 1000 * parseInt(y.rankOrder, 10) + parseInt(y.rankPos, 10);
+      if (xScore === yScore) {
+        return x.name.length > y.name.length;
+      } else {
+        return xScore - yScore;
+      }
     }
     matches.sort(sortMatches);
     return matches;
