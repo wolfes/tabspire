@@ -141,6 +141,7 @@ TS.io.registerCommands = function() {
   TS.io.commandsRegistered = true;
 
   TS.vent.on('nspire:openGoogleSearch', function(data) {
+    debug('nspire:openGoogleSearch - ', data);
     TS.controller.openSearchTab({
       'query': 'query' in data ? data.query : '',
       'lucky': false
