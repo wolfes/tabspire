@@ -269,6 +269,15 @@ TS.controller.getTabsByFuzzyName = function(tabName) {
 };
 
 /**
+ * Get list of windows that fuzzy-match the name.
+ * @param {string} winName The desired name.
+ * @return {array} The matching windows.
+ */
+TS.controller.getWinByFuzzyName = function(winName) {
+    return TS.dbWin.getWinByFuzzyName(winName);
+};
+
+/**
  * Focus a tab that is already open in Chrome,
  * and close currently selected tab if it is a newtab.
  * @param {Object} tab The tab with the url to focus.
@@ -412,3 +421,88 @@ chrome.extension.onMessage.addListener(
             }
         }
 });
+
+
+/**
+ * Open a window with chrome windowInfo object.
+ * @param {Object} windowInfo Chrome's window info object, with 'tabs'.
+ */
+TS.controller.openWindowFromInfo = function(windowInfo) {
+  // 1. Create window for tabs.
+  debug('controller.openWindowFromInfo(', windowInfo);
+  var windowUrls = [];
+  var windowTabs = windowInfo['tabs'];
+  for (var i = 0, n = windowTabs.length; i < n; i++) {
+    windowUrls.push(windowTabs[i]['url']);
+  }
+  TS.controller.focusWin(windowInfo, function(success) {
+    debug('focusWin cb:', success);
+    if (!success) {
+      // No existing window to focus, create new window.
+      chrome.windows.create({
+          url: windowUrls
+      });
+    }
+  });
+  // Add tabs to window.
+};
+
+/**
+ * Focus window if present and returns boolean success.
+ * @param {Object} winInfo Chrome window info object.
+ * @param {function(boolean)} cont Called with success or failure.
+ */
+TS.controller.focusWin = function(winInfo, cont) {
+  // Get all windows, populated with tabs.
+  // Check each window, focus first with all of winInfo's tab urls.
+  // Failing that, return success=false.
+  var requiredUrls = {};
+  var winTabs = winInfo['tabs'];
+  for (var i = 0, n = winTabs.length; i < n; i++) {
+    requiredUrls[winTabs[i]['url']] = true;
+  }
+  chrome.windows.getAll({'populate': true}, function(windows) {
+    var foundWindow = false;
+    for (var i = 0, n = windows.length; i < n; i++) {
+      if (foundWindow) {
+        break; // We found our window, stop search.
+      }
+      var win = windows[i];
+      var winTabs = win.tabs;
+      // Check window for matching tabs.
+      var tabUrls = {};
+      for (var j = 0, m = winTabs.length; j < m; j++) {
+        tabUrls[winTabs[j].url] = true;
+      }
+      debug(requiredUrls, tabUrls);
+      var hasRequiredTabs = TS.controller.hasRequiredKeys(
+        requiredUrls, tabUrls);
+      if (hasRequiredTabs) {
+        // Focus this window, stop our search.
+        debug('Found window to focus.');
+        TS.windows.focusById(windows[i].id);
+        foundWindow = true;
+        break;
+      }
+    }
+    cont(foundWindow);
+  });
+};
+
+
+
+/**
+ * Checks if a dict has all required keys from another dict.
+ * @param {Object} requiredKeys Dict with required keys.
+ * @param {Object} keys The dict with keys to check.
+ * @return {boolean} Whether keys dict has all keys in requiredKeys dict.
+ *
+ */
+TS.controller.hasRequiredKeys = function(requiredKeys, keys) {
+  for (key in requiredKeys) {
+    if (!(key in keys)) {
+      return false;
+    }
+  }
+  return true;
+};

@@ -22,5 +22,5 @@ TS.windows = TS.windows || {};
  * @param {number} windowId The ID of the window to focus.
  */
 TS.windows.focusById = function(windowId) {
-    chrome.windows.update(windowId, {focused: true});
+  chrome.windows.update(windowId, {focused: true});
 };

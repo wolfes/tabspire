@@ -26,6 +26,15 @@ Named Tab Manipulation
 - `t d name/tab`
 - Fuzzy Search enabled!
 
+Named Window Manipulation
+-------------------------
+
+### Add (or overwrite existing) Window:
+- `t A name/of/window`
+
+### Open/Focus Window:
+- `t O name/window`
+
 General Tab Manipulation
 -------------------------
 
