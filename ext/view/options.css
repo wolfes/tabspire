@@ -9,7 +9,6 @@ head, body {
 .named-tab {
    /*height: 30px; */
    /*text-align: center;*/
-   padding: 10px 8px;
 }
 
 .named-tab:nth-child(odd) {
@@ -17,19 +16,21 @@ head, body {
 }
 
 .named-tab-name {
-    display: inline-block;
-    /*font-size: 20px;*/
-    font-weight: 200;
-    letter-spacing: 0.05em;
-    width: 350px;
+  padding: 10px 8px;
+  display: inline-block;
+  font-weight: 200;
+  letter-spacing: 0.05em;
+  width: 350px;
 }
 
 .named-tab-title {
-    display: inline-block;
-    width: 500px;
+  padding: 10px 8px;
+  display: inline-block;
+  width: 500px;
 }
 
 .named-tab-url {
-    display: inline-block;
-    width: 500px;
+  padding: 10px 8px;
+  display: inline-block;
+  width: 500px;
 }
