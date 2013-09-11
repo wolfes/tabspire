@@ -1,6 +1,6 @@
 {
   "name": "Tabspire",
-  "version": "2.0.8.0",
+  "version": "2.0.9.0",
   "manifest_version": 2,
   "description": "Command Line / GUI for saving & opening tabs.",
   "browser_action": {

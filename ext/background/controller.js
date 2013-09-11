@@ -27,7 +27,6 @@ $(document).ready(function() {
     chrome.browserAction.onClicked.addListener(function(tab) {
        TS.controller.openTab({'url': 'http://github.com/wolfes/tabspire'});
     });
-    //debug('Initialization Done!');
 });
 
 /**
