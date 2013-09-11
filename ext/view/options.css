@@ -20,6 +20,7 @@ head, body {
     display: inline-block;
     /*font-size: 20px;*/
     font-weight: 200;
+    letter-spacing: 0.05em;
     width: 350px;
 }
 

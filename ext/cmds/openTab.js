@@ -55,7 +55,7 @@ TS.cmds.suggestOpenTab = function(msg) {
         return {
             content: 'open ' + tabInfo.url,
             description: ('open ' + tabInfo.name + ' -> ' +
-                TS.util.encodeXml(tabInfo.url))
+                TS.util.encodeXml('url' in tabInfo ? tabInfo.url : ''))
         };
     });
     msg.showSuggestions(suggestions);

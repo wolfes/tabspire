@@ -112,5 +112,19 @@ TS.dbTabs.removeTabByURL = function(url) {
     TS.dbTabs.saveNamedTabs(tabdict);
 };
 
-
+/**
+ * Rename tab from previous to new name.
+ * @param {string} prevName The old tab name.
+ * @param {string} newName The new tab name.
+ */
+TS.dbTabs.renameTab = function(prevName, newName) {
+  var namedTabDict = TS.dbTabs.getNamedTabs();
+  if (prevName in namedTabDict) {
+    var tab = _.clone(namedTabDict[prevName]);
+    delete namedTabDict[prevName];
+    tab['name'] = newName;
+    namedTabDict[newName] = tab;
+  }
+  TS.dbTabs.saveNamedTabs(namedTabDict);
+};
 

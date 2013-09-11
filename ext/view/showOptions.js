@@ -24,9 +24,8 @@ TS.opts.getNamedTabs = function() {
  */
 TS.opts.tmplNamedTabs = function() {
   var namedTabs = TS.dbTabs.getNamedTabs();
-  console.log(namedTabs);
 
-  var tabElts = document.createElement('ul');
+  var tabElts = document.createElement('div');
 
   var namedTabList = [];
   for (var tabName in namedTabs) {
@@ -51,17 +50,24 @@ TS.opts.tmplNamedTabs = function() {
     var urlElipses = url && url.length > 50 ? '...' : '';
     url = url ? url.substr(0, 50) + titleElipses : '';
 
-    var tabElt = document.createElement('li');
+    var tabElt = document.createElement('div');
     tabElt.className = 'named-tab';
 
-    tabElt.appendChild(TS.opts.snipNamedTabElt(
-      tab['name'], 'named-tab-name'));
+    var nameSnip = TS.opts.snipNamedTabElt(
+      tab['name'], 'named-tab-name');
+    nameSnip.contentEditable = true;
+    nameSnip.setAttribute('data-name', tab['name']);
+    tabElt.appendChild(nameSnip);
 
-    tabElt.appendChild(TS.opts.snipNamedTabElt(
-      title, 'named-tab-title'));
+    var titleSnip = TS.opts.snipNamedTabElt(
+      title, 'named-tab-title');
+    titleSnip.contentEditable = true;
+    tabElt.appendChild(titleSnip);
 
-    tabElt.appendChild(TS.opts.snipNamedTabElt(
-      url, 'named-tab-url'));
+    var urlSnip = TS.opts.snipNamedTabElt(
+      url, 'named-tab-url');
+    urlSnip.contentEditable = true;
+    tabElt.appendChild(urlSnip);
 
     tabElts.appendChild(tabElt);
   }
@@ -82,9 +88,66 @@ TS.opts.snipNamedTabElt = function(text, className) {
     return namedTabSnip;
 };
 
+/**
+ * Process edit to named tab's name.
+ * @param {Object} tabNameElt Element for tab name.
+ */
+TS.opts.changeTabName = function(tabNameElt) {
+    // Step 1: Record prev and new tab name.
+    var prevName = tabNameElt.getAttribute('data-name');
+    var newName = tabNameElt.innerText.trim();
+
+    // Step 2: Update data-name attrib.
+    tabNameElt.setAttribute('data-name', newName);
+
+    // Step 3: Rename tab in db.
+    TS.dbTabs.renameTab(prevName, newName);
+};
+
+/**
+ * Process edit to named tab's title.
+ * @param {Object} tabTitleElt Element for tab title.
+ */
+TS.opts.changeTabTitle = function(tabTitleElt) {
+  var newTitle = tabTitleElt.innerText.trim();
+  var tabName = tabTitleElt.parentNode.childNodes[0].innerText;
+
+  var namedTabs = TS.dbTabs.getNamedTabs();
+  if (tabName in namedTabs) {
+    namedTabs[tabName]['title'] = newTitle;
+  }
+  TS.dbTabs.saveNamedTabs(namedTabs);
+};
+
+/**
+ * Process edit to named tab's url.
+ * @param {Object} tabUrlElt Element for tab url.
+ */
+TS.opts.changeTabUrl = function(tabUrlElt) {
+  var newUrl = tabUrlElt.innerText.trim();
+  var tabName = tabUrlElt.parentNode.childNodes[0].innerText;
+
+  var namedTabs = TS.dbTabs.getNamedTabs();
+  if (tabName in namedTabs) {
+    namedTabs[tabName]['url'] = newUrl;
+  }
+  TS.dbTabs.saveNamedTabs(namedTabs);
+};
+
 $(document).ready(function() {
-  console.log('Loading...');
   var tmplNamedTabs = TS.opts.tmplNamedTabs();
   $('#named-tabs').html(tmplNamedTabs);
-  console.log('Done.');
+
+  $('.named-tab-name').on('keyup blur', function(e) {
+    var tabNameElt = e.currentTarget;
+    TS.opts.changeTabName(tabNameElt);
+  });
+  $('.named-tab-title').on('keyup blur', function(e) {
+    var tabTitleElt = e.currentTarget;
+    TS.opts.changeTabTitle(tabTitleElt);
+  });
+  $('.named-tab-url').on('keyup blur', function(e) {
+    var tabUrlElt = e.currentTarget;
+    TS.opts.changeTabUrl(tabUrlElt);
+  });
 });
