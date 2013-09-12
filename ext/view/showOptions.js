@@ -42,19 +42,15 @@ TS.opts.tmplNamedTabs = function() {
   for (var i = 0, n = namedTabList.length; i < n; i++) {
     var tab = namedTabList[i];
 
+    var tabName = tab['name'];
     var title = tab['title'];
-    var titleElipses = title && title.length > 60 ? '...' : '';
-    title = title ? title.substr(0, 60) + titleElipses : '';
-
     var url = tab['url'];
-    var urlElipses = url && url.length > 50 ? '...' : '';
-    url = url ? url.substr(0, 50) + titleElipses : '';
 
     var tabElt = document.createElement('div');
     tabElt.className = 'named-tab';
 
     var nameSnip = TS.opts.snipNamedTabElt(
-      tab['name'], 'named-tab-name');
+      tabName, 'named-tab-name');
     nameSnip.contentEditable = true;
     nameSnip.setAttribute('data-name', tab['name']);
     tabElt.appendChild(nameSnip);
@@ -68,6 +64,7 @@ TS.opts.tmplNamedTabs = function() {
       url, 'named-tab-url');
     urlSnip.contentEditable = true;
     tabElt.appendChild(urlSnip);
+    tabElt.innerHTML += '<br />';
 
     tabElts.appendChild(tabElt);
   }
