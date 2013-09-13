@@ -27,13 +27,11 @@ TS.opts.tmplNamedTabs = function() {
 
   var tabElts = document.createElement('div');
 
-  var namedTabList = [];
-  for (var tabName in namedTabs) {
-    var tab = namedTabs[tabName];
-    if ('url' in tab) {
-      namedTabList.push(tab);
-    }
-  }
+  var namedTabList = _.values(namedTabs);
+  namedTabList = _.filter(namedTabList, function(namedTab) {
+    return 'url' in namedTab;
+  });
+
   namedTabList.sort(function(tabA, tabB) {
     return tabA['name'] > tabB['name'] ? 1 :
       tabA['name'] < tabB['name'] ? -1 : 0;
@@ -75,8 +73,8 @@ TS.opts.tmplNamedTabs = function() {
 /**
  * Create a snippet part of named tab element.
  * @param {string} text Text for tab element.
- * @param {string} className The className for this snippet..
- * @return {Object} namedTabSnip The snippet for namedTabElt..
+ * @param {string} className The className for this snippet.
+ * @return {Object} namedTabSnip The snippet for namedTabElt.
  */
 TS.opts.snipNamedTabElt = function(text, className) {
     var namedTabSnip = document.createElement('span');
@@ -138,13 +136,16 @@ $(document).ready(function() {
   $('.named-tab-name').on('keyup blur', function(e) {
     var tabNameElt = e.currentTarget;
     TS.opts.changeTabName(tabNameElt);
+    return true;
   });
   $('.named-tab-title').on('keyup blur', function(e) {
     var tabTitleElt = e.currentTarget;
     TS.opts.changeTabTitle(tabTitleElt);
+    return true;
   });
   $('.named-tab-url').on('keyup blur', function(e) {
     var tabUrlElt = e.currentTarget;
     TS.opts.changeTabUrl(tabUrlElt);
+    return true;
   });
 });
