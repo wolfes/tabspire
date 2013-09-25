@@ -14,22 +14,14 @@ TS.cmds = TS.cmds || {};
 
 // Add command to extract all tabs with matching urls
 // into new window.
-TS.omni.commands.push({
-    'opt': 'e',
-    'cmd': 'extract',
-    'desc': 'Extract Tabs',
-    'suggest': 'suggestExtraction',
-    'cmdName': 'extractTabs'
-});
+TS.omni.registerCommand(
+  'e', 'extract', 'Extract Tabs', 'extractTabs'
+);
 // Add command to extract all tabs with matching urls
 // into new window, keeping original tabs open.
-TS.omni.commands.push({
-    'opt': 'E',
-    'cmd': 'extractClones',
-    'desc': 'Clone Tabs',
-    'suggest': 'suggestExtraction',
-    'cmdName': 'cloneTabs'
-});
+TS.omni.registerCommand(
+  'E', 'extractClones', 'Clone Tabs', 'cloneTabs'
+);
 
 /**
  * Initialize command listeners.

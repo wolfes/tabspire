@@ -66,6 +66,16 @@ TS.tabs.getSelected = function(callWithFocusedTab) {
     });
 };
 
+/**
+ * Fetch currently selected tab's url.
+ * @param {function()} callWithURL Called with current tab's URL.
+ */
+TS.tabs.getCurrentURL = function(callWithURL) {
+  TS.tabs.getSelected(function(tab) {
+    callWithURL(tab['url']);
+  });
+};
+
 /** Helper Methods */
 
 /**

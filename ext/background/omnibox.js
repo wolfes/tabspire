@@ -40,6 +40,25 @@ TS.omni.commands = [];
 // Register command with properties and a function to identify input?
 
 /**
+ * Registers omnibox command.
+ *
+ * @param {string} opt Short name for command a user will type to activate.
+ * @param {string} cmd Long name for the command.
+ * @param {string} desc Description of command for suggestion.
+ * @param {string} cmdName Broadcast on vent for perform/suggest actions.
+ */
+TS.omni.registerCommand = function(
+    opt, cmd, desc, cmdName) {
+  TS.omni.commands.push({
+    'opt': opt,
+    'cmd': cmd,
+    'desc': desc,
+    'cmdName': cmdName
+  });
+};
+
+
+/**
  * Basic Idea: Each command has:
  * Option: 1 char, for easy typing of command.
  * Cmd: 1 word, for partial/full cmd word recognition.
@@ -189,6 +208,9 @@ chrome.omnibox.onInputChanged.addListener(TS.omni.inputChanged);
 TS.omni.inputEntered = function(text) {
     var cmd = TS.omni._getCmd(text);
     debug('inputEntered cmd:', cmd);
+    if (cmd === undefined) {
+      return;
+    }
     var optToCmd = {
         'a': TS.omni.cmdAddTab,
         'o': TS.omni.cmdOpenTab,

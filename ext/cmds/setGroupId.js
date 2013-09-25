@@ -13,13 +13,9 @@ var TS = TS || {};
 TS.cmds = TS.cmds || {};
 
 // Add command to set id for server.
-TS.omni.commands.push({
-    'opt': 'C',
-    'cmd': 'groupId',
-    'desc': 'Set Group Id',
-    'suggest': 'suggestMessage',
-    'cmdName': 'setGroupId'
-});
+TS.omni.registerCommand(
+   'C', 'groupId', 'Set Group Id', 'setGroupId'
+);
 
 /**
  * Initialize command listeners.

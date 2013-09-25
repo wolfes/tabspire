@@ -15,13 +15,9 @@ TS.cmds = TS.cmds || {};
 /** List of commands. */
 TS.cmds.all = TS.cmds.all || [];
 
-TS.omni.commands.push({
-  'opt': 'O',
-  'cmd': 'OpenWin',
-  'desc': 'Open Win',
-  'suggest': 'suggestOpen',
-  'cmdName': 'openWin'
-});
+TS.omni.registerCommand(
+  'O', 'OpenWin', 'Open Win', 'openWin'
+);
 
 /**
  * Initialize command listeners.

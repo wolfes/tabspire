@@ -12,13 +12,9 @@ var TS = TS || {};
 /** Module Namespace */
 TS.cmds = TS.cmds || {};
 
-TS.omni.commands.push({
-    'opt': 's',
-    'cmd': 'script',
-    'desc': 'Add Script',
-    'suggest': 'suggestMessage',
-    'cmdName': 'addBooklet'
-});
+TS.omni.registerCommand(
+   's', 'script', 'Add Script', 'addBooklet'
+);
 
 /**
  * Initialize command listeners.

@@ -12,13 +12,9 @@ var TS = TS || {};
 /** Module Namespace */
 TS.cmds = TS.cmds || {};
 
-TS.omni.commands.push({
-    'opt': 'rw',
-    'cmd': 'rwindow',
-    'desc': 'Reload Win',
-    'suggest': 'suggestMessage',
-    'cmdName': 'reloadWindow'
-});
+TS.omni.registerCommand(
+   'rw', 'rwindow', 'Reload Win', 'reloadWindow'
+);
 
 /**
  * Initialize command listeners.

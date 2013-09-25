@@ -12,13 +12,9 @@ var TS = TS || {};
 /** Module Namespace */
 TS.cmds = TS.cmds || {};
 
-TS.omni.commands.push({
-    'opt': 'd',
-    'cmd': 'delete',
-    'desc': 'Del Tab',
-    'suggest': 'suggestDelete',
-    'cmdName': 'deleteTab'
-});
+TS.omni.registerCommand(
+  'd', 'delete', 'Del Tab', 'deleteTab'
+);
 
 /**
  * Initialize command listeners.

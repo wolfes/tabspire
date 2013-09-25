@@ -13,13 +13,9 @@ var TS = TS || {};
 TS.cmds = TS.cmds || {};
 
 // Add command for: Bookmark Fuzzy Search
-TS.omni.commands.push({
-    'opt': 'b',
-    'cmd': 'bookmarkOpen',
-    'desc': 'Open Bookmark',
-    'suggest': 'suggestChromeBookmarks',
-    'cmdName': 'openBookmark'
-});
+TS.omni.registerCommand(
+  'b', 'bookmarkOpen', 'Open Bookmark', 'openBookmark'
+);
 
 /**
  * Initialize command listeners.

@@ -13,13 +13,9 @@ var TS = TS || {};
 TS.cmds = TS.cmds || {};
 
 // Add command for: History Fuzzy Search
-TS.omni.commands.push({
-    'opt': 'h',
-    'cmd': 'history',
-    'desc': 'Search History',
-    'suggest': 'suggestHistory',
-    'cmdName': 'openHistory'
-});
+TS.omni.registerCommand(
+   'h', 'history', 'Search History', 'openHistory'
+);
 
 /**
  * Initialize command listeners.

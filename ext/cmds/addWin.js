@@ -15,14 +15,9 @@ TS.cmds = TS.cmds || {};
 /** List of commands. */
 TS.cmds.all = TS.cmds.all || [];
 
-
-TS.omni.commands.push({
-    'opt': 'A',
-    'cmd': 'AddWin',
-    'desc': 'Add Win',
-    'suggest': 'suggestAddWin',
-    'cmdName': 'addWin'
-});
+TS.omni.registerCommand(
+  'A', 'AddWin', 'Add Win', 'addWin'
+);
 
 /**
  * Initialize command listeners.

@@ -13,13 +13,9 @@ var TS = TS || {};
 TS.cmds = TS.cmds || {};
 
 // Add command to set id for server.
-TS.omni.commands.push({
-    'opt': 'c',
-    'cmd': 'clientId',
-    'desc': 'Set Client Id',
-    'suggest': 'suggestMessage',
-    'cmdName': 'setClientId'
-});
+TS.omni.registerCommand(
+   'c', 'clientId', 'Set Client Id', 'setClientId'
+);
 
 /**
  * Initialize command listeners.

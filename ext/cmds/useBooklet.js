@@ -12,13 +12,9 @@ var TS = TS || {};
 /** Module Namespace */
 TS.cmds = TS.cmds || {};
 
-TS.omni.commands.push({
-    'opt': 'u',
-    'cmd': 'usebook',
-    'desc': 'Use Book',
-    'suggest': 'suggestBookmarks',
-    'cmdName': 'useBooklet'
-});
+TS.omni.registerCommand(
+   'u', 'usebook', 'Use Book', 'useBooklet'
+);
 
 /**
  * Initialize command listeners.
