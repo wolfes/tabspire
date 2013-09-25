@@ -189,6 +189,9 @@ chrome.omnibox.onInputChanged.addListener(TS.omni.inputChanged);
 TS.omni.inputEntered = function(text) {
     var cmd = TS.omni._getCmd(text);
     debug('inputEntered cmd:', cmd);
+    if (cmd === undefined) {
+      return;
+    }
     var optToCmd = {
         'a': TS.omni.cmdAddTab,
         'o': TS.omni.cmdOpenTab,

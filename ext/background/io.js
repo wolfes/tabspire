@@ -10,6 +10,12 @@ var TS = TS || {};
 /** Module Namespace */
 TS.io = TS.io || {};
 
+/** Port for private messaging. */
+TS.io.port = null;
+
+/** Port for group messaging. */
+TS.io.groupPort = null;
+
 /** Base Server API url. */
 TS.io.BASE_URL = 'ws://cmdsync.com:3000/tabspire/api/0/';
 
@@ -38,7 +44,7 @@ TS.io.startSocketHeartbeat = function() {
 /**
  * Set up socket with a given private client id.
  * @param {string} clientId Alphabetic string to identify this connection.
- */
+*/
 TS.io.setClientId = function(clientId) {
   if (clientId.search('/') !== -1) {
     debug('Client ID invalid.  Cannot contain slashes.');
@@ -65,13 +71,12 @@ TS.io.joinGroupById = function(groupName) {
     TS.io.BASE_TEST_URL : TS.io.BASE_URL);
   var connectUrl = baseSocketUrl + groupName + '/join-group';
 
-  TS.io.port = new WebSocket(connectUrl);
+  TS.io.groupPort = new WebSocket(connectUrl);
   //TODO(wstyke): Consider using routeIncomingGroupRequest handler.
-  TS.io.port.onmessage = TS.io.routeIncomingPrivateRequest;
-  TS.io.port.onopen = function() {
+  TS.io.groupPort.onmessage = TS.io.routeIncomingPrivateRequest;
+  TS.io.groupPort.onopen = function() {
     debug('Connected!');
   };
-
 };
 
 /**
@@ -120,6 +125,11 @@ TS.io.routeIncomingPrivateRequest = function(request) {
   // Publish the incoming command request.
   if (requestData.hasOwnProperty('command') &&
       requestData.hasOwnProperty('command-data')) {
+    if (requestData.hasOwnProperty('sender-uuid') &&
+        requestData['sender-uuid'] === TS.gCmd.uuid) {
+      // Prevent processing your own command.
+      return;
+    }
     TS.vent.trigger(
       'nspire:' + requestData.command,
       requestData['command-data']);
