@@ -30,11 +30,11 @@ TS.gCmd.sendToGroup = function(cmd) {
   cmd['channel-type'] = TS.gCmd.GROUP_CHANNEL_TYPE;
   cmd['sender-uuid'] = TS.gCmd.uuid;
   cmd['group-name'] = TS.dbFlags.getFlag('lastGroupName');
-  TS.io.port.send(JSON.stringify(cmd));
+  TS.io.groupPort.send(JSON.stringify(cmd));
 };
 
 /**
- * Send group message to open current URL.
+ * Send current group message to open current URL.
  */
 TS.gCmd.openCurrentURL = function() {
   TS.tabs.getCurrentURL(function(currentUrl) {

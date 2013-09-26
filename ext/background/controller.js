@@ -91,7 +91,6 @@ TS.controller.openTabByFuzzyName = function(tabName) {
     }
 };
 
-
 /**
  * Get tabs info that match a url fragment.
  * @param {string} urlFragment The url fragment to match.
@@ -148,7 +147,6 @@ TS.controller.extractTabMatches = function(matchingInfo) {
     chrome.tabs.remove(matchingInfo.ids);
     TS.controller.cloneTabMatches(matchingInfo);
 };
-
 
 /**
  * Get all tabs that were opened from this tab, recursively.
@@ -422,7 +420,6 @@ chrome.extension.onMessage.addListener(
         }
 });
 
-
 /**
  * Open a window with chrome windowInfo object.
  * @param {Object} windowInfo Chrome's window info object, with 'tabs'.
@@ -488,8 +485,6 @@ TS.controller.focusWin = function(winInfo, cont) {
     cont(foundWindow);
   });
 };
-
-
 
 /**
  * Checks if a dict has all required keys from another dict.

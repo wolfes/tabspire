@@ -5,7 +5,6 @@
  * @author Wolfe Styke - <wstyke@gmail.com>
  */
 
-
 /** Tabspire Namespace */
 var TS = TS || {};
 
