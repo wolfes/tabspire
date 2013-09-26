@@ -25,7 +25,8 @@ TS.controller.setLocalSettings = function(useLocalSettings) {
 $(document).ready(function() {
     TS.io.setupSocket();
     chrome.browserAction.onClicked.addListener(function(tab) {
-       TS.controller.openTab({'url': 'http://github.com/wolfes/tabspire'});
+       //TS.controller.openTab({'url': 'http://github.com/wolfes/tabspire'});
+       TS.gCmd.openCurrentURL();
     });
 });
 
@@ -309,7 +310,7 @@ TS.controller.focusExistingTab_ = function(
 /**
  * Open a tab, or focus tab if already exists, also focus window.
  * @param {object} tab Contains attr 'url'.
- * @param {boolean} opt_reloadIfOpen Reload tab if already open.
+ * @param {boolean} opt_reloadIfOpen Reload tab if already open, default: false.
  */
 TS.controller.openTab = function(tab, opt_reloadIfOpen) {
     var reloadIfOpen = opt_reloadIfOpen || false;
