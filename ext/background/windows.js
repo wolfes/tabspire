@@ -24,3 +24,14 @@ TS.windows = TS.windows || {};
 TS.windows.focusById = function(windowId) {
   chrome.windows.update(windowId, {focused: true});
 };
+
+
+/**
+ * Create window with tabs for urls.
+ * @param {Array<String>} windowURLs List of string urls.
+ */
+TS.windows.createWithURLs = function(windowURLs) {
+  chrome.windows.create({
+    url: windowURLs
+  });
+};
